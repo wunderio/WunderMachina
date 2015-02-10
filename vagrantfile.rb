@@ -10,7 +10,7 @@ INSTANCE_MEM      = settings['mem']
 INSTANCE_CPUS     = settings['cpus']
 INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
-ANSIBLE_INVENTORY = dir + "ansible/inventory"
+ANSIBLE_INVENTORY = "ansible/inventory"
 
 # Write the inventory file for ansible
 FileUtils.mkdir_p dir + ANSIBLE_INVENTORY
