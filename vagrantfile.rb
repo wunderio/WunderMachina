@@ -33,6 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.box      = "centos-6.6-x86_64-v0"
 
 	config.vm.network :private_network, ip: INSTANCE_IP
+  config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
 
 	# Sync folders
 	config.vm.synced_folder ".", "/vagrant", type: :nfs
