@@ -27,6 +27,6 @@
       - "{{ php_package }}-pecl-memcache"
 
   # Install redis
-  - name: Install php-pecl-redis
-    yum: name=http://dl.iuscommunity.org/pub/ius/development/CentOS/6/x86_64/php55u-pecl-redis-2.2.4-4.ius.centos6.x86_64.rpm state=present
+  #  - name: Install php-pecl-redis
+  #  yum: name=http://dl.iuscommunity.org/pub/ius/development/CentOS/6/x86_64/php55u-pecl-redis-2.2.4-4.ius.centos6.x86_64.rpm state=present
 
