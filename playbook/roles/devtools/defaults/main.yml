@@ -1,13 +1,12 @@
 
 
 # the following is also set in web-front - required here for xdebug
-# This setting is not "global"
-# php_package: php53u
+php_package: php53u
 
 # the following is also set in web-front - required here for mailcatcher
 php_ini_file: /etc/php.d/zz_wunderkraut.ini
 
-devtools_development_packages:
+development_packages:
  - nano
  - ruby-devel
  - sqlite-devel
