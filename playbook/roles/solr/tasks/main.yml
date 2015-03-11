@@ -10,7 +10,7 @@
       creates="{{ cache_path }}/solr-{{ solr_version }}.tgz"
 
   - name: Create group for solr
-    group: name=solr    
+    group: name=solr
 
   - name: Create user for solr
     user: name=solr
@@ -41,3 +41,6 @@
     template: src=solr_sysconfig.j2 dest=/etc/sysconfig/solr
     notify:
       - restart solr
+
+  - name: ensure solr is running now and on boot
+    service: name=solr state=started enabled=yes
