@@ -52,3 +52,5 @@
     mysql_user: name={{ item.value.user }} password={{ item.value.pass }} priv={{ item.key }}.*:ALL state=present
     with_dict: databases
 
+  - name: Install Pipe Viewer for monitoring MySQL imports
+    yum: pkg=pv state=latest
