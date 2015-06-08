@@ -24,7 +24,7 @@
     creates=/etc/yum.repos.d/remi.repo
 
 - name: Enable ius repository
-  shell: rpm -Uhv http://dl.iuscommunity.org/pub/ius/stable/CentOS/6/x86_64/ius-release-1.0-13.ius.centos6.noarch.rpm
+  shell: rpm -Uhv http://dl.iuscommunity.org/pub/ius/stable/CentOS/6/x86_64/ius-release-1.0-14.ius.centos6.noarch.rpm
     creates=/etc/yum.repos.d/ius.repo
 
 - name: Enable WK repository
