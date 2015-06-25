@@ -44,7 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		config.cache.enable :yum
 		config.cache.synced_folder_opts = {
 			type: :nfs,
-			mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+			mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
 		}
 	end
 
