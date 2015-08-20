@@ -1,16 +1,9 @@
 
-
-# the following is also set in web-front - required here for xdebug
-php_package: php53u
-
-# the following is also set in web-front - required here for mailcatcher
-php_ini_file: /etc/php.d/zz_wunderkraut.ini
-
 development_packages:
  - nano
  - ruby-devel
  - sqlite-devel
- - gcc-c++ 
+ - gcc-c++
 
 xdebug:
  - section: XDebug
@@ -18,7 +11,7 @@ xdebug:
     - key: xdebug.remote_enable
       val: 1
     - key: xdebug.remote_handler
-      val: dbgp 
+      val: dbgp
     - key: xdebug.remote_connect_back
       val: 1
     - key: xdebug.remote_port
@@ -28,11 +21,13 @@ xdebug:
     - key: xdebug.remote_log
       val: /var/log/xdebug.log
 
+# mailhog configuration.
+mailhog_binary_url: https://github.com/mailhog/MailHog/releases/download/v0.1.7/MailHog_linux_amd64
+mailhog_install_dir: /opt/mailhog
 
-# PHP ini
-php:
- - section: PHP
-   options:
-    - key: sendmail_path
-      val: /usr/bin/catchmail
-      
+# ssmtp configuration.
+ssmtp_mailhub: localhost:1025
+ssmtp_root: postmaster
+ssmtp_authuser: ""
+ssmtp_authpass: ""
+ssmtp_from_line_override: "YES"
