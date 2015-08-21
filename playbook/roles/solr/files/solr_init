@@ -431,7 +431,7 @@ case "$ACTION" in
         if running $JETTY_PID
         then
           echo "Already Running!"
-          exit 1
+          exit 0
         else
           # dead pid file - remove
           rm -f "$JETTY_PID"
