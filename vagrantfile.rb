@@ -33,7 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.box      = "centos-6.6-x86_64-v0"
 
 	config.vm.network :private_network, ip: INSTANCE_IP
-  config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
+	config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
 
 	# Sync folders
 	config.vm.synced_folder ".", "/vagrant", type: :nfs
@@ -58,7 +58,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.provider :virtualbox do |vb|
 		vb.name = INSTANCE_NAME
-		vb.customize ["modifyvm", :id, "--memory", INSTANCE_MEM, "--cpus", INSTANCE_CPUS, "--ioapic", "on", "--rtcuseutc", "on", "--natdnshostresolver1", "on"]
+		version = `VBoxManage --version`
+		if version[0] == "5"
+			# Set up some VirtualBox 5 specific things
+			vb.customize [
+				"modifyvm", :id,
+				"--memory", INSTANCE_MEM,
+				"--cpus", INSTANCE_CPUS,
+				"--ioapic", "on",
+				"--rtcuseutc", "on",
+				"--natdnshostresolver1", "on",
+				"--paravirtprovider", "kvm"
+			]
+		else
+			# Other virtualbox versions
+			vb.customize [
+				"modifyvm", :id,
+				"--memory", INSTANCE_MEM,
+				"--cpus", INSTANCE_CPUS,
+				"--ioapic", "on",
+				"--rtcuseutc", "on",
+				"--natdnshostresolver1", "on"
+			]
+		end
 	end
 
 	########################################
@@ -88,5 +110,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	end
 
 	config.vm.provision :shell, :path => "ansible/shell/provision.sh"
-	
+
 end
