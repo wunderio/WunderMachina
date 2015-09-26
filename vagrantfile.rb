@@ -34,6 +34,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.network :private_network, ip: INSTANCE_IP
 	config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
+	# Allow us to use our box with vagrant 1.7.x
+	config.ssh.insert_key = FALSE
 
 	# Sync folders
 	config.vm.synced_folder ".", "/vagrant", type: :nfs
