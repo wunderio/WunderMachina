@@ -7,7 +7,7 @@
     insertafter='^;suhosin.stealth = 1'
     line='suhosin.executor.include.whitelist = phar'
     state=present
-  when: php_package != "php55u" or "php56u"
+  when: php_package != "php55u" and php_package != "php56u"
 
 - name: Install composer
   shell: curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/bin/composer

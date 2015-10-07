@@ -39,7 +39,7 @@
     when: php_package == "php53u"
 
   - include: "php55u.yml"
-    when: php_package == "php55u" or "php56u"
+    when: php_package == "php55u" or php_package == "php56u"
 
 # PHP configuration ini file
   - name: php-fpm www.conf
