@@ -10,3 +10,4 @@ drush: {
   version: "6.*",
 }
 
+drupal_files: drupal/files
