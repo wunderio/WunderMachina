@@ -23,8 +23,8 @@
   shell: source /etc/profile.d/composer.sh && composer global require drush/drush:{{ drush.version }} && drush
     creates=/usr/bin/drush
 
-- name: Ensure drupal/files dir exists
-  file: path=/vagrant/{{ drupal_files }} state=directory
+- name: Ensure drupal/files dir exists and set it to world writable
+  file: path=/vagrant/{{ drupal_files }} state=directory mode=0777
 
 # - name: Install drush sql-sync-pipe
 #   shell: cd {{ composer.path }}/vendor/drush/drush/commands && git clone https://github.com/mvance/sql-sync-pipe.git
