@@ -18,8 +18,6 @@ xdebug:
       val: 9000
     - key: xdebug.remote_autostart
       val: 0
-    - key: xdebug.remote_log
-      val: /var/log/xdebug.log
 
 # mailhog configuration.
 mailhog_binary_url: https://github.com/mailhog/MailHog/releases/download/v0.1.7/MailHog_linux_amd64
