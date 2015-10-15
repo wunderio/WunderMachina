@@ -13,27 +13,42 @@
   with_items:
     - "{{ development_packages }}"
 
+
+##
+# Php XDebug.
+#
+
 - name: PHP | XDebug
   yum: pkg={{ php_package }}-pecl-xdebug state=installed
   tags: ntp
 
-- name: PHP | Add section to the xdebug.ini file if it is missing
-  lineinfile: dest=/etc/php.d/15-xdebug.ini
-    regexp='^[XDebug]'
-    insertbefore=BOF
-    line='[XDebug]'
-
 - name: PHP | Set up xdebug.ini
-  ini_file: dest=/etc/php.d/15-xdebug.ini
+  ini_file: dest=/etc/php.d/zzz-xdebug.ini
     section={{ item.0.section }}
     option={{ item.1.key }}
     value={{ item.1.val }}
-    backup=yes
+    state=present
   with_subelements:
     - "{{ xdebug }}"
     - options
   notify:
     - restart php-fpm
+
+- name: PHP | Set the remote log option in the xdebug ini file.
+  ini_file: dest=/etc/php.d/zzz-xdebug.ini
+    section={{ item.0.section }}
+    option=xdebug.remote_log
+    value=/var/log/xdebug.log
+  with_subelements:
+    - "{{ xdebug }}"
+    - options
+  notify:
+    - restart php-fpm
+  when: xdebug_remote_debug_log == true
+
+- name: PHP | Make sure the xdebug remote log file exists and it writeable
+  file: path=/var/log/xdebug.log state=touch mode="660"
+  when: xdebug_remote_debug_log == true
 
 # Install and configure MailHog.
 - name: MAILHOG | Ensure mailhog install directory exists.
