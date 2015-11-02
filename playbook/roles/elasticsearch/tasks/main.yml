@@ -16,6 +16,20 @@
 - name: Install Elasticsearch.
   yum: pkg=elasticsearch state=installed
 
+- name: Removing Plugins if they exist
+  action: >
+    shell bin/plugin remove {{ item.shortname }}
+    chdir={{ elasticsearch_home_dir }}
+  with_items: elasticsearch_plugins
+  ignore_errors: yes
+
+- name: Installing Plugins
+  action: >
+    shell bin/plugin install {{ item.name }}
+    chdir={{ elasticsearch_home_dir }}
+  with_items: elasticsearch_plugins
+  ignore_errors: yes
+
 - name: Configure Elasticsearch.
   lineinfile: >
     dest=/etc/elasticsearch/elasticsearch.yml
