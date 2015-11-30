@@ -1,0 +1,6 @@
+---
+# defaults file for platformsh-cli
+
+composer: {
+  path: "/usr/lib/composer",
+}
