@@ -1,0 +1,110 @@
+################################################################################
+# This file is provisioned automatically - you have been warned :)
+################################################################################
+
+## Wunderkraut MariaDB configuration for CentOS
+## Optimised for Drupal
+
+[client]
+port = 3306
+socket = /var/lib/mysql/mysql.sock
+default-character-set   = utf8
+
+[mysqld_safe]
+socket = /var/lib/mysql/mysql.sock
+
+[server]
+# Basic Settings.
+user = mysql
+pid-file = /var/lib/mysql/mysql.pid
+socket = /var/lib/mysql/mysql.sock
+port = 3306
+basedir = /usr
+datadir = /var/lib/mysql
+tmpdir = /tmp
+language = /usr/share/mysql/english
+skip-external-locking
+
+# Character sets and SQL mode.
+character_set_server = utf8
+collation_server = utf8_general_ci
+sql_mode = NO_ENGINE_SUBSTITUTION,TRADITIONAL
+
+# Network.
+bind-address = 0.0.0.0
+
+# There's no reason to waste time resolving domain names.
+# Faster & Safer. Do not use host names in GRANTs.
+skip-name-resolve
+
+# Query cache
+query_cache_type = 1
+query_cache_limit = 256K
+query_cache_min_res_unit = 2k
+query_cache_size = 80M
+
+# Basic Tuning.
+max_connections = 500
+connect_timeout = 5
+wait_timeout = 60
+max_allowed_packet = 256M
+thread_cache_size = 128
+sort_buffer_size = 4M
+bulk_insert_buffer_size = 32M
+tmp_table_size = 64M
+max_heap_table_size = 64M
+
+# MyISAM.
+myisam_recover = BACKUP
+key_buffer_size = 256M
+table_cache = 400
+myisam_sort_buffer_size = 512M
+concurrent_insert = 2
+read_buffer_size = 2M
+read_rnd_buffer_size = 16M
+
+# InnoDB.
+default_storage_engine = InnoDB
+
+# O_DIRECT bypasses the operating system's handling of data. This
+# can drastically improve how well your system handles large amounts
+# of RAM by removing double buffers (once in InnoDB's cache, again
+# in the filesystem's cache), at a slight cost to reliability.
+# This appears to be more dramatic the more RAM you have.
+# Should reduce swap pressure and in most cases improves performance.
+innodb_flush_method = O_DIRECT
+
+innodb_buffer_pool_size = {{ innodb_buffer_pool_size }}M
+
+# Reduce contention. Set to 4+ in MySQL 5.5+
+innodb_buffer_pool_instances    = 6
+
+innodb_data_file_path = ibdata1:200M:autoextend
+innodb_log_buffer_size = 8M
+innodb_file_per_table = 1
+innodb_open_files = 32768
+innodb_io_capacity = 400
+innodb_thread_concurrency = 16
+innodb_additional_mem_pool_size = 10M
+innodb_read_io_threads = 16
+innodb_write_io_threads = 16
+innodb_flush_log_at_trx_commit = 0
+innodb_support_xa = 0
+innodb_max_dirty_pages_pct = 70
+
+# Reduce deadlocks
+# See:
+# - https://drupal.org/node/2164849
+# - https://drupal.org/node/1952972
+transaction-isolation          = READ-COMMITTED
+
+# Need adjustment if many connections/sec
+# Percona suggests 2048 is reasonable value. Original 100.
+back_log = 2048
+
+slow_query_log = 0
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet  = 128M

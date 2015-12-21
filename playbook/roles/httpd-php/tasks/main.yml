@@ -1,0 +1,21 @@
+---
+- name: set up directories (with logs directory)
+  file: path=/var/www/site/logs state=directory recurse=yes
+  sudo: true
+
+# Include the appropriate OS specific setups.
+
+- include: redhat_apache.yml
+  when: ansible_os_family == "RedHat"
+
+- include: redhat_php.yml
+  when: ansible_os_family == "RedHat"
+
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - MariaDB-client
+    - gd
+    - gd-devel
+    - GraphicsMagick

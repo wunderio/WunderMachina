@@ -1,0 +1,37 @@
+---
+
+# Install required packages
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - python-pip
+    - python-devel
+    - python-virtualenv
+    - augeas-libs
+    - dialog
+    - libffi-devel
+    - openssl-devel
+    - redhat-rpm-config
+
+- shell: pip install requests[security]
+
+# Check if we have nginx already running in  port 80
+- shell: netstat -tunlp | grep ":80 " | sed -e 's/.*\///'
+  register: port_80
+
+# Check if letsencrypt folder already exists
+- stat: path="{{ letsencrypt_src }}/letsencrypt"
+  register: letsencrypt_installed
+
+# Fetch letsencrypt if it doesn't exist
+- shell: cd {{ letsencrypt_src }} && git clone https://github.com/letsencrypt/letsencrypt
+  when: not letsencrypt_installed.stat.exists
+
+# Update letsencrypt if it exists
+- shell: cd {{ letsencrypt_src }}/letsencrypt && git pull
+  when: letsencrypt_installed.stat.exists
+
+- name: Run initial certificate request only if port 80 is free
+  command: "{{ letsencrypt_command }}"
+  when: port_80.stdout.find('nginx') == -1

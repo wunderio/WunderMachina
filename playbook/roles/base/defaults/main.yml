@@ -1,0 +1,14 @@
+---
+
+partition_var_log: True
+
+base_pubkeys_enable: True
+base_pubkeys_auth: username:password
+base_pubkeys_url: https://www.example.com
+base_addhost_url: https://www.example.com
+
+# On default we disable iptables but we want option to keep it on for customer-servers without external firewall
+disable_iptables: True
+
+# Default distribution CentOS 7
+distro: "centos7"

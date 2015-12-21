@@ -1,0 +1,16 @@
+# Setup Varnish repository
+
+# Prepare yum repositories
+- yum:
+		name="{{ item }}"
+		state=present
+	with_items:
+		- "https://repo.varnish-cache.org/redhat/varnish-4.1.el7.rpm"
+	when: distro == "rhel7"
+
+- yum:
+		name={{ item }}
+		state=present
+	with_items:
+		- "https://repo.varnish-cache.org/redhat/varnish-4.1.el7.rpm"
+	when: distro == "centos7"

@@ -1,0 +1,75 @@
+---
+
+# Base user configurations
+
+
+# @TODO: Disable password authentication and disable password authentication
+# /etc/ssh/sshd_config
+#PermitRootLogin no
+#PasswordAuthentication no
+
+# Create a group for our user
+- group:
+    name="www-admin"
+
+# Add our www-admin user
+# Note that by generating an SSH key the .ssh folder is created, handy.
+- user:
+    name="www-admin"
+    comment="WWW Administrator"
+    group="www-admin"
+    generate_ssh_key=yes
+    ssh_key_bits=2048
+    ssh_key_file=.ssh/id_rsa
+
+ # Remove tty requirement for www-admin
+- lineinfile:
+    'dest=/etc/sudoers.d/www-admin owner=root group=root mode=0440
+    line="Defaults:www-admin !requiretty,!lecture"
+    state=present
+    create=yes
+    backup=yes
+    validate="visudo -cf %s"'
+
+# Allow www-admin to do sudoing
+- lineinfile:
+    'dest=/etc/sudoers.d/www-admin owner=root group=root mode=0440
+    line="www-admin ALL=(ALL) ALL"
+    state=present
+    create=yes
+    backup=yes
+    validate="visudo -cf %s"'
+
+- lineinfile:
+    'dest=/etc/sudoers.d/www-admin owner=root group=root mode=0440
+    line="www-admin ALL=(ALL) NOPASSWD: /usr/bin/systemctl"
+    state=present
+    create=yes
+    backup=yes
+    validate="visudo -cf %s"'
+
+# Enable automatic ssh key usage if enabled
+- template:
+    src=authorized_keys.sh.j2
+    dest=/etc/ssh/authorized_keys.sh
+    owner=root
+    group=nobody
+    mode=0750
+  when: base_pubkeys_enable == True
+
+# Register host to our auth management system
+- shell:
+    curl -u {{ base_pubkeys_auth }} {{ base_addhost_url }}
+
+- lineinfile:
+    dest=/etc/ssh/sshd_config
+    line="{{ item }}"
+    create=no
+    backup=yes
+  with_items:
+    - AuthorizedKeysCommand /etc/ssh/authorized_keys.sh
+    - AuthorizedKeysCommandUser nobody
+    - UseDNS no
+  when: base_pubkeys_enable == True
+  notify:
+    - restart sshd

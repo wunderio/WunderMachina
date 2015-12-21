@@ -1,0 +1,8 @@
+---
+
+# Setup MariaDB repo
+
+# Mariadb repository
+- copy:
+		src=mariadb.repo
+		dest=/etc/yum.repos.d/mariadb.repo

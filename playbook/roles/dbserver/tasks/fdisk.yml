@@ -1,0 +1,20 @@
+---
+
+# Create /var/lib/mysql partition for tertiary hard drive
+# Tertiary hard drive added in the UpCloud UI (recognized as /dev/vdc)
+
+- name: Check if path named '/var/lib/mysql' exists
+  stat: path=/var/lib/mysql
+  register: mysql_installed
+- name: Create partition to secondary drive
+  shell: sudo echo -e "n\np\n1\n\n\nw\n" | fdisk /dev/vdc
+  when: not mysql_installed.stat.exists
+- name: Format the partition in the secondary drive
+  shell: sudo mkfs.xfs -i size=512 /dev/vdc1
+  when: not mysql_installed.stat.exists
+- name: Create /var/lib/mysql mount point and mount the partition
+  shell: sudo mkdir -p /var/lib/mysql && mount /dev/vdc1 /var/lib/mysql
+  when: not mysql_installed.stat.exists
+- name: Add automount for secondary drive as /export/vdc1 (type=xfs)
+  lineinfile: dest=/etc/fstab line="/dev/vdc1 /var/lib/mysql xfs noatime,nodiratime,nobarrier,inode64 0 0"
+  when: not mysql_installed.stat.exists

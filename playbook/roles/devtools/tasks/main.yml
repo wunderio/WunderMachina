@@ -1,94 +1,36 @@
-##
-# CSS compiling tools.
-#
-- name: CSS | Install rubygems package
-  yum: pkg=rubygems state=installed
-  tags: css
+---
 
-- name: RUBY | Install Bundler
-  shell: gem install bundler
+- include: yum.yml
 
-- name: Development packages
-  yum: pkg={{ item }} state=installed
-  with_items:
-    - "{{ development_packages }}"
-
-
-##
-# Php XDebug.
-#
-
-- name: PHP | XDebug
-  yum: pkg={{ php_package }}-pecl-xdebug state=installed
-  tags: ntp
-
-- name: PHP | Set up xdebug.ini
-  ini_file: dest=/etc/php.d/zzz-xdebug.ini
-    section={{ item.0.section }}
-    option={{ item.1.key }}
-    value={{ item.1.val }}
+- yum:
+    name={{ item }}
     state=present
-  with_subelements:
-    - "{{ xdebug }}"
-    - options
+  with_items:
+    - blackfire-agent
+    - blackfire-php
+
+# Add blackfire keys straight to the file (the config --register did not work).
+- replace:
+    dest=/etc/blackfire/agent
+    regexp='server-id=.*$'
+    replace='server-id={{ blackfire_server_key }}'
+    backup=yes
   notify:
-    - restart php-fpm
+    restart blackfire-agent
 
-- name: PHP | Set the remote log option in the xdebug ini file.
-  ini_file: dest=/etc/php.d/zzz-xdebug.ini
-    section={{ item.0.section }}
-    option=xdebug.remote_log
-    value=/var/log/xdebug.log
-  with_subelements:
-    - "{{ xdebug }}"
-    - options
+- replace:
+    dest=/etc/blackfire/agent
+    regexp='server-token=.*$'
+    replace='server-token={{ blackfire_server_token }}'
+    backup=yes
   notify:
-    - restart php-fpm
-  when: xdebug_remote_debug_log == true
+    restart blackfire-agent
 
-- name: PHP | Make sure the xdebug remote log file exists and it writeable
-  file: path=/var/log/xdebug.log state=touch mode="660"
-  when: xdebug_remote_debug_log == true
 
-# Install and configure MailHog.
-- name: MAILHOG | Ensure mailhog install directory exists.
-  file:
-    path: "{{ mailhog_install_dir }}"
-    owner: root
-    group: root
-    state: directory
-    mode: 0755
-
-- name: MAILHOG | Download MailHog binary.
-  get_url:
-    url: "{{ mailhog_binary_url }}"
-    dest: "{{ mailhog_install_dir }}/mailhog"
-    owner: root
-    group: root
-    mode: 0755
-
-- name: MAILHOG | Install the daemonize package.
-  yum: pkg=daemonize state=installed
-
-- name: MAILHOG | Copy mailhog init script into place.
-  copy:
-    src: mailhog
-    dest: /etc/init.d/mailhog
-    owner: root
-    group: root
-    mode: 0755
-
-- name: MAILHOG | Ensure mailhog is enabled and will start on boot.
-  service: name=mailhog state=started enabled=yes
-
-- name: MAILHOG | Install sSMTP.
-  yum: pkg=ssmtp state=installed
-
-- name: MAILHOG | Copy sSMTP configuration.
-  template:
-    src: ssmtp.conf.j2
-    dest: /etc/ssmtp/ssmtp.conf
-    owner: root
-    group: root
-    mode: 0644
-
+- template:
+    src=blackfire.ini.j2
+    dest=/root/.blackfire.ini
+    owner=root
+    mode=0600
+  notify:
+    restart blackfire-agent

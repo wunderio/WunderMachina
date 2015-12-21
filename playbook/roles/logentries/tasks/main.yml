@@ -1,0 +1,24 @@
+---
+
+# This is the logentries role to install logentries remotelog service
+
+- include:
+    "yum.yml"
+  when:
+    logentries_enabled == True
+
+# Install Logentries
+- yum:
+    pkg={{item}}
+    state=present
+  with_items:
+    - logentries
+    - logentries-daemon
+  when:
+    logentries_enabled == True
+
+# Logentries, if enabled
+- include:
+    "logentries.yml"
+  when:
+    logentries_enabled == True

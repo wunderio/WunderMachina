@@ -1,0 +1,6 @@
+---
+
+# Logentries repository
+- copy:
+    src=blackfire.repo
+    dest=/etc/yum.repos.d/blackfire.repo

@@ -1,0 +1,11 @@
+---
+
+composer: {
+  path: "/usr/lib/composer",
+}
+
+drush: {
+# Specify which version of Drush to install - comment to disable
+# See a list of versions at http://pear.drush.org/
+  version: "8.*",
+}

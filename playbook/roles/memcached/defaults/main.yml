@@ -1,0 +1,6 @@
+---
+
+memcached_port: 11211
+memcached_maxconn: 1024
+memcached_cachesize: 256
+memcached_options: "-I 4M"

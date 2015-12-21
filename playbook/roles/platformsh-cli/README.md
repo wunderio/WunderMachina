@@ -1,1 +1,0 @@
-Platformsh-cli role

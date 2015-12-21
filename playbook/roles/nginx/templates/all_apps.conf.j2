@@ -1,0 +1,45 @@
+################################################################################
+# This file is provisioned automatically - you have been warned :)
+################################################################################
+
+{% for site in apps %}
+
+{% if site.server_forwards is defined %}
+# HTTP Forwarder {{ site.server_forwards }} => {{ site.server_name }}
+server {
+    listen {{ site.http_port }};
+    server_name {{ site.server_forwards }};
+
+    return 301 http://{{ site.server_name }}$request_uri;
+}
+
+{% endif %}
+
+# HTTP Site {{ site.server_name }} => php-fpm
+server {
+  listen {{ site.http_port }};
+  server_name {{ site.server_name }}{% if site.server_aliases is defined %} {{ site.server_aliases }}{% endif %};
+
+  root {{ site.docroot }};
+  access_log /var/log/nginx/http-{{ site.server_name }}-access.log main buffer=32k;
+  error_log /var/log/nginx/http-{{ site.server_name }}-error.log;
+
+  {% if nginx_disable_arbeit is not defined %}
+  limit_conn arbeit 32;
+  {% endif %}
+
+  ## See the blacklist.conf file at the parent dir: /etc/nginx.
+  ## Deny access based on the User-Agent header.
+  if ($bad_bot) {
+    return 444;
+  }
+  ## Deny access based on the Referer header.
+  if ($bad_referer) {
+    return 444;
+  }
+
+  include conf.d/drupal.conf;
+  include conf.d/php_fpm_status.conf;
+}
+
+{% endfor %}

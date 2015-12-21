@@ -1,0 +1,10 @@
+---
+
+monit_enabled: True
+monit_alert_email_service_name: "Example site"
+monit_alert_email_from: "from-no-where@localhost"
+monit_alert_email_to: "to-no-where@localhost"
+monit_allow:
+  - localhost
+  - 127.0.0.1
+monit_check_solr_collection: collection

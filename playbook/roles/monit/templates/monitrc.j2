@@ -1,0 +1,99 @@
+set daemon  60
+set logfile /var/log/monit.log
+set mailserver localhost
+set mail-format {
+from: {{ monit_alert_email_from }}
+subject: {{ monit_alert_email_service_name }} $SERVICE $EVENT at $DATE
+message: Monit $ACTION $SERVICE at $DATE on $HOST
+$DESCRIPTION
+
+Mearra alert system
+}
+set alert {{ monit_alert_email_to }} only on {connection, exec, nonexist, resource, timeout}
+
+set eventqueue basedir /var/monit/ slots 1000
+set httpd port 2812 and # Monit will run on port 2812
+{% for line in monit_allow %}
+   allow {{ line }}
+{% endfor %}
+
+check system {{ ansible_nodename }}
+
+{% if monit_check_cron is defined %}
+check process cron with pidfile /var/run/crond.pid
+   group system
+   start program = "/usr/bin/systemctl start crond"
+   stop  program = "/usr/bin/systemctl stop crond"
+   if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_sshd is defined %}
+check process sshd with pidfile /var/run/sshd.pid
+   start program  "/usr/bin/systemctl start sshd"
+   stop program  "/usr/bin/systemctl stop sshd"
+   if failed port 22 protocol ssh then restart
+   if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_varnish is defined %}
+check process varnish with pidfile /var/run/varnish.pid
+   group cache
+   start program = "/usr/bin/systemctl start varnish"
+   stop program = "/usr/bin/systemctl stop varnish"
+   if failed host 127.0.0.1 port 8081 protocol http
+     and request "/monit-check-url-happy"
+     then restart
+   if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_mysql is defined %}
+check process mysql with pidfile /var/lib/mysql/mysql.pid
+   group database
+   start program = "/usr/bin/systemctl start mysql"
+   stop program = "/usr/bin/systemctl stop mysql"
+   if failed host 127.0.0.1 port 3306 then restart
+   if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_memcached is defined %}
+check process memcached MATCHING memcached
+   group cache
+   start program = "/usr/bin/systemctl start memcached"
+   stop program = "/usr/bin/systemctl stop memcached"
+   if failed host 127.0.0.1 port 11211 protocol memcache then restart
+   if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_nginx is defined %}
+check process nginx with pidfile /var/run/nginx.pid
+   group apache
+   start program = "/usr/bin/systemctl start nginx"
+   stop program = "/usr/bin/systemctl stop nginx"
+   if failed host 127.0.0.1 port 8082 protocol http
+     and request '/index.html'
+     with timeout 5 seconds
+     then restart
+   if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_php_fpm is defined %}
+check process php-fpm with pidfile /var/run/php-fpm/php-fpm.pid
+  group apache
+  start program = "/usr/bin/systemctl start php-fpm"
+  stop program  = "/usr/bin/systemctl stop php-fpm"
+  if failed host 127.0.0.1 port 8080 protocol http
+     and request '/fpm-ping'
+     with timeout 10 seconds for 5 cycles
+     then restart
+  if failed unixsocket /var/run/php-fpm/php-fpm.sock then restart
+  if 5 restarts within 15 cycles then timeout
+
+{% endif %}
+{% if monit_check_solr is defined %}
+check process solr with pidfile "/var/run/jetty.pid"
+  group system
+  start program = "/usr/bin/systemctl start solr"
+  stop program = "/usr/bin/systemctl stop solr"
+    if failed host localhost port 8983 protocol http and request "/solr/{{monit_check_solr_collection}}/admin/ping" for 3 cycles then restart
+    if 5 restarts within 15 cycles then timeout
+{% endif %}

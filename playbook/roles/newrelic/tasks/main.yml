@@ -1,0 +1,42 @@
+---
+
+# Setup New Relic repository
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://yum.newrelic.com/pub/newrelic/el5/x86_64/newrelic-repo-5-3.noarch.rpm"
+  when:
+    distro == "rhel7" and newrelic_enabled == True
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://yum.newrelic.com/pub/newrelic/el5/x86_64/newrelic-repo-5-3.noarch.rpm"
+  when:
+    distro == "centos7" and newrelic_enabled == True
+
+# Install rewrelic
+
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - newrelic-php5
+  when:
+    newrelic_enabled == True
+
+- shell: newrelic-install install
+  environment:
+    NR_INSTALL_KEY: "{{ newrelic_license_key }}"
+    NR_INSTALL_SILENT: 1
+  when:
+    newrelic_enabled == True
+
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - newrelic-daemon
+  when:
+    newrelic_enabled == True

@@ -1,0 +1,42 @@
+---
+
+# Setup basic repositories and install basic packages.
+
+# Prepare yum repositories
+- yum:
+    name={{item}}
+    state=present
+  with_items:
+    - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+  when: distro == "rhel7"
+
+- yum:
+    name={{item}}
+    state=present
+  with_items:
+    - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+  when: distro == "centos7"
+
+# Install generic packages and tools we need to have everywhere.
+- yum:
+    pkg={{item}}
+    state=present
+  with_items:
+    - screen
+    - git
+    - wget
+    - unzip
+    - iftop
+    - make
+    - ntp
+    - python-yaml
+    - MySQL-python
+    - postfix
+    - net-tools
+    - patch
+    - ncurses-term
+    - vim
+    - htop
+    - iotop
+
+

@@ -1,0 +1,104 @@
+################################################################################
+# This file is provisioned automatically - you have been warned :)
+################################################################################
+
+## Silently block all undefined vhost access
+server {
+  listen 80 default_server;
+  server_name _;
+  return 444;
+}
+
+{% for site in httpforwards %}
+
+{% if site.forwarded_domains is defined %}
+# HTTP Forwarder
+server {
+    listen 80;
+    server_name {{ site.forwarded_domains }};
+
+    return 301 https://{{ site.server_name }}$request_uri;
+}
+
+{% endif %}
+
+{% endfor %}
+
+{% for site in sslterminators %}
+
+{% if site.server_forwards is defined %}
+# SSL Forwarder {{ site.server_forwards }} => {{ site.server_name }}
+server {
+    listen 443 ssl http2;
+    server_name {{ site.server_forwards }};
+
+    ssl on;
+    ssl_certificate {{ site.ssl_certificate }};
+    ssl_certificate_key {{ site.ssl_certificate_key }};
+
+    {% if site.use_dhparam is defined %}
+    ssl_dhparam /etc/nginx/ssl/dh2048.pem;
+    {% endif %}
+
+    include "conf.d/server_ssl.conf";
+
+    return 301 https://{{ site.server_name }}$request_uri;
+}
+
+{% endif %}
+
+# SSL Terminator {{ site.server_name }} => {{ site.server_name|replace(".", "") }}
+server {
+  listen 443 ssl http2;
+  server_name {{ site.server_name }}{% if site.server_aliases is defined %} {{ site.server_aliases }}{% endif %};
+
+  ssl on;
+  ssl_certificate {{ site.ssl_certificate }};
+  ssl_certificate_key {{ site.ssl_certificate_key }};
+
+  {% if site.use_dhparam is defined %}
+  ssl_dhparam /etc/nginx/ssl/dh2048.pem;
+  {% endif %}
+
+  include "conf.d/server_ssl.conf";
+
+  access_log /var/log/nginx/ssl-{{ site.server_name }}-access.log main buffer=32k;
+  error_log /var/log/nginx/ssl-{{ site.server_name }}-error.log;
+
+  {% if basicauth_enabled == True %}
+
+  satisfy  any;
+  {% for ip in basicauth_ip %}
+  allow {{ ip.address }};
+  {% endfor %}
+  deny   all;
+
+  auth_basic "Restricted";
+  auth_basic_user_file /etc/nginx/.htpasswd;
+
+  {% endif %}
+
+  location / {
+
+    # Pass the request on to Varnish.
+    proxy_pass http://{{ site.server_name|replace(".", "") }};
+
+    # We expect the downsteam servers to redirect to the
+    # right hostname, so don't do any rewrites here.
+    proxy_redirect             off;
+
+    # Pass a bunch of headers to the downstream server
+    # so they'll know what's going on.
+    proxy_set_header           Host             $host;
+    proxy_set_header           X-Real-IP        $remote_addr;
+    proxy_set_header           X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+    # Most web apps can be configured to read this header and
+    # understand that the current session is actually HTTPS.
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    add_header              Front-End-Https   on;
+  }
+
+}
+
+{% endfor %}

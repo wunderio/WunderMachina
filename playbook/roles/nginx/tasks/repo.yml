@@ -1,0 +1,15 @@
+---
+
+# Setup all of our nginx related repositories.
+
+- name: Install RHEL 7 version of Nginx repository
+  copy:
+    src=nginx/repo/nginx.rhel7.repo
+    dest=/etc/yum.repos.d/nginx.repo
+  when: distro == "rhel7"
+
+- name: Install Centos 7 version of Nginx repository
+  copy:
+    src=nginx/repo/nginx.centos7.repo
+    dest=/etc/yum.repos.d/nginx.repo
+  when: distro == "centos7"

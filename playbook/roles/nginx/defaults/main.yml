@@ -1,0 +1,21 @@
+---
+
+nginx_real_ip: 127.0.0.1
+
+nginx_logentries_follow:
+  - /var/log/drupal.log
+  - /var/log/nginx/http-*.log
+
+apps:
+  - server_name: www.test.com
+    server_aliases: bob.com
+    server_forwards: test.com
+    http_port: 8080
+    docroot: /var/www/test.com/current
+  - server_name: test2.com
+    server_aliases: www.example35.com www.example53.com
+    http_port: 8080
+    docroot: /var/www/test2.com/current
+
+# Default distribution CentOS 7
+distro: "centos7"

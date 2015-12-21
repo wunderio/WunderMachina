@@ -1,0 +1,107 @@
+---
+
+- include: "yum.yml"
+
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - nginx
+
+
+# Delete legacy backups
+# This is because we used to, but we really don't need to backup these.
+- shell: find {{ item }} -regex '^.*@.*~$' -type f -delete
+  with_items:
+    - /etc/nginx
+
+# Add www-adming to nginx group and vice versa.
+- user:
+    name=www-admin
+    groups=nginx
+    append=yes
+- user:
+    name=nginx
+    groups=www-admin
+    append=yes
+
+
+# Nginx configuration files
+
+- action: file path=/etc/nginx/sites-enabled state=directory
+- action: file path=/etc/nginx/ssl state=directory
+
+- name: Check if dhparam file exists
+  stat: path=/etc/nginx/ssl/dh2048.pem
+  register: dhparam_file
+
+- shell: openssl dhparam -out /etc/nginx/ssl/dh2048.pem 2048
+  when: not dhparam_file.stat.exists
+
+- copy:
+    src=ssl/{{ item }}
+    dest=/etc/nginx/ssl/{{ item }}
+  with_items:
+    - wk.dev.pem
+    - wk.dev.key
+  notify:
+    - restart nginx
+
+- template:
+    src=ssl_terminators.conf.j2
+    dest=/etc/nginx/sites-enabled/ssl_terminators.conf
+  notify:
+    - restart nginx
+
+- template:
+    src=nginx_upstream_sslterminated.conf.j2
+    dest=/etc/nginx/conf.d/nginx_upstream_sslterminated.conf
+  notify:
+    - restart nginx
+
+# Make logentries follow appserver logs.
+#- shell:
+#    le follow "{{ item }}"
+#  with_items:
+#    - "{{ sslterminator_logentries_follow }}"
+#  when:
+#    logentries_enabled == True
+
+- shell: cat /proc/cpuinfo | grep processor | wc -l
+  register: processor_count
+
+- template:
+    src=nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+
+- copy:
+    src=nginx/{{ item }}
+    dest=/etc/nginx/{{ item }}
+  with_items:
+    - conf.d/server_ssl.conf
+  notify:
+    - restart nginx
+
+# Use Basic Auth
+- yum:
+    name=python-passlib
+    state=present
+  when: basicauth_enabled == True
+
+- htpasswd: path=/etc/nginx/.htpasswd name={{ basicauth_username }} password={{ basicauth_password }} owner=root group=root mode=0644
+  when: basicauth_enabled == True
+
+# Create monit test site
+- action: file path=/var/www/test state=directory
+
+- copy:
+    src=nginx/test/index.html
+    dest=/var/www/test/index.html
+
+- copy:
+    src=nginx/test/nginx_test.conf
+    dest=/etc/nginx/sites-enabled/nginx_test.conf
+  notify:
+    - restart nginx

@@ -1,0 +1,84 @@
+---
+
+# Setup all of our app server related repositories.
+- include: "repo.yml"
+
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - nginx
+
+# Delete legacy backups
+# This is because we used to, but we really don't need to backup these.
+- shell: find {{ item }} -regex '^.*@.*~$' -type f -delete
+  with_items:
+    - /etc/nginx
+
+# Nginx configuration files
+
+- action: file path=/etc/nginx/sites-enabled state=directory
+
+- template:
+    src=all_apps.conf.j2
+    dest=/etc/nginx/sites-enabled/all_apps.conf
+  notify:
+    - restart nginx
+
+- shell: cat /proc/cpuinfo | grep processor | wc -l
+  register: processor_count
+
+- template:
+    src=nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+
+- copy:
+    src=nginx/{{ item }}
+    dest=/etc/nginx/{{ item }}
+  with_items:
+    - mime.types
+    - conf.d/nginx_blacklist.conf
+    - conf.d/nginx_upstream_phpcgi.conf
+    - conf.d/drupal.conf
+    - conf.d/fastcgi_drupal.conf
+    - conf.d/php_fpm_status.conf
+  notify:
+    - restart nginx
+
+# Make logentries follow nginx logs.
+#- shell:
+#    le follow "{{ item }}"
+#  with_items:
+#    - "{{ nginx_logentries_follow }}"
+#  when:
+#    logentries_enabled == True
+
+# Add www-admin to nginx group and vice versa.
+- user:
+    name=www-admin
+    groups=nginx
+    append=yes
+- user:
+    name=nginx
+    groups=www-admin
+    append=yes
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - nginx
+
+# Create monit test site
+- action: file path=/var/www/test state=directory
+
+- copy:
+    src=nginx/test/index.html
+    dest=/var/www/test/index.html
+
+- copy:
+    src=nginx/test/nginx_test.conf
+    dest=/etc/nginx/sites-enabled/nginx_test.conf
+  notify:
+    - restart nginx

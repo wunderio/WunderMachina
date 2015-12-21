@@ -1,0 +1,7 @@
+---
+
+letsencrypt_src: /root
+letsencrypt_email: test@example.com
+letsencrypt_cert_domains:
+  - "{{ ansible_fqdn }}"
+letsencrypt_command: "{{ letsencrypt_src }}/letsencrypt/letsencrypt-auto certonly --standalone --standalone-supported-challenges http-01 --agree-tos --text {% for domain in letsencrypt_domains %}-d {{ domain }} {% endfor %}--email {{ letsencrypt_email }}"

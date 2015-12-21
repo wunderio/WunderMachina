@@ -1,0 +1,13 @@
+################################################################################
+# This file is provisioned automatically - you have been warned :)
+################################################################################
+
+{% for site in sslterminators %}
+
+upstream {{ site.server_name|replace(".", "") }} {
+{% for server in site.backends %}
+  server {{ server }};
+{% endfor %}
+}
+
+{% endfor %}

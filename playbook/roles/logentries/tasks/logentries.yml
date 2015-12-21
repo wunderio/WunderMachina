@@ -1,0 +1,18 @@
+---
+
+# Logentries
+
+- shell:
+    le register --account-key={{ logentries_account_key }} --name={{ logentries_service_name }} --hostname={{ logentries_hostname }} --force
+    creates=/etc/le
+
+- shell:
+    le follow "{{ item }}"
+  with_items:
+    - "{{ logentries_follow }}"
+  notify: restart logentries
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - logentries

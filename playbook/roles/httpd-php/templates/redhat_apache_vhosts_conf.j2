@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+ServerName {{ ansible_fqdn }}
+NameVirtualHost *:{{ http_port }}
+
+DirectoryIndex index.php index.html
+
+Include vhosts/*.conf

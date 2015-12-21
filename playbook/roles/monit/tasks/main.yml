@@ -1,0 +1,18 @@
+---
+
+# This is the monit role to install monit service
+
+# Install monit
+- yum:
+    pkg={{item}}
+    state=present
+  with_items:
+    - monit
+  when:
+    monit_enabled == True
+
+# Monit configs, if enabled
+- include:
+    "monit.yml"
+  when:
+    monit_enabled == True

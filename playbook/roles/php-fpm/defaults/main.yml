@@ -1,0 +1,72 @@
+---
+
+php_memory_limit: 256
+
+php_fpm_logentries_follow:
+  - /var/log/php-fpm/www-error.log
+
+# Default settings for PHP
+
+php_ini_file: /etc/php.d/zz_wunderkraut.ini
+
+php_ini:
+ - section: PHP
+   options:
+    - key: memory_limit
+      val: "{{ php_memory_limit }}M"
+    - key: realpath_cache_size
+      val: 256K
+    - key: realpath_cache_ttl
+      val: 7200
+    - key: max_execution_time
+      val: 60
+    - key: max_input_time
+      val: 60
+    - key: post_max_size
+      val: 24M
+    - key: upload_max_filesize
+      val: 50M
+    - key: max_file_uploads
+      val: 20
+    - key: allow_url_fopen
+      val: On
+    - key: display_errors
+      val: Off
+    - key: html_errors
+      val: Off
+ - section: DATE
+   options:
+    - key: date.timezone
+      val: Europe/Helsinki
+ - section: OPCACHE
+   options:
+    - key: opcache.enable
+      val: 1
+    - key: opcache.validate_timestamps
+      val: 0
+    - key: opcache.memory_consumption
+      val: 256
+    - key: opcache.interned_strings_buffer
+      val: 8
+    - key: opcache.max_accelerated_files
+      val: 4000
+    - key: opcache.validate_timestamps
+      val: 0
+    - key: opcache.fast_shutdown
+      val: 1
+    - key: opcache.blacklist_filename
+      val: /etc/php.d/opcache*.blacklist
+
+php_fpm_user: 'nginx'
+php_fpm_group: 'nginx'
+php_fpm_pm_max_children: '50'
+php_fpm_pm_start_servers: '15'
+php_fpm_pm_min_spare_servers: '10'
+php_fpm_pm_max_spare_servers: '35'
+php_fpm_pm_max_requests: '500'
+
+# Default PHP version
+php_package: "php56u"
+
+# Default distribution CentOS 7
+distro: "centos7"

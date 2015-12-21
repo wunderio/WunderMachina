@@ -1,0 +1,24 @@
+---
+
+sslterminator_logentries_follow:
+  - /var/log/nginx/ssl-*.log
+
+sslterminators:
+  - server_name: www.test.com
+    server_forwards: test.com
+    ssl_certificate: /etc/nginx/ssl/wk.dev.pem
+    ssl_certificate_key: /etc/nginx/ssl/wk.dev.key
+    use_dhparam: True
+    backends:
+      - 127.0.0.1:8081
+
+httpforwards:
+  - server_name: www.test.com
+    forwarded_domains: 'test.com www.test.com'
+
+basicauth_enabled: False
+basicauth_username: wunder
+basicauth_password: wunder123
+basicauth_ip:
+  - address: 127.0.0.1
+  - address: 192.168.0.1

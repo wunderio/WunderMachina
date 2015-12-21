@@ -1,0 +1,77 @@
+---
+
+# Dynamically reading the IP addresses of the eth1 interface (internal network IPs)
+# using group name 'webservers'
+# TODO: fix the hard coded group name otherwise this role cannot be used in generic way elsewhere
+- name: Read the internal IP addresses (eth1 interface) of the gluster nodes into a variable
+  set_fact:
+    gluster_ip_addresses: "{{ hostvars|to_group_vars(groups, 'webservers')|map(attribute='ansible_eth1.ipv4.address')|list }}"
+  tags: hostfile
+
+# Check if this playbook has been already run.
+# Trying to run it twice would cause all sorts of issues.
+- stat: path=/export/vdb1
+  register: st
+- fail: msg="Seems like some of the GlusterFS preparations and configurations are already done"
+  when: st.stat.exists
+
+# Prerequisities for GlusterFS installation:
+# 1. Tertiary hard drive added in the UpCloud UI (recognized as /dev/vdc)
+- name: Create partition to tertiary drive
+  shell: echo -e "n\np\n1\n\n\nw\n" | fdisk /dev/vdc
+- name: Format the partition in the tertiary drive
+  shell: mkfs.xfs -i size=512 /dev/vdc1
+- name: Create mount point for the GlusterFS' brick location
+  shell: mkdir -p /export/vdc1 && mount /dev/vdc1 /export/vdc1 && mkdir -p /export/vdc1/brick
+- name: Add automount for tertiary drive as /export/vdb1 (type=xfs)
+  lineinfile: dest=/etc/fstab line="/dev/vdc1 /export/vdc1 xfs defaults 0 0"
+
+# 2. GlusterFS cluster nodes added to /etc/hosts to ease the configuration steps
+- name: GlusterFS cluster nodes to /etc/hosts file
+  lineinfile: dest=/etc/hosts line="{{ item.1 }} gluster{{ item.0 }}"
+  with_indexed_items:
+    - "{{ gluster_ip_addresses }}"
+  tags: hostfile
+# Fix the hosts file not to have eth1 address since it will prevent gluster volume creation
+- name: Fix the previous task by replacing eth1 address with loopback address
+  shell: sed -i 's/{{ ansible_eth1.ipv4.address }}/127\.0\.0\.1/g' /etc/hosts
+
+
+# GlusterFS installation and configuration
+# For more information see:
+#   http://www.gluster.org/community/documentation/index.php/Getting_started_configure
+#   http://chimera.labs.oreilly.com/books/1230000000845/ch10.html#_example_configuration
+#
+- name: Add GlusterFS repository
+  copy: src=glusterfs.repo dest=/etc/yum.repos.d/glusterfs.repo
+- name: Install GlusterFS
+  yum: pkg=glusterfs-server state=present
+- name: Ensure glusterd is running now and on boot
+  service: name=glusterd state=started enabled=yes
+
+- name: Probe peers
+  shell: gluster peer probe gluster0; gluster peer probe gluster1; gluster peer probe gluster2; gluster peer probe gluster3; gluster peer probe gluster4; gluster peer probe gluster5
+  # only one server should be running the probes to avoid unintentional creation of multiple groups
+  # "a peer cannot seek membership into the cluster, only a member can 'invite' a new peer."
+  # http://www.gluster.org/pipermail/gluster-users.old/2015-January/020084.html
+  run_once: true
+  ignore_errors: yes
+- name: Create gluster volume
+  shell: gluster volume create gluster_volume_0 replica 2 gluster0:/export/vdb1/brick gluster1:/export/vdb1/brick
+  run_once: true
+  ignore_errors: yes
+- name: Start gluster volume
+  shell: gluster volume start gluster_volume_0
+  run_once: true
+  ignore_errors: yes
+- name: Create access point for the gluster volume
+  shell: mkdir -p /mnt/gluster_volume
+- name: Mount gluster volume access point
+  shell: mount -t glusterfs localhost:/gluster_volume_0 /mnt/gluster_volume
+- name: Add automount for gluster volume as /mnt/gluster_volume (type=glusterfs)
+  lineinfile: dest=/etc/fstab line="localhost:/gluster_volume_0 /mnt/gluster_volume glusterfs defaults,_netdev 0 0"
+
+# In some restart cases (multiple servers at once) the automount from fstab doesn't work
+- name: Add gluster volume mounting to rc.local
+  lineinfile: dest=/etc/rc.local regexp=glusterfs insertafter="deployment.sh" line="mount -t glusterfs localhost:/gluster_volume_0 /mnt/gluster_volume"
+  tags: automount_fix

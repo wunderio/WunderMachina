@@ -1,0 +1,10 @@
+---
+
+databases:
+  - name: drupal
+    user: drupal
+    pass: password
+    hosts:
+      - "127.0.0.1"
+      - "::1"
+      - "localhost"

@@ -1,0 +1,8 @@
+---
+
+logentries_enabled: False
+logentries_account_key: "12345667-1234-1234-1234-123456789012"
+logentries_service_name: "examplesite"
+logentries_hostname: "example-site.com"
+logentries_follow:
+  - /var/log/secure

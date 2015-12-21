@@ -1,6 +1,0 @@
----
-# tasks file for platformsh-cli
-
-- name: Install Platform.sh CLI
-  shell: source /etc/profile.d/composer.sh && composer global require platformsh/cli
-    creates=/usr/bin/platform

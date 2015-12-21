@@ -1,0 +1,68 @@
+---
+
+# Setup all of our php-fpm related repositories.
+- include: "repo.yml"
+
+- include: "php56u.yml"
+  when: php_package == "php56u"
+
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - MariaDB-client
+    - gd
+    - gd-devel
+    - GraphicsMagick
+
+# Delete legacy backups
+# This is because we used to, but we really don't need to backup these.
+- shell: find {{ item }} -regex '^.*@.*~$' -type f -delete
+  with_items:
+    - /etc/php-fpm.d
+    - /etc/php.d
+
+# PHP-FPM configurations
+- template:
+    src=www.conf.j2
+    dest=/etc/php-fpm.d/www.conf
+- copy:
+    src=php-fpm/{{ item }}
+    dest=/etc/{{ item }}
+  with_items:
+    - php-fpm.conf
+
+# PHP configuration ini file
+- lineinfile:
+    dest={{ php_ini_file }}
+    regexp='^[{{ item.section }}]'
+    insertafter=EOF
+    line='[{{ item.section }}]'
+    create=True
+    mode=644
+  with_items:
+    - "{{ php_ini }}"
+
+# PHP configuration files
+- ini_file: dest={{ php_ini_file }}
+    section="{{ item.0.section }}"
+    option="{{ item.1.key }}"
+    value="{{ item.1.val }}"
+  with_subelements:
+    - "{{ php_ini }}"
+    - options
+  notify:
+    - restart php-fpm
+
+# Make logentries follow php-fpm logs.
+- shell:
+    le follow "{{ item }}"
+  with_items:
+    - "{{ php_fpm_logentries_follow }}"
+  when:
+    logentries_enabled == True
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - php-fpm

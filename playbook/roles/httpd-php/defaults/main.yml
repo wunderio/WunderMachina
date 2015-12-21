@@ -1,0 +1,25 @@
+---
+
+# Default PHP version
+php_package: "php56u"
+
+# php.ini settings
+php_memory_limit: 256M
+php_max_execution_time: 60
+php_max_input_time: 60
+php_max_input_vars: 2000
+php_post_max_size: 100M
+php_upload_max_filesize: 100M
+php_display_errors: On
+php_display_startup_errors: On
+php_html_errors: On
+php_date_timezone: Europe/Helsinki
+php_realpath_cache_size: 256k
+php_realpath_cache_ttl: 7200
+
+# Apache
+http_port: 80
+admin_mail: admin@example.com
+webserver_hostname: www.example.com
+webserver_alias: example.com
+webserver_docroot: /var/www/example.com

@@ -1,0 +1,126 @@
+---
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://dl.iuscommunity.org/pub/ius/stable/Redhat/7/x86_64/ius-release-1.0-14.ius.el7.noarch.rpm"
+  when: distro == "rhel7"
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://dl.iuscommunity.org/pub/ius/stable/CentOS/7/x86_64/ius-release-1.0-14.ius.centos7.noarch.rpm"
+  when: distro == "centos7"
+
+# Mariadb repository for client
+- copy:
+    src=mariadb.repo
+    dest=/etc/yum.repos.d/mariadb.repo
+
+- name: Install php packages
+  yum: pkg={{ item }} state=present
+  with_items:
+    - "{{ php_package }}"
+    - "{{ php_package }}-cli"
+    - "{{ php_package }}-common"
+    - "{{ php_package }}-devel"
+    - "{{ php_package }}-gd"
+    - "{{ php_package }}-mbstring"
+    - "{{ php_package }}-mcrypt"
+    - "{{ php_package }}-mysql"
+    - "{{ php_package }}-opcache"
+    - "{{ php_package }}-pdo"
+    - "{{ php_package }}-pear"
+    - "{{ php_package }}-soap"
+    - "{{ php_package }}-pecl-imagick"
+    - "{{ php_package }}-pecl-jsonc"
+    - "{{ php_package }}-pecl-memcache"
+    - "{{ php_package }}-pecl-uploadprogress"
+    - "{{ php_package }}-xml"
+    - "{{ php_package }}-xmlrpc"
+    - "{{ php_package }}-tidy"
+  notify:
+    - restart httpd
+
+- name: change php apache2 memory_limit
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?memory_limit =" insertafter="^[#|;]?memory_limit =" line="memory_limit = {{ php_memory_limit }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 post_max_size
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?post_max_size =" insertafter="^[#|;]?post_max_size =" line="post_max_size = {{ php_post_max_size }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 upload_max_filesize
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?upload_max_filesize =" insertafter="^[#|;]?upload_max_filesize = " line="upload_max_filesize = {{ php_upload_max_filesize }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 max_execution_time
+  lineinfile: dest=/etc/php.ini regexp="[#|;]?max_execution_time =" insertafter="^[#|;]?max_execution_time =" line="max_execution_time = {{ php_max_execution_time }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 max_input_time
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?max_input_time =" insertafter="^[#|;]?max_input_time =" line="max_input_time = {{ php_max_input_time }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 max_input_vars
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?max_input_vars =" insertafter="^[#|;]?max_input_vars =" line="max_input_vars = {{ php_max_input_vars }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 display_errors
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?display_errors =" insertafter="^[#|;]?display_errors =" line="display_errors = {{ php_display_errors }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 display_startup_errors
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?display_startup_errors =" insertafter="^[#|;]?display_startup_errors =" line="display_startup_errors = {{ php_display_startup_errors }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 html_errors
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?html_errors =" insertafter="^[#|;]?html_errors =" line="html_errors = {{ php_html_errors }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 date.timezone
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?date.timezone =" insertafter="^[#|;]?date.timezone =" line="date.timezone = {{ php_date_timezone }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 realpath_cache_size
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?realpath_cache_size =" insertafter="^[#|;]?realpath_cache_size =" line="realpath_cache_size = {{ php_realpath_cache_size }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change php apache2 realpath_cache_ttl
+  lineinfile: dest=/etc/php.ini regexp="^[#|;]?relapath_cache_ttl =" insertafter="^[#|;]?realpath_cache_ttl =" line="realpath_cache_ttl = {{ php_realpath_cache_ttl }}"
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: change OPcache configuration file opcache.ini
+  template: src=redhat_php_apache2_opcache.ini.j2 dest=/etc/php.d/10-opcache.ini
+  sudo: true
+  notify:
+    - restart httpd
+
+- name: don't expose php
+  lineinfile: dest=/etc/php.ini regexp="^(;*)expose_php =" insertafter="^(;*)expose_php =" line="expose_php = Off"
+  sudo: true
+  notify:
+    - restart httpd

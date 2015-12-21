@@ -1,0 +1,12 @@
+---
+
+# This is the base role which installs repositories and packages and things we
+# need on servers all around.
+
+- include: "fdisk.yml"
+  when:
+    partition_var_log == True
+
+- include: yum.yml
+- include: system.yml
+- include: users.yml

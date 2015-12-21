@@ -1,0 +1,16 @@
+---
+
+# Monit
+
+- template:
+    src=monitrc.j2
+    dest=/etc/monitrc
+    owner=root
+    mode=0600
+  notify:
+    - restart monit
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - monit

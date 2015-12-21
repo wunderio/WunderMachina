@@ -1,0 +1,6 @@
+---
+
+# Datadog repository
+- copy:
+    src=datadog.repo
+    dest=/etc/yum.repos.d/datadog.repo

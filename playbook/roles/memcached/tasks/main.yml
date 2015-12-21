@@ -1,0 +1,17 @@
+---
+
+# Install memcached
+
+- yum:
+    name=memcached
+    state=present
+
+# Make sure configuration is in place
+- template:
+    src=memcached.j2
+    dest=/etc/sysconfig/memcached
+  notify:
+    - restart memcached
+
+# Make sure memcached is ON and configured to start on boot
+- service: name=memcached state=started enabled=yes

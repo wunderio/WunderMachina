@@ -1,0 +1,11 @@
+#!/bin/bash
+
+################################################################################
+# This file is provisioned automatically - you have been warned :)
+################################################################################
+
+{% if base_pubkeys_auth is defined %}
+curl -u {{ base_pubkeys_auth }} "{{ base_pubkeys_url }}"
+{% else %}
+curl "{{ base_pubkeys_url }}"
+{% endif %}

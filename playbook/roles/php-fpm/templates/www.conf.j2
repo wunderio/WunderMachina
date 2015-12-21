@@ -1,0 +1,29 @@
+################################################################################
+# This file is provisioned automatically - you have been warned :)
+################################################################################
+
+[www]
+listen = /var/run/php-fpm/php-fpm.sock
+listen.backlog = -1
+listen.allowed_clients = 127.0.0.1
+listen.owner = nginx
+listen.group = nginx
+listen.mode = 0666
+user = {{ php_fpm_user }}
+group = {{ php_fpm_group }}
+pm = dynamic
+pm.max_children = {{ php_fpm_pm_max_children }}
+pm.start_servers = {{ php_fpm_pm_start_servers }}
+pm.min_spare_servers = {{ php_fpm_pm_min_spare_servers }}
+pm.max_spare_servers = {{ php_fpm_pm_max_spare_servers }}
+pm.max_requests = {{ php_fpm_pm_max_requests }}
+pm.status_path = /php-fpm-status
+ping.path = /fpm-ping
+request_terminate_timeout = 120
+request_slowlog_timeout = 10s
+slowlog = /var/log/php-fpm/www-slow.log
+rlimit_files = 131072
+rlimit_core = unlimited
+php_admin_value[error_log] = /var/log/php-fpm/www-error.log
+php_admin_flag[log_errors] = on
+

@@ -1,0 +1,4 @@
+---
+
+- name: restart blackfire-agent
+  service: name=blackfire-agent state=running
