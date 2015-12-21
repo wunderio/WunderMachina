@@ -13,11 +13,13 @@ services:
   - docker
 
 before_install:
-  - docker pull weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION}
+  #- docker pull weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION}
+  - docker pull williamyeh/ansible:centos7-onbuild
 
 script:
  # Run tests in Container
- - docker run --rm=true -v `pwd`:/WunderMachina:rw weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION} /bin/bash -c "/WunderMachina/tests/test-in-docker.sh ${OS_TYPE} ${OS_VERSION} ${ANSIBLE_VERSION}"
+ - docker run --rm=true -v `pwd`:/WunderMachina:rw williamyeh/ansible:centos7-onbuild /bin/bash -c "/WunderMachina/tests/test-in-docker.sh ${OS_TYPE} ${OS_VERSION} ${ANSIBLE_VERSION}"
+ #- docker run --rm=true -v `pwd`:/WunderMachina:rw weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION} /bin/bash -c "/WunderMachina/tests/test-in-docker.sh ${OS_TYPE} ${OS_VERSION} ${ANSIBLE_VERSION}"
 
 notifications:
   email: false
