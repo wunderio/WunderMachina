@@ -5,7 +5,6 @@
   roles:
    - { role: base, tags: [ 'base' ] }
    - { role: logentries, tags: [ 'logentries' ] }
-   - { role: letsencrypt, tags: [ 'letsencrypt' ] }
    - { role: nginx, tags: [ 'nginx' ] }
    - { role: php-fpm, tags: [ 'php-fpm' ] }
    - { role: varnish, tags: [ 'varnish' ] }
@@ -14,14 +13,15 @@
    - { role: drush, tags: [ 'drush' ] }
    - { role: memcached, tags: [ 'memcached' ] }
    - { role: datadog, tags: [ 'datadog' ] }
+   - { role: monit, tags: [ 'monit' ] }
 
   vars:
 
     distro: "centos7"
 
-    partition_var_lib_mysql: True
+    partition_var_lib_mysql: False
 
-    partition_var_log: True
+    partition_var_log: False
 
     datadog_enabled: True
     datadog_api_key: somerandomfiller12345
@@ -29,33 +29,28 @@
     newrelic_enabled: True
     newrelic_license_key: "this-is-a-fake-key-replace-with-a-real-1"
 
-    base_pubkeys_enable: True
+    base_pubkeys_enable: False
     base_pubkeys_auth: username:password
     base_pubkeys_url: https://example.com/auth
     base_addhost_url: https://example.com/auth/add_server
 
-    logentries_enabled: True
+    logentries_enabled: False
     logentries_account_key: "some-random-account-key"
     logentries_service_name: "example"
     logentries_hostname: "www.example.com"
     logentries_follow:
       - /var/log/secure
 
-    letsencrypt_email: support@example.com
-    letsencrypt_domains:
-      - example.com
-      - www.example.com
-
     memcached_port: 11211
     memcached_maxconn: 1024
-    memcached_cachesize: 256
+    memcached_cachesize: 64
     memcached_options: "-I 4M"
 
     php_package: "php56u"
 
-    memory_db: 2048 # In MB
-    memory_app: 5120 # In MB
-    php_memory_limit: 256
+    memory_db: 512 # In MB
+    memory_app: 512 # In MB
+    php_memory_limit: 64
 
     innodb_buffer_pool_size: "{{ memory_db }}"
     dbserver_logentries_follow:
@@ -147,8 +142,8 @@
     sslterminators:
       - server_name: www.example.com
         server_forwards: example.com
-        ssl_certificate: /etc/letsencrypt/live/example.com/fullchain.pem
-        ssl_certificate_key: /etc/letsencrypt/live/example.com/privkey.pem
+        ssl_certificate: /etc/nginx/ssl/wk.dev.pem
+        ssl_certificate_key: /etc/nginx/ssl/wk.dev.key
         use_dhparam: True
         backends:
           - 127.0.0.1:8081
@@ -180,3 +175,16 @@
             - name: test1_web
               address: 127.0.0.1
               port: 8080
+
+    monit_enabled: True
+    monit_alert_email_service_name: "test.com"
+    monit_alert_email_from: "alert@example.com"
+    monit_alert_email_to: "alert-rec@example.com"
+    monit_check_cron: True
+    monit_check_sshd: True
+    monit_check_mysql: True
+    monit_check_memcached: True
+    monit_check_nginx: True
+    monit_check_php_fpm: True
+    monit_check_varnish: True
+    monit_check_solr: True
