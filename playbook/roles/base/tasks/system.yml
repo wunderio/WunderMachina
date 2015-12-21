@@ -37,6 +37,12 @@
     line="*    hard    nofile    65535"
     backup=yes
 
+# Check if sysctl.conf exists
+- stat: path="/etc/sysctl.conf"
+  register: sysctl_exists
+
+- action: file path=/etc/sysctl.conf
+
 - lineinfile:
     dest=/etc/sysctl.conf
     line="fs.file-max = 65536"
