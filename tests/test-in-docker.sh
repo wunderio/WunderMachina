@@ -25,7 +25,7 @@ fi
 
 
 cd $RDIR/..
-printf "[defaults]\nroles_path = ../" > ansible.cfg
+printf "[defaults]\nroles_path = ../playbook/roles" > ansible.cfg
 
 function test_playbook_syntax(){
 
