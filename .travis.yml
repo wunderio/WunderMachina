@@ -18,7 +18,6 @@ before_install:
 script:
  # Run tests in Container
  - docker run --rm=true -v `pwd`:/WunderMachina:rw weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION} /bin/bash -c "/WunderMachina/tests/test-in-docker.sh ${OS_TYPE} ${OS_VERSION} ${ANSIBLE_VERSION}"
- #- docker run --rm=true -v `pwd`:/WunderMachina:rw weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION} ls -la /WunderMachina/tests/
 
 notifications:
   email: false
