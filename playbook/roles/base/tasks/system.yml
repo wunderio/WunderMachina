@@ -7,7 +7,12 @@
     name=libselinux-python
     state=present
 
+# Check if selinux is available
+- stat: path="/etc/selinux/config"
+  register: selinux_exists
+
 - selinux: state=disabled
+  when: selinux_exists.stat.exists
 
 # Operating system tweaks:
 - replace:
