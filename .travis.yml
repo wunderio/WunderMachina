@@ -10,11 +10,11 @@ services:
   - docker
 
 before_install:
-  - docker pull centos:7
+  - docker pull ilari/centos7-systemd
 
 script:
  # Run tests in Container
- - docker run --rm=true -v `pwd`:/WunderMachina:rw centos:7 /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
+ - docker run --rm=true -v `pwd`:/WunderMachina:rw ilari/centos7-systemd /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
 
 notifications:
   email: false
