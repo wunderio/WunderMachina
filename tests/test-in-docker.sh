@@ -24,7 +24,7 @@ fi
 cd $RDIR/..
 printf "[defaults]\nroles_path = /WunderMachina/playbook/roles" > ansible.cfg
 
-yum install python-setuptools python-devel gcc
+yum -y install python-setuptools python-devel gcc
 easy_install pip
 pip install ansible
 
