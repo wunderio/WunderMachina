@@ -1,9 +1,6 @@
 language: python
 python: '2.7'
 sudo: required
-env:
-  #matrix:
-  - OS_TYPE=centos OS_VERSION=7 ANSIBLE_VERSION=1.9.4
 
 branches:
   only:
@@ -13,13 +10,11 @@ services:
   - docker
 
 before_install:
-  #- docker pull weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION}
-  - docker pull williamyeh/ansible:centos7-onbuild
+  - docker pull centos:7
 
 script:
  # Run tests in Container
- - docker run --rm=true -v `pwd`:/WunderMachina:rw williamyeh/ansible:centos7-onbuild /bin/bash -c "/WunderMachina/tests/test-in-docker.sh ${OS_TYPE} ${OS_VERSION} ${ANSIBLE_VERSION}"
- #- docker run --rm=true -v `pwd`:/WunderMachina:rw weldpua2008/docker-ansible:${OS_TYPE}${OS_VERSION}_v${ANSIBLE_VERSION} /bin/bash -c "/WunderMachina/tests/test-in-docker.sh ${OS_TYPE} ${OS_VERSION} ${ANSIBLE_VERSION}"
+ - docker run --rm=true -v `pwd`:/WunderMachina:rw centos:7 /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
 
 notifications:
   email: false

@@ -4,9 +4,6 @@ SOURCE="${BASH_SOURCE[0]}"
 RDIR="$( dirname "$SOURCE" )"
 SUDO=`which sudo 2> /dev/null`
 SUDO_OPTION="--sudo"
-OS_TYPE=${1:-}
-OS_VERSION=${2:-}
-ANSIBLE_VERSION=${3:-}
 
 ANSIBLE_VAR=""
 ANSIBLE_INVENTORY="tests/test-inventory"
@@ -26,6 +23,10 @@ fi
 
 cd $RDIR/..
 printf "[defaults]\nroles_path = /WunderMachina/playbook/roles" > ansible.cfg
+
+yum install python-setuptools python-devel gcc
+easy_install pip
+pip install ansible
 
 function test_playbook_syntax(){
 
