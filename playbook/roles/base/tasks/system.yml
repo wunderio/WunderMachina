@@ -41,7 +41,7 @@
 - stat: path="/etc/sysctl.conf"
   register: sysctl_exists
 
-- action: file path=/etc/sysctl.conf
+- action: file path=/etc/sysctl.conf state=touch owner=root group=root mode=0644
   when: not sysctl_exists.stat.exists
 
 - lineinfile:
