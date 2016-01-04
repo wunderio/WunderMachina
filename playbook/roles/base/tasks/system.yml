@@ -14,6 +14,10 @@
 - selinux: state=disabled
   when: selinux_exists.stat.exists
 
+- name: disable network manager
+  tags: networking
+  service: name=network-manager state=stopped enabled=no
+
 # Operating system tweaks:
 - replace:
     dest=/etc/security/limits.d/20-nproc.conf
