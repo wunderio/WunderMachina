@@ -10,11 +10,16 @@ services:
   - docker
 
 before_install:
-  - docker pull ilari/centos7-systemd
+  - sudo docker pull ilari/centos7-systemd
+  - sudo docker build --rm=true --tag=travistest .
 
 script:
- # Run tests in Container
- - docker run --privileged -v `pwd`:/WunderMachina:rw ilari/centos7-systemd /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
+  # Run container in detached state
+  - sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro travistest /usr/lib/systemd/systemd > /tmp/container_id
+  # Run tests in Container
+  - sudo docker exec "$(cat /tmp/container_id)" /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
+  # Clean up
+  - sudo docker stop "$(cat /tmp/container_id)"
 
 notifications:
   email: false
