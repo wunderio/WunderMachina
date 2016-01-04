@@ -14,7 +14,7 @@ before_install:
 
 script:
  # Run tests in Container
- - docker run --privileged --rm=true -v `pwd`:/WunderMachina:rw ilari/centos7-systemd /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
+ - docker run --privileged -v `pwd`:/WunderMachina:rw ilari/centos7-systemd /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
 
 notifications:
   email: false
