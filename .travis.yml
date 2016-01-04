@@ -1,6 +1,8 @@
 language: python
 python: '2.7'
 sudo: required
+env:
+  - CONTAINER_ID=$(mktemp)
 
 branches:
   only:
@@ -11,15 +13,15 @@ services:
 
 before_install:
   - sudo docker pull centos:7
-  - sudo docker build --rm=true --tag=travistest .
+  - sudo docker build --rm=true --file=Dockerfile --tag=centos:ansible .
 
 script:
   # Run container in detached state
-  - sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro travistest /usr/lib/systemd/systemd > /tmp/container_id
+  - sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro centos:ansible /usr/lib/systemd/systemd > "${CONTAINER_ID}"
   # Run tests in Container
-  - sudo docker exec "$(cat /tmp/container_id)" /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
+  - sudo docker exec "$(cat ${CONTAINER_ID})" /bin/bash -c "/WunderMachina/tests/test-in-docker.sh"
   # Clean up
-  - sudo docker stop "$(cat /tmp/container_id)"
+  - sudo docker stop "$(cat ${CONTAINER_ID})"
 
 notifications:
   email: false
