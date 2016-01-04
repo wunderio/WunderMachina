@@ -10,7 +10,7 @@ services:
   - docker
 
 before_install:
-  - sudo docker pull ilari/centos7-systemd
+  - sudo docker pull centos:7
   - sudo docker build --rm=true --tag=travistest .
 
 script:
