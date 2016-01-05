@@ -25,7 +25,7 @@ notifications:
   email: false
   hipchat:
     rooms:
-      secure: JM+TMxOSehVBgdT/f/IEDI52hqo1M9EM2vYIb4i8pMt3vQ5K6piMeOQ3DE0xjkNSn56LtwzY4CPTEq1/2omp5N6sQTZUWj82abgGaGNupGr9kuSSJGVrCi6YwKl3oXiWRBZ9DQcLvAwM3374G0LrrUX+8Zf4xCM8O8UzB44NCVhhrjlfz9HtA86COE3VKw9OK29aPWjoAazM1hRoiTVRIqH7Pz+KeDIIssJn40xMipiL8cpX3i3EGxY/JJAHOwoP+XLp+YGvs7+iALXKNTEMgFyO/G9g5HNsI2UoKqm1A0DvLWsVFX+1HSHlSLiCY53xdWf2l2K5YjfgLrhYEGXDBvgXOv9qFrjpTfZndoj3lJsIg1Kp3HtjGI3Cqrm6III5wNNkmp2dpvUEUvwea0Cjj8vdBFy7kECZNu3KzT0naQq9FrKliMBgqYyzZgyAXSeXsTiXFUahTaOGF7RIpzqAbVyA5FJq96wLdzB4OfuRsd/OCSHWq4l/Apx1y/a/QsYst+HqRpr5qZZ4mB8P+h8FDzwj5+dxncSHlbpmTmweoru4ysC1WDLYzbL9LVmeKzXwzK0a5sSb2VuxWtbJ9i9Nf/JXQ7GP3pXIPN9xXaLDhjKiFWydLcjGbypKu9A/PFvYzuyOCvxX5SXfj8g7kkb2BEepBBoGadaptkHAkTI35RU=
+      secure: Hya0PQBPo3culofddbT6bJYUgcFNQLqt2IM+ZdBMryk7Ox9d9YUrqDpoa6Rs4LXrqtkZOAPuioTlakjcSp3hZRIxsmTPBRY200En/dnUysajI0X/MS3eDrNwgOPZ39J+ktXI7f7XTOhgNx4shhvT50KSfuIuvkoPtt9YKKrD99dLFiYRSx62dS0/zWHgsORbq/jKVRQoOveZRMCiLrTbGl+0ZM3PV7XbrlNPiYYUlsZ3BP12p8NU600WG7VwKRmUzC7hawghMcutup1tmC24BiY14fNaYewu1vScapvvKnDzoDtTC2p0WQKV2Tr0bp/MGQxbGAvyybiUKyvicGqjaUMUtPvIKQT4vqgg2FGyPUkOTJCJ///4nYoVs6NdIYKeA1dFjrRP76zhlVrIqhckhOUyKdFCJEq6W4AfLC0YXe4aAE/zS6GGDBxErIlxwgeHdmfGzebP2ZaBzWqL24izfYLEUsg54zNEfEGwWBVT0Fi+ACKitjSPj0gzLp9pfUbcRGS6p9B5qtBlY3MhJK/WMApVhASvIAc/Cle78EqjmP1JTxlZzRzwRMFPaAs5qCvChjgcwXbnLITisk2uTNFr7BeMHRiZPHlvLGGwRqQzYo3fJMjTc2dQ5eHM13OK6oOIG85OFrwJCXT6znm1sXcuOo4jVV7Uy2KvMrV7DHXbKnM=
     template:
-      - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a>/<a href="%{compare_url}">Change view</a>)'
+    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a> / <a href="%{compare_url}">Change view</a>)'
     format: html
