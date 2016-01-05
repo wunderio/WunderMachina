@@ -16,6 +16,8 @@ RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-deve
 RUN yum clean all
 RUN easy_install pip
 RUN pip install ansible
+RUN mkdir /etc/ansible
+RUN printf "[defaults]\nroles_path = /WunderMachina/playbook/roles" > /etc/ansible/ansible.cfg
 # Disable requiretty
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 VOLUME [ "/sys/fs/cgroup" ]
