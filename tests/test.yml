@@ -24,7 +24,7 @@
     partition_var_log: False
 
     datadog_enabled: True
-    datadog_api_key: somerandomfiller12345
+    datadog_api_key: 1234567890
 
     newrelic_enabled: True
     newrelic_license_key: "this-is-a-fake-key-replace-with-a-real-1"
