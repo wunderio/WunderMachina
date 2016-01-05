@@ -19,7 +19,7 @@ script:
   # Run container in detached state
   - sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro centos:ansible /usr/lib/systemd/systemd > "${CONTAINER_ID}"
   # Create ansible.cfg
-  - sudo docker exec "$(cat ${CONTAINER_ID})" printf "[defaults]\nroles_path = /WunderMachina/playbook/roles" > ansible.cfg
+  - sudo docker exec "$(cat ${CONTAINER_ID})" mkdir /etc/ansible && printf "[defaults]\nroles_path = /WunderMachina/playbook/roles" > /etc/ansible/ansible.cfg
   # Run syntac check
   - sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory /WunderMachina/tests/test.yml --syntax-check || (echo "ansible playbook syntax check was failed" && exit 2 )
   # Clean up
