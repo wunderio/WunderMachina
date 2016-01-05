@@ -15,7 +15,7 @@
     datadog_enabled == True
 
 - name: Create Datadog configuration
-  shell: sudo sh -c "sed 's/api_key:.*/api_key: {{datadog_api_key}}/' /etc/dd-agent/datadog.conf.example > /etc/dd-agent/datadog.conf"
+  shell: "sed 's/api_key:.*/api_key: {{datadog_api_key}}/' /etc/dd-agent/datadog.conf.example > /etc/dd-agent/datadog.conf"
   notify:
     - restart datadog
   when:
