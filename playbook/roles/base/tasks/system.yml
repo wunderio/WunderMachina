@@ -17,7 +17,6 @@
 - name: disable network manager
   tags: networking
   service: name=network-manager state=stopped enabled=no
-  ignore_errors: True
 
 # Operating system tweaks:
 - replace:
