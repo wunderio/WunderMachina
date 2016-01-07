@@ -22,3 +22,6 @@ basicauth_password: wunder123
 basicauth_ip:
   - address: 127.0.0.1
   - address: 192.168.0.1
+
+# Default distribution CentOS 7
+distro: "centos7"
