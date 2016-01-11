@@ -6,23 +6,24 @@
 - name: Check if partition named '/var/log' exists
   shell: "mountpoint /var/log"
   register: varlog
+  ignore_errors: True
 - name: Create partition to secondary drive
-  shell: sudo echo -e "n\np\n1\n\n\nw\n" | fdisk /dev/vdb
+  shell: echo -e "n\np\n1\n\n\nw\n" | fdisk /dev/vdb
   when: varlog.rc != 0
 - name: Format the partition in the secondary drive
-  shell: sudo mkfs.ext4 /dev/vdb1
+  shell: mkfs.ext4 /dev/vdb1
   when: varlog.rc != 0
 - name: Create temp mount point to copy files from current /var/log
-  shell: sudo mkdir -p /mnt/varlog && mount /dev/vdb1 /mnt/varlog
+  shell: mkdir -p /mnt/varlog && mount /dev/vdb1 /mnt/varlog
   when: varlog.rc != 0
 - name: Copy files from old /var/log
-  shell: sudo cp -rpf /var/log/* /mnt/varlog/.
+  shell: cp -rpf /var/log/* /mnt/varlog/.
   when: varlog.rc != 0
 - name: Unmount temp mount and delete current /var/log
-  shell: sudo umount /mnt/varlog && rm -rf /mnt/varlog && rm -rf /var/log
+  shell: umount /mnt/varlog && rm -rf /mnt/varlog && rm -rf /var/log
   when: varlog.rc != 0
 - name: Create /var/log mount point and mount the partition
-  shell: sudo mkdir -p /var/log && mount /dev/vdb1 /var/log
+  shell: mkdir -p /var/log && mount /dev/vdb1 /var/log
   when: varlog.rc != 0
 - name: Add automount for secondary drive as /export/vdb1 (type=ext4)
   lineinfile: dest=/etc/fstab line="/dev/vdb1 /var/log ext4 defaults 0 0"
