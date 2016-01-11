@@ -17,19 +17,19 @@ varnish:
 
 # # Multiple apps
 #   - name: test_com_director
-#     host_regexp: test.com
+#     host: test.com
 #     backends:
 #       - name: test1_web
 #         address: 192.168.1.101
 #         port: 8080
 #   - name: test2_com_director
-#     host_regexp: test2.com
+#     host: test2.com
 #     backends:
 #       - name: test2_web
 #         address: 192.168.1.102
 #         port: 8081
 #   - name: test3_com_director
-#     host_regexp: test3.com
+#     host: test3.com
 #     backends:
 #       - name: test3_web
 #         address: 192.168.1.102
