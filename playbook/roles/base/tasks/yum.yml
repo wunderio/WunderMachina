@@ -29,6 +29,7 @@
     - iftop
     - make
     - ntp
+    - gcc
     - python-yaml
     - MySQL-python
     - postfix
