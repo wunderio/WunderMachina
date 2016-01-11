@@ -6,6 +6,9 @@
 - include: "php56u.yml"
   when: php_package == "php56u"
 
+- include: "php70u.yml"
+  when: php_package == "php70u"
+
 - yum:
     name={{ item }}
     state=present
