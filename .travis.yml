@@ -21,16 +21,16 @@ script:
   /WunderMachina/tests/test-php56.yml -vvv --connection=local --sudo || ( echo 'First run
   failed' && exit 2 )
 - sudo docker stop "$(cat ${CONTAINER_ID})"
-- sudo docker rm "$(cat ${CONTAINER_ID})"
-- sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro
-  centos:ansible /usr/lib/systemd/systemd > "${CONTAINER_ID}"
-- sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
-  /WunderMachina/tests/test-php70.yml --syntax-check || (echo 'Ansible playbook syntax check
-  failed' && exit 2 )
-- sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
-  /WunderMachina/tests/test-php70.yml -vvv --connection=local --sudo || ( echo 'First run
-  failed' && exit 2 )
-- sudo docker stop "$(cat ${CONTAINER_ID})"
+#- sudo docker rm "$(cat ${CONTAINER_ID})"
+#- sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro
+#  centos:ansible /usr/lib/systemd/systemd > "${CONTAINER_ID}"
+#- sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
+#  /WunderMachina/tests/test-php70.yml --syntax-check || (echo 'Ansible playbook syntax check
+#  failed' && exit 2 )
+#- sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
+#  /WunderMachina/tests/test-php70.yml -vvv --connection=local --sudo || ( echo 'First run
+#  failed' && exit 2 )
+#- sudo docker stop "$(cat ${CONTAINER_ID})"
 notifications:
   email: false
   hipchat:
