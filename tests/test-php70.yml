@@ -11,6 +11,7 @@
    - { role: dbserver, tags: [ 'dbserver' ] }
    - { role: sslterminator, tags: [ 'sslterminator' ] }
    - { role: drush, tags: [ 'drush' ] }
+   - { role: drupal-console, tags: [ 'drupal-console' ] }
    - { role: memcached, tags: [ 'memcached' ] }
    - { role: datadog, tags: [ 'datadog' ] }
    - { role: monit, tags: [ 'monit' ] }
