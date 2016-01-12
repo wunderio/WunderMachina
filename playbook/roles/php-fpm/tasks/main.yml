@@ -29,6 +29,11 @@
 - template:
     src=www.conf.j2
     dest=/etc/php-fpm.d/www.conf
+  when: php_package == "php56u"
+- template:
+    src=www.conf.php7.j2
+    dest=/etc/php-fpm.d/www.conf
+  when: php_package == "php70u"
 - copy:
     src=php-fpm/{{ item }}
     dest=/etc/{{ item }}

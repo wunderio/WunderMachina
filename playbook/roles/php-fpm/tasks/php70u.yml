@@ -2,15 +2,14 @@
 
 # Install all php packages
 - name: Install php-fpm
-  yum: pkg={{ php_package }}-fpm enablerepo=ius-testing state=present
+  yum: pkg={{ php_package }}-fpm state=present
 
 - name: Ensure php-fpm is running now and on boot
   service: name=php-fpm state=started enabled=yes
 
 - name: Install php packages
-  yum: pkg={{ item }} enablerepo=ius-testing state=present
+  yum: pkg={{ item }} state=present
   with_items:
-    - "{{ php_package }}"
     - "{{ php_package }}-cli"
     - "{{ php_package }}-common"
     - "{{ php_package }}-devel"
