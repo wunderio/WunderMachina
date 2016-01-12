@@ -1,0 +1,10 @@
+---
+
+# Install drupal console.
+
+- name: Install drupal console
+  shell: curl https://drupalconsole.com/installer -L -o drupal.phar && mv drupal.phar /usr/bin/drupal
+    creates=/usr/bin/drupal
+
+- name: Change permission
+  shell: chmod oug+x /usr/bin/drupal
