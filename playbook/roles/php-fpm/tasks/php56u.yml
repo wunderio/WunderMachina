@@ -29,3 +29,7 @@
     - "{{ php_package }}-pecl-uploadprogress"
     - "{{ php_package }}-xml"
     - "{{ php_package }}-xmlrpc"
+
+# Install twig package
+- name: Install twig
+  yum: pkg={{ php_package }}-twig enablerepo=ius-testing state=present
