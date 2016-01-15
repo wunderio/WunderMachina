@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if true | openssl s_client -connect {{letsencrypt_domains.0}}:443 2>/dev/null | \
+  openssl x509 -noout -checkend 2592000; then
+else
+  cd /root/letsencrypt
+  ./letsencrypt-auto certonly --config /root/letsencrypt-scripts/cli.ini {% for domain in letsencrypt_domains %}-d {{ domain }} {% endfor %}
+
+  if [ $? -ne 0 ]
+  then
+        ERRORLOG=`tail /var/log/letsencrypt/letsencrypt.log`
+        echo -e "The Lets Encrypt Cert has not been renewed! \n \n" $ERRORLOG | mail -s "Lets Encrypt Alert:{% for domain in letsencrypt_domains %} {{ domain }} /{% endfor %}" fi.support@wunderkraut.com
+  else
+        /usr/bin/systemctl reload nginx
+  fi
+fi
+
+
+exit 0

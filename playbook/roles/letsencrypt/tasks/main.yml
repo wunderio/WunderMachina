@@ -35,3 +35,24 @@
 - name: Run initial certificate request only if port 80 is free
   command: "{{ letsencrypt_command }}"
   when: port_80.stdout.find('nginx') == -1
+
+- name: Create directory for certificate renewal scripts
+  file:
+    state=directory
+    path=/root/letsencrypt-scripts
+    group=root
+    owner=root
+
+- template:
+    src=cli.ini.j2
+    dest=/root/letsencrypt-scripts/cli.ini
+    owner=root
+
+- template:
+    src=renewal.sh.j2
+    dest=/root/letsencrypt-scripts/renewal.sh
+    owner=root
+    mode=755
+
+- cron: name="Letsencrypt certificate renewal check" minute="0" hour="1" job="/root/letsencrypt-scripts/renewal.sh > /dev/null 2>&1" state="present"
+
