@@ -48,12 +48,12 @@
     - restart nginx
 
 # Make logentries follow nginx logs.
-#- shell:
-#    le follow "{{ item }}"
-#  with_items:
-#    - "{{ nginx_logentries_follow }}"
-#  when:
-#    logentries_enabled == True
+- shell:
+    le follow "{{ item }}"
+  with_items:
+    - "{{ nginx_logentries_follow }}"
+  when:
+    logentries_enabled == True
 
 # Add www-admin to nginx group and vice versa.
 - user:
