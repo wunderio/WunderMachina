@@ -61,6 +61,12 @@ http {
   # Enable HSTS;
   add_header Strict-Transport-Security max-age=31536000;
 
+  # Enable X-Frame-Options
+  add_header X-Frame-Options "SAMEORIGIN" always;
+
+  # Enable Content Security Policy
+  add_header Content-Security-Policy "default-src https: data: 'unsafe-inline' 'unsafe-eval'" always;
+
   ## Enable the builtin cross-site scripting (XSS) filter available
   ## in modern browsers.  Usually enabled by default we just
   ## reinstate in case it has been somehow disabled for this
