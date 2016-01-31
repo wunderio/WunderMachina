@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+# /etc/init.d/hhvm -- startup script for HHVM FastCGI
+#
+# chkconfig: 345 26 74
+# description: HHVM (aka the HipHop Virtual Machine) is an open-source virtual machine designed for executing programs written in Hack and PHP
+# processname: hhvm
+
+### BEGIN INIT INFO
+# Provides: hhvm
+# Required-Start: $local_fs
+# Required-Stop: $local_fs
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop hhvm
+# Description: HHVM (aka the HipHop Virtual Machine) is an open-source virtual machine designed for executing programs written in Hack and PHP
+### END INIT INFO
+
+pre-start script
+    mkdir -p -m0755 /var/run/hhvm
+    chown nginx:nginx /var/run/hhvm
+end script
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+hhvm=/usr/local/bin/hhvm
+prog=`/bin/basename $hhvm`
+lockfile=/var/lock/subsys/hhvm
+pidfile=/var/run/hhvm/pid
+RETVAL=0
+
+test -x /usr/local/bin/hhvm || exit 1
+
+start() {
+    echo -n $"Starting $prog: "
+
+    daemon --pidfile ${pidfile} ${hhvm} --config /etc/hhvm/server.ini --mode daemon
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && touch ${lockfile}
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p ${pidfile} ${prog}
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
+}
+
+rh_status() {
+    status -p ${pidfile} ${hhvm}
+}
+
+case "$1" in
+  start)
+        rh_status >/dev/null 2>&1 && exit 0
+        start
+        ;;
+  stop)
+        stop
+        ;;
+
+  reload|force-reload|restart|try-restart)
+        stop
+        start
+        ;;
+
+  status)
+        rh_status
+        RETVAL=$?
+        ;;
+
+  *)
+        echo "Usage: /etc/init.d/hhvm {start|stop|restart|status}"
+        exit 2
+esac
+
+exit $RETVAL

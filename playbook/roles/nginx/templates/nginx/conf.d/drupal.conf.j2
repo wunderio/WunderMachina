@@ -173,7 +173,11 @@ location = /_ping.php {
 
 location @drupal {
   include conf.d/fastcgi_drupal.conf;
-  fastcgi_pass phpcgi;
+  {% if hhvm is not defined %}
+    fastcgi_pass phpcgi;
+  {% else %}
+    fastcgi_pass unix:/var/run/hhvm/server.sock;
+  {% endif %}
 }
 
 ## Disallow access to patches directory.

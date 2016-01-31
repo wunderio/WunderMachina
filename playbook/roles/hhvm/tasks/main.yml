@@ -1,0 +1,97 @@
+---
+
+- name: Clone prebuilt HHVM for CentOS 7
+  git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
+       dest=/tmp/hhvm-3.11.1
+       version=HHVM-3.11.1
+
+- name: Install Remi repo for ImageMagic
+  yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm state=present
+
+# @todo: this conflicts with php-fpm role because ImageMagick is also installed there.
+# HHVM needs more latest version so the fix is to remove the old one.
+# Should we instead add Remi repo version to php-fpm role?
+- name: Install ImageMagic dependency from Remi repo and remove old one
+  yum: name=ImageMagick state=absent
+- yum: name=ImageMagick-last\* state=present enablerepo=remi
+
+- name: Install rest of the dependencies
+  yum:
+    pkg={{item}}
+    state=present
+  with_items:
+    - cpp
+    - gcc-c++
+    - cmake
+    - psmisc
+    - binutils-devel
+    - boost-devel
+    - jemalloc-devel
+    - sqlite-devel
+    - tbb-devel
+    - bzip2-devel
+    - openldap-devel
+    - readline-devel
+    - elfutils-libelf-devel
+    - gmp-devel
+    - lz4-devel
+    - pcre-devel
+    - libxslt-devel
+    - libevent-devel
+    - libyaml-devel
+    - libvpx-devel
+    - libpng-devel
+    - libzip-devel
+    - libicu-devel
+    - libmcrypt-devel
+    - libmemcached-devel
+    - libcap-devel
+    - libdwarf-devel
+    - unixODBC-devel
+    - expat-devel
+    - mariadb-devel
+    - libedit-devel
+    - libcurl-devel
+    - libxml2-devel
+    - libxslt-devel
+    - glog-devel
+    - oniguruma-devel
+    - inotify-tools-devel
+    - ocaml
+    - openssl-devel
+
+- name: Install HHVM
+  command: /usr/bin/cmake -P cmake_install.cmake
+  args:
+    chdir: /tmp/hhvm-3.11.1/
+
+- name: Copy configurations to /etc/hhvm/
+  file: path=/etc/hhvm state=directory
+- copy:
+    src=etc/hhvm/{{ item }}
+    dest=/etc/hhvm/{{ item }}
+  with_items:
+    - php.ini
+    - server.ini
+
+- name: Set up service
+  copy:
+    src=etc/init.d/hhvm
+    dest=/etc/init.d/hhvm
+    mode="u+rwx,g+rx,o+rx"
+
+- name: Create logs folder
+  file: path=/var/log/hhvm state=directory owner=nginx group=nginx
+
+- name: Create run folder
+  file: path=/var/run/hhvm state=directory owner=nginx group=nginx
+
+#- name: Fix fatal error - unexpected St13runtime_error (by setting LC_ALL variable)
+#  lineinfile: dest=/etc/environment state=present regexp='^LC_ALL' line='LC_ALL=C'
+
+- name: Add HHVM to service
+  shell: chkconfig --add hhvm
+- shell: chkconfig hhvm on
+
+- name: Start HHVM
+  service: name=hhvm state=started
