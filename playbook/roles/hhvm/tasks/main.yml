@@ -4,3 +4,54 @@
 - git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
        dest=/tmp/hhvm-3.11.1
        version=HHVM-3.11.1
+
+- name: Install Remi repo for ImageMagic
+  yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm state=present
+
+- name: Install ImageMagic dependency from Remi repo
+  yum: name=ImageMagick-last\* state=present enablerepo=remi
+
+- name: Install rest of the dependencies
+  yum:
+    pkg={{item}}
+    state=present
+  with_items:
+    - cpp
+    - gcc-c++
+    - cmake
+    - psmisc
+    - binutils-devel
+    - boost-devel
+    - jemalloc-devel
+    - sqlite-devel
+    - tbb-devel
+    - bzip2-devel
+    - openldap-devel
+    - readline-devel
+    - elfutils-libelf-devel
+    - gmp-devel
+    - lz4-devel
+    - pcre-devel
+    - libxslt-devel
+    - libevent-devel
+    - libyaml-devel
+    - libvpx-devel
+    - libpng-devel
+    - libzip-devel
+    - libicu-devel
+    - libmcrypt-devel
+    - libmemcached-devel
+    - libcap-devel
+    - libdwarf-devel
+    - unixODBC-devel
+    - expat-devel
+    - mariadb-devel
+    - libedit-devel
+    - libcurl-devel
+    - libxml2-devel
+    - libxslt-devel
+    - glog-devel
+    - oniguruma-devel
+    - inotify-tools-devel
+    - ocaml
+    - openssl-devel
