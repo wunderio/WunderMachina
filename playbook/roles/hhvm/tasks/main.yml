@@ -1,2 +1,6 @@
 ---
-# tasks file for hhvm
+
+# Clone prebuilt HHVM for CentOS 7.
+- git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
+       dest=/tmp/hhvm-3.11.1
+       version=HHVM-3.11.1
