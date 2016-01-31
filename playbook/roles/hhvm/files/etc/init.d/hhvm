@@ -16,6 +16,11 @@
 # Description: HHVM (aka the HipHop Virtual Machine) is an open-source virtual machine designed for executing programs written in Hack and PHP
 ### END INIT INFO
 
+pre-start script
+    mkdir -p -m0755 /var/run/hhvm
+    chown nginx:nginx /var/run/hhvm
+end script
+
 # Source function library.
 . /etc/rc.d/init.d/functions
 
