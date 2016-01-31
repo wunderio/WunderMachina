@@ -55,3 +55,8 @@
     - inotify-tools-devel
     - ocaml
     - openssl-devel
+
+# Install HHVM.
+- command: /usr/bin/cmake -P cmake_install.cmake
+  args:
+    chdir: /tmp/hhvm-3.11.1/
