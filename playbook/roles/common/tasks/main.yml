@@ -41,6 +41,10 @@
 # Refresh closest mirror cache
 #- file: path=/var/cache/yum/x86_64/6/timedhosts.txt state=absent
 
+# Clean cache before installing packages.
+- name: Clearing Yum Cache
+  shell: yum clean all
+
 # Basic packages
 - name: Install packages
   yum: pkg={{ item }} state=present
