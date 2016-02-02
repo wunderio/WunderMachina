@@ -1,0 +1,12 @@
+---
+
+# Copy backup.sh to it's place
+- template:
+    src=backup.sh.j2
+    dest=/root/backup.sh
+    owner=root
+    group=nobody
+    mode=0750
+
+# Setup backup cron job
+- cron: name="Backup cron job" minute="0" hour="1" job="/root/backup.sh > /dev/null 2>&1" state="present"
