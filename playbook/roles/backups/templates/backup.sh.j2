@@ -1,9 +1,9 @@
 #!/bin/bash
 
-mkdir -p /var/backups/drupal/database/$(date +%y-%m-%d)
-BACKUPDB=/var/backups/drupal/database/$(date +%y-%m-%d)/{{ backup_db_name }}-database-$(date +%H%M).sql.gz
+mkdir -p {{ backup_location }}/drupal/database/$(date +%y-%m-%d)
+BACKUPDB={{ backup_location }}/drupal/database/$(date +%y-%m-%d)/{{ backup_db_name }}-database-$(date +%H%M).sql.gz
 mysqldump --skip-lock-tables --single-transaction --quick {{ backup_db_name }} | gzip > $BACKUPDB
 
 # Remove more than 4 days old backups.
-find /var/backups/drupal/database -mtime +4 -exec rm {} \;
-find /var/backups/drupal/database -type d -empty -exec rmdir {} \;
+find {{ backup_location }}/drupal/database -mtime +4 -exec rm {} \;
+find {{ backup_location }}/drupal/database -type d -empty -exec rmdir {} \;
