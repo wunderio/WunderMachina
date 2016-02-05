@@ -1,7 +1,7 @@
 ---
 
-sslterminator_logentries_follow:
-  - /var/log/nginx/ssl-*.log
+sslterminator_papertrail_follow:
+  - /var/log/nginx/ssl-*error.log
 
 sslterminators:
   - server_name: www.test.com

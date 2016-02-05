@@ -2,9 +2,9 @@
 
 nginx_real_ip: 127.0.0.1
 
-nginx_logentries_follow:
+nginx_papertrail_follow:
   - /var/log/drupal.log
-  - /var/log/nginx/http-*.log
+  - /var/log/nginx/http-*error.log
 
 apps:
   - server_name: www.test.com

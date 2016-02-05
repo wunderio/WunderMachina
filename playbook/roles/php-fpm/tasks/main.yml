@@ -62,13 +62,18 @@
   notify:
     - restart php-fpm
 
-# Make logentries follow php-fpm logs.
-- shell:
-    le follow "{{ item }}"
+# Make papertrail follow appserver logs.
+- lineinfile:
+    dest=/etc/log_files.yml
+    insertafter='files:'
+    line='  - {{ item }}'
+    mode=644
   with_items:
-    - "{{ php_fpm_logentries_follow }}"
+    - "{{ php_fpm_papertrail_follow }}"
   when:
-    logentries_enabled == True
+    papertrail_enabled == True
+  notify:
+    - restart remote_syslog
 
 # Make sure all services are ON and configured to start on boot
 - service: name={{ item }} state=started enabled=yes

@@ -2,7 +2,7 @@
 
 php_memory_limit: 256
 
-php_fpm_logentries_follow:
+php_fpm_papertrail_follow:
   - /var/log/php-fpm/www-error.log
 
 # Default settings for PHP

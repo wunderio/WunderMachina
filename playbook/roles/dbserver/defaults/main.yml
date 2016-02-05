@@ -4,6 +4,3 @@ partition_var_lib_mysql: True
 mariadb_root_password: root
 
 innodb_buffer_pool_size: 1024
-
-dbserver_logentries_follow:
-  - /var/log/secure

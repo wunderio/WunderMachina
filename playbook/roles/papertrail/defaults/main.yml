@@ -1,0 +1,9 @@
+---
+
+papertrail_enabled: False
+papertrail_remote_syslog2_version: "0.16"
+papertrail_conf: "/etc/log_files.yml"
+papertrail_host: "logs.papertrailapp.com"
+papertrail_port: 12345
+papertrail_logs:
+  - /var/log/secure

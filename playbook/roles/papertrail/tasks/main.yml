@@ -1,0 +1,43 @@
+---
+
+- name: Install TLS support for Rsyslog
+  yum: name=rsyslog-gnutls state=present
+  when:
+    papertrail_enabled == True
+
+- name: Download remote_syslog
+  get_url: url="https://github.com/papertrail/remote_syslog2/releases/download/v{{ papertrail_remote_syslog2_version }}/remote_syslog_linux_amd64.tar.gz"
+           dest="/tmp/remote_syslog_{{ papertrail_remote_syslog2_version }}_linux_amd64.tar.gz"
+  when:
+    papertrail_enabled == True
+
+- name: Extract remote_syslog
+  unarchive: src="/tmp/remote_syslog_{{ papertrail_remote_syslog2_version }}_linux_amd64.tar.gz"
+             dest=/usr/local/bin
+             copy=no
+             owner=root
+             group=root
+             mode=0750
+             creates=/usr/local/bin/remote_syslog/remote_syslog
+  when:
+    papertrail_enabled == True
+
+- name: Copy systemd service file
+  copy:
+    src=remote_syslog.service
+    dest=/usr/lib/systemd/system/remote_syslog.service
+  when:
+    papertrail_enabled == True
+
+- name: Configure remote_syslog
+  template: src="log_files.yml.j2"
+            dest="{{ papertrail_conf }}"
+  notify:
+    - Restart remote_syslog
+  when:
+    papertrail_enabled == True
+
+- name: Make sure remote_syslog is started on boot
+  service: name=remote_syslog state=started enabled=yes
+  when:
+    papertrail_enabled == True
