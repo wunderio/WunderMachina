@@ -23,5 +23,7 @@ basicauth_ip:
   - address: 127.0.0.1
   - address: 192.168.0.1
 
+papertrail_enabled: False
+
 # Default distribution CentOS 7
 distro: "centos7"
