@@ -2,6 +2,8 @@ files:
 {% for logfile in papertrail_logs %}
   - {{ logfile }}
 {% endfor %}
+exclude_patterns:
+  - Notice:
 hostname: {{ ansible_nodename }}
 destination:
   host: {{ papertrail_host }}
