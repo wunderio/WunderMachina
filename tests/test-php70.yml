@@ -176,6 +176,18 @@
             - name: test1_web
               address: 127.0.0.1
               port: 8080
+            - name: test_extra_http
+              address: 127.0.0.1
+              port: 8080
+              ignore: True
+
+    varnish_extra_definition:
+      - name: add extra director
+        dest: /etc/varnish/default.vcl
+        insertafter: "# Extra directors"
+        content: |
+          new test_extra = directors.round_robin();
+          test_extra.add_backend(test_extra_http);
 
     monit_enabled: True
     monit_alert_email_service_name: "test.com"

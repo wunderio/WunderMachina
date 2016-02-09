@@ -22,6 +22,13 @@
   notify:
     - restart varnish
 
+- name: Add extra definitions
+  blockinfile:
+    dest: "{{ item.dest }}"
+    insertafter: "{{ item.insertafter }}"
+    content: "{{ item.content }}"
+  with_items: "{{ varnish_extra_definition }}"
+  when: varnish_extra_definition is defined
 
 # Make sure all services are ON and configured to start on boot
 - service: name={{ item }} state=started enabled=yes
