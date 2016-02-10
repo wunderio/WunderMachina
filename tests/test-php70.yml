@@ -4,7 +4,7 @@
   remote_user: root
   roles:
    - { role: base, tags: [ 'base' ] }
-   - { role: logentries, tags: [ 'logentries' ] }
+   - { role: papertrail, tags: [ 'papertrail' ] }
    - { role: nginx, tags: [ 'nginx' ] }
    - { role: php-fpm, tags: [ 'php-fpm' ] }
    - { role: varnish, tags: [ 'varnish' ] }
@@ -12,6 +12,7 @@
    - { role: sslterminator, tags: [ 'sslterminator' ] }
    - { role: drush, tags: [ 'drush' ] }
    - { role: drupal-console, tags: [ 'drupal-console' ] }
+   - { role: drupal-db, tags: [ 'drupal-db' ] }
    - { role: memcached, tags: [ 'memcached' ] }
    - { role: datadog, tags: [ 'datadog' ] }
    - { role: monit, tags: [ 'monit' ] }
@@ -35,11 +36,10 @@
     base_pubkeys_url: https://example.com/auth
     base_addhost_url: https://example.com/auth/add_server
 
-    logentries_enabled: False
-    logentries_account_key: "some-random-account-key"
-    logentries_service_name: "example"
-    logentries_hostname: "www.example.com"
-    logentries_follow:
+    papertrail_enabled: False
+    papertrail_remote_syslog2_version: "0.16"
+    papertrail_conf: "/etc/log_files.yml"
+    papertrail_logs:
       - /var/log/secure
 
     memcached_port: 11211
