@@ -1,8 +1,9 @@
 ---
 
-# How to properly do yum update -y?
-#- name: Upgrade all packages
-#  yum: name=* state=latest
+# How to properly do yum update -y? Some say it's yum: name=* state=latest but
+# this will create conflicts (atleast when doing provision on already built
+# system. This seems to work:
+- name: Update system
 - command: yum update -y
 
 - name: Clone prebuilt HHVM for CentOS 7
