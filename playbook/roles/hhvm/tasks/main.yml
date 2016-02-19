@@ -3,6 +3,7 @@
 # How to properly do yum update -y?
 #- name: Upgrade all packages
 #  yum: name=* state=latest
+- command: yum update -y
 
 - name: Clone prebuilt HHVM for CentOS 7
   git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
