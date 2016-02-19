@@ -14,7 +14,7 @@
        dest=/tmp/hhvm-3.12.0
        version=HHVM-3.12.0
 
-- name: Enable EPEL repositories.
+- name: Enable EPEL repositories
   yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm state=present
 
 - name: Install dependencies
