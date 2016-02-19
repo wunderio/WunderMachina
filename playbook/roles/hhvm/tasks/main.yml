@@ -1,21 +1,18 @@
 ---
 
+# How to properly do yum update -y?
+#- name: Upgrade all packages
+#  yum: name=* state=latest
+
 - name: Clone prebuilt HHVM for CentOS 7
   git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
-       dest=/tmp/hhvm-3.11.1
-       version=HHVM-3.11.1
+       dest=/tmp/hhvm-3.12.0
+       version=HHVM-3.12.0
 
-- name: Install Remi repo for ImageMagic
-  yum: name=http://rpms.famillecollet.com/enterprise/remi-release-7.rpm state=present
+- name: Enable EPEL repositories.
+  yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm state=present
 
-# @todo: this conflicts with php-fpm role because ImageMagick is also installed there.
-# HHVM needs more latest version so the fix is to remove the old one.
-# Should we instead add Remi repo version to php-fpm role?
-- name: Install ImageMagic dependency from Remi repo and remove old one
-  yum: name=ImageMagick state=absent
-- yum: name=ImageMagick-last\* state=present enablerepo=remi
-
-- name: Install rest of the dependencies
+- name: Install dependencies
   yum:
     pkg={{item}}
     state=present
@@ -23,11 +20,14 @@
     - cpp
     - gcc-c++
     - cmake
+    - git
     - psmisc
     - binutils-devel
     - boost-devel
     - jemalloc-devel
-    - sqlite-devel
+    - numactl-devel
+    - ImageMagick-devel
+    - sqlite-devel-devel
     - tbb-devel
     - bzip2-devel
     - openldap-devel
@@ -56,14 +56,20 @@
     - libxslt-devel
     - glog-devel
     - oniguruma-devel
-    - inotify-tools-devel
     - ocaml
+    - gperf
+    - enca
+    - libjpeg-turbo-devel
     - openssl-devel
+    - mariadb
+    - mariadb-server
+    - fribidi-devel
+    - libc-client-devel
 
 - name: Install HHVM
   command: /usr/bin/cmake -P cmake_install.cmake
   args:
-    chdir: /tmp/hhvm-3.11.1/
+    chdir: /tmp/hhvm-3.12.0/
 
 - name: Copy configurations to /etc/hhvm/
   file: path=/etc/hhvm state=directory
@@ -93,5 +99,5 @@
   shell: chkconfig --add hhvm
 - shell: chkconfig hhvm on
 
-- name: Start HHVM
-  service: name=hhvm state=started
+- name: Start/restart HHVM
+  service: name=hhvm state=restarted
