@@ -4,7 +4,10 @@
 # this will create conflicts (atleast when doing provision on already built
 # system. This seems to work:
 - name: Update system
-- command: yum update -y
+  command: yum update -y
+
+- name: Delete older hhvm
+  file: path=/tmp/hhvm-3.11.1 state=absent
 
 - name: Clone prebuilt HHVM for CentOS 7
   git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
