@@ -31,6 +31,35 @@ server {
 
 {% endfor %}
 
+{% if httpextraforwards is defined %}
+{% for site in httpextraforwards %}
+{% if site.forward_from_domain is defined %}
+# HTTP Forwarder
+server {
+    listen {{ site.port }};
+    server_name {{ site.forward_from_domain }};
+
+    {% if site.ssl_certificate is defined %}
+    ssl on;
+    ssl_certificate {{ site.ssl_certificate }};
+    ssl_certificate_key {{ site.ssl_certificate_key }};
+
+    {% endif %}
+    {% if site.use_dhparam is defined %}
+    ssl_dhparam /etc/nginx/ssl/dh2048.pem;
+
+    {% endif %}
+    {% for fwd in site.forwards %}
+    rewrite {{ fwd.forward_from_path }} {{ fwd.forward_to }} {{ fwd.type }};
+    {% endfor %}
+}
+
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+
 {% for site in sslterminators %}
 
 {% if site.server_forwards is defined %}
