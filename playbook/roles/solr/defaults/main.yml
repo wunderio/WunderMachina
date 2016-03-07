@@ -1,4 +1,4 @@
-
+---
 
 solr_path: /usr/local/share/solr
 solr_log_path: /var/log/solr
