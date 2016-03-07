@@ -2,8 +2,8 @@
 
 mkdir -p {{ backup_location }}/drupal/database/$(date +%y-%m-%d)
 BACKUPDB={{ backup_location }}/drupal/database/$(date +%y-%m-%d)/{{ backup_db_name }}-database-$(date +%H%M).sql
-mysqldump --skip-lock-tables --single-transaction --quick {{ backup_db_name }} --ignore-table=cache_form --ignore-table=search_index > $BACKUPDB
-mysqldump --skip-lock-tables --single-transaction --quick -d {{ backup_db_name }} cache_form search_index >> $BACKUPDB
+mysqldump -u root --skip-lock-tables --single-transaction --quick {{ backup_db_name }} --ignore-table={{ backup_db_name }}.cache_form --ignore-table={{ backup_db_name }}.search_index > $BACKUPDB
+mysqldump -u root --skip-lock-tables --single-transaction --quick -f -d {{ backup_db_name }} cache_form search_index >> $BACKUPDB
 gzip $BACKUPDB
 
 # Remove more than 4 days old backups.
