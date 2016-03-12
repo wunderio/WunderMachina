@@ -1,80 +1,7 @@
 ---
 
-# How to properly do yum update -y? Some say it's yum: name=* state=latest but
-# this will create conflicts (atleast when doing provision on already built
-# system. This seems to work:
-- name: Update system
-  command: yum update -y
-
-- name: Delete older hhvm
-  file: path=/tmp/hhvm-3.11.1 state=absent
-
-- name: Clone prebuilt HHVM for CentOS 7
-  git: repo=https://github.com/hkirsman/hhvm_centos7_builds.git
-       dest=/tmp/hhvm-3.12.0
-       version=HHVM-3.12.0
-
-- name: Enable EPEL repositories
-  yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm state=present
-
-- name: Install dependencies
-  yum:
-    pkg={{item}}
-    state=present
-  with_items:
-    - cpp
-    - gcc-c++
-    - cmake
-    - git
-    - psmisc
-    - binutils-devel
-    - boost-devel
-    - jemalloc-devel
-    - numactl-devel
-    - ImageMagick-devel
-    - sqlite-devel-devel
-    - tbb-devel
-    - bzip2-devel
-    - openldap-devel
-    - readline-devel
-    - elfutils-libelf-devel
-    - gmp-devel
-    - lz4-devel
-    - pcre-devel
-    - libxslt-devel
-    - libevent-devel
-    - libyaml-devel
-    - libvpx-devel
-    - libpng-devel
-    - libzip-devel
-    - libicu-devel
-    - libmcrypt-devel
-    - libmemcached-devel
-    - libcap-devel
-    - libdwarf-devel
-    - unixODBC-devel
-    - expat-devel
-    - mariadb-devel
-    - libedit-devel
-    - libcurl-devel
-    - libxml2-devel
-    - libxslt-devel
-    - glog-devel
-    - oniguruma-devel
-    - ocaml
-    - gperf
-    - enca
-    - libjpeg-turbo-devel
-    - openssl-devel
-    - mariadb
-    - mariadb-server
-    - fribidi-devel
-    - libc-client-devel
-
 - name: Install HHVM
-  command: /usr/bin/cmake -P cmake_install.cmake
-  args:
-    chdir: /tmp/hhvm-3.12.0/
+  yum: name=https://github.com/hkirsman/hhvm_centos7_rpms/raw/b9569aec30f7855d180966a3bc9d6ca2e78e7604/hhvm-3.12.1.el7.centos.x86_64.rpm state=present
 
 - name: Copy configurations to /etc/hhvm/
   file: path=/etc/hhvm state=directory
@@ -96,9 +23,6 @@
 
 - name: Create run folder
   file: path=/var/run/hhvm state=directory owner=nginx group=nginx
-
-#- name: Fix fatal error - unexpected St13runtime_error (by setting LC_ALL variable)
-#  lineinfile: dest=/etc/environment state=present regexp='^LC_ALL' line='LC_ALL=C'
 
 - name: Add HHVM to service
   shell: chkconfig --add hhvm
