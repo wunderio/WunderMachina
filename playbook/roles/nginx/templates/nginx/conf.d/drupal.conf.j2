@@ -6,13 +6,13 @@ location / {
 
   ## Handle D7 image styles
   location ~* /files/styles/ {
-    expires 30d;
+    expires 365d;
     try_files $uri @drupal;
   }
 
   ## Handle D6 imagecache
   location ~* /imagecache/ {
-    expires 30d;
+    expires 365d;
     try_files $uri @drupal;
   }
 
@@ -44,21 +44,6 @@ location / {
     return 404;
   }
 
-  ## Serve static files & images directly, without all standard drupal rewrites, php-fpm etc.
-  location ~* ^.+\.(?:css|js|jpe?g|gif|png|ico|swf|docx?|xlsx?|tiff?|txt|cgi|bat|pl|dll|aspx?|exe|class)$ {
-    tcp_nodelay     off;
-    expires         30d;
-    add_header Cache-Control "public";
-    ## Set the OS file cache.
-    open_file_cache max=10000 inactive=120s;
-    open_file_cache_valid 45s;
-    open_file_cache_min_uses 2;
-    open_file_cache_errors off;
-    try_files $uri =404;
-    log_not_found off;
-    access_log off;
-  }
-
   ###
   ### Advagg_css and Advagg_js support.
   ###
@@ -76,7 +61,22 @@ location / {
     add_header Last-Modified "Wed, 20 Jan 1988 04:20:42 GMT";
     add_header Access-Control-Allow-Origin *;
     add_header X-Header "AdvAgg Generator 2.0 CDN";
-    try_files $uri @redirect;
+    try_files $uri @drupal;
+  }
+
+  ## Serve static files & images directly, without all standard drupal rewrites, php-fpm etc.
+  location ~* ^.+\.(?:css|js|jpe?g|gif|png|ico|svg|swf|docx?|xlsx?|tiff?|txt|cgi|bat|pl|dll|aspx?|exe|class)$ {
+    tcp_nodelay     off;
+    expires         365d;
+    add_header Cache-Control "public";
+    ## Set the OS file cache.
+    open_file_cache max=10000 inactive=120s;
+    open_file_cache_valid 45s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors off;
+    try_files $uri =404;
+    log_not_found off;
+    access_log off;
   }
 
   ## PDFs and powerpoint files handling.
@@ -88,12 +88,12 @@ location / {
   }
 
   # Configure webfont access
-  location ~* \.(?:ttf|ttc|otf|eot|woff|font.css)$ {
+  location ~* \.(?:ttf|ttc|otf|eot|woff|woff2|font.css)$ {
     # Uncomment to allow cross domain webfont access
     #add_header "Access-Control-Allow-Origin" "*";
 
     # Set cache rules for webfonts.
-    expires 30d;
+    expires 365d;
     add_header Cache-Control "public";
     ## Set the OS file cache.
     open_file_cache max=10000 inactive=120s;
@@ -107,7 +107,7 @@ location / {
 
   ## Serve bigger media/static/archive files directly, without all standard drupal rewrites, php-fpm etc.
   location ~* ^.+\.(?:avi|mpe?g|mov|wmv|mp3|mp4|m4a|ogg|flv|wav|midi|zip|tar|t?gz|rar)$ {
-    expires         30d;
+    expires         365d;
     tcp_nodelay     off;
     try_files $uri =404;
     log_not_found off;
@@ -169,6 +169,11 @@ location = /_ping.php {
   fastcgi_param  SCRIPT_FILENAME    $document_root/_ping.php;
   fastcgi_pass phpcgi;
   access_log off;
+}
+
+# Handle autocomplete to-cleanURLs policy
+if ( $args ~* "^q=(?<query_value>.*)" ) {
+  rewrite ^/index.php$ $host/?q=$query_value? permanent;
 }
 
 location @drupal {

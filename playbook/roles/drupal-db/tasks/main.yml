@@ -1,7 +1,11 @@
 ---
 
 - name: Create database for Drupal
-  mysql_db: name={{ item.name }} state=present
+  mysql_db:
+    name: "{{ item.name }}"
+    collation: "{{ item.collation | default('utf8_swedish_ci') }}"
+    encoding: "{{ item.encoding | default('utf8') }}"
+    state: present
   with_items: "{{ databases }}"
 
 - name: Create database users for Drupal

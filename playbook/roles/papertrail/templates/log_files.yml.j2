@@ -1,0 +1,12 @@
+files:
+{% for logfile in papertrail_logs %}
+  - {{ logfile }}
+{% endfor %}
+exclude_patterns:
+  - Notice:
+hostname: {{ ansible_nodename }}
+destination:
+  host: {{ papertrail_host }}
+  port: {{ papertrail_port }}
+  protocol: tls
+new_file_check_interval: "10"

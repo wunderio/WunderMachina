@@ -1,7 +1,7 @@
 ---
 
-sslterminator_logentries_follow:
-  - /var/log/nginx/ssl-*.log
+sslterminator_papertrail_follow:
+  - /var/log/nginx/ssl-*error.log
 
 sslterminators:
   - server_name: www.test.com
@@ -22,6 +22,8 @@ basicauth_password: wunder123
 basicauth_ip:
   - address: 127.0.0.1
   - address: 192.168.0.1
+
+papertrail_enabled: False
 
 # Default distribution CentOS 7
 distro: "centos7"

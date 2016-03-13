@@ -59,13 +59,18 @@
   notify:
     - restart nginx
 
-# Make logentries follow appserver logs.
-#- shell:
-#    le follow "{{ item }}"
-#  with_items:
-#    - "{{ sslterminator_logentries_follow }}"
-#  when:
-#    logentries_enabled == True
+# Make papertrail follow appserver logs.
+- lineinfile:
+    dest=/etc/log_files.yml
+    insertafter='files:'
+    line='  - {{ item }}'
+    mode=644
+  with_items:
+    - "{{ sslterminator_papertrail_follow }}"
+  when:
+    papertrail_enabled == True
+  notify:
+    - restart remote_syslog
 
 - shell: cat /proc/cpuinfo | grep processor | wc -l
   register: processor_count

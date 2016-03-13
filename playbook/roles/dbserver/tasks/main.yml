@@ -11,14 +11,6 @@
     src=mariadb.repo
     dest=/etc/yum.repos.d/mariadb.repo
 
-# Make logentries follow dbserver logs.
-- shell:
-    le follow {{ item }}
-  with_items:
-    - "{{ dbserver_logentries_follow }}"
-  when:
-    logentries_enabled == True
-
 # Provision our mysql configs
 - template:
     src=my.cnf.j2

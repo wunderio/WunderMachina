@@ -52,13 +52,18 @@
   notify:
     - restart nginx
 
-# Make logentries follow nginx logs.
-- shell:
-    le follow "{{ item }}"
+# Make papertrail follow appserver logs.
+- lineinfile:
+    dest=/etc/log_files.yml
+    insertafter='files:'
+    line='  - {{ item }}'
+    mode=644
   with_items:
-    - "{{ nginx_logentries_follow }}"
+    - "{{ nginx_papertrail_follow }}"
   when:
-    logentries_enabled == True
+    papertrail_enabled == True
+  notify:
+    - restart remote_syslog
 
 # Add www-admin to nginx group and vice versa.
 - user:

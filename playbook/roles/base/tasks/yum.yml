@@ -40,5 +40,6 @@
     - htop
     - iotop
     - sudo
+    - yum-security
 
 

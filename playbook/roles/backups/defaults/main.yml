@@ -1,0 +1,4 @@
+---
+
+backup_db_name: drupaldb
+backup_location: /var/backups

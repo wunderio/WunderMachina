@@ -2,3 +2,4 @@
 
 dependencies:
   - role: ansible-yum
+  - role: ansible-blockinfile

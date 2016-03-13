@@ -97,3 +97,9 @@ check process solr with pidfile "/var/run/jetty.pid"
     if failed host localhost port 8983 protocol http and request "/solr/{{monit_check_solr_collection}}/admin/ping" for 3 cycles then restart
     if 5 restarts within 15 cycles then timeout
 {% endif %}
+{% if monit_check_remote_syslog is defined %}
+check process remote_syslog MATCHING remote_syslog
+   group logs
+   start program = "/usr/bin/systemctl start remote_syslog"
+   stop program = "/usr/bin/systemctl stop remote_syslog"
+{% endif %}

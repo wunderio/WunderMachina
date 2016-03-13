@@ -22,6 +22,12 @@ server {
       root        /var/www/letsencrypt-auto;
     }
 
+    {% if site.extra_forwards is defined %}
+    {% for forward in site.extra_forwards %}
+    rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+    {% endfor %}
+    {% endif %}
+
     location / {
       return 301 https://{{ site.server_name }}$request_uri;
     }
@@ -30,6 +36,35 @@ server {
 {% endif %}
 
 {% endfor %}
+
+{% if httpextraforwards is defined %}
+{% for site in httpextraforwards %}
+{% if site.forward_from_domain is defined %}
+# HTTP Forwarder
+server {
+    listen {{ site.port }};
+    server_name {{ site.forward_from_domain }};
+
+    {% if site.ssl_certificate is defined %}
+    ssl on;
+    ssl_certificate {{ site.ssl_certificate }};
+    ssl_certificate_key {{ site.ssl_certificate_key }};
+
+    {% endif %}
+    {% if site.use_dhparam is defined %}
+    ssl_dhparam /etc/nginx/ssl/dh2048.pem;
+
+    {% endif %}
+    {% for fwd in site.forwards %}
+    rewrite {{ fwd.forward_from_path }} {{ fwd.forward_to }} {{ fwd.type }};
+    {% endfor %}
+}
+
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
 
 {% for site in sslterminators %}
 
@@ -83,6 +118,14 @@ server {
   auth_basic "Restricted";
   auth_basic_user_file /etc/nginx/.htpasswd;
 
+  {% endif %}
+
+  {% if extra_proxy_locations is defined %}
+  {% for location in extra_proxy_locations %}
+  location {{ location.location }} {
+    {{ location.definition }}
+  }
+  {% endfor %}
   {% endif %}
 
   location / {
