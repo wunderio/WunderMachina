@@ -9,6 +9,4 @@
     src=etc/hhvm/{{ item }}
     dest=/etc/hhvm/{{ item }}
   with_items:
-    - php.ini
     - server.ini
-
