@@ -1,7 +1,7 @@
 ---
 
 - name: Install HHVM
-  yum: name=https://github.com/hkirsman/hhvm_centos7_rpms/raw/b9569aec30f7855d180966a3bc9d6ca2e78e7604/hhvm-3.12.1.el7.centos.x86_64.rpm state=present
+  yum: name=https://github.com/hkirsman/hhvm_centos7_rpms/raw/7e1d2d3b1c1bf85e46b992af1e6aff30c0a07e4e/hhvm-3.12.1.el7.centos.x86_64.rpm state=present
 
 - name: Copy configurations to /etc/hhvm/
   file: path=/etc/hhvm state=directory
@@ -12,21 +12,3 @@
     - php.ini
     - server.ini
 
-- name: Set up service
-  copy:
-    src=etc/init.d/hhvm
-    dest=/etc/init.d/hhvm
-    mode="u+rwx,g+rx,o+rx"
-
-- name: Create logs folder
-  file: path=/var/log/hhvm state=directory owner=nginx group=nginx
-
-- name: Create run folder
-  file: path=/var/run/hhvm state=directory owner=nginx group=nginx
-
-- name: Add HHVM to service
-  shell: chkconfig --add hhvm
-- shell: chkconfig hhvm on
-
-- name: Start/restart HHVM
-  service: name=hhvm state=restarted
