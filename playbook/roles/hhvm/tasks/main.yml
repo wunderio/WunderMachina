@@ -10,3 +10,6 @@
     dest=/etc/hhvm/{{ item }}
   with_items:
     - server.ini
+
+- name: Start/restart HHVM
+  service: name=hhvm state=restarted
