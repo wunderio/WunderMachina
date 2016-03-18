@@ -28,6 +28,14 @@ server {
   limit_conn arbeit 32;
   {% endif %}
 
+  {% if app_dir_aliases is defined %}
+  {% for alias in app_dir_aliases %}
+  location {{ alias.path }} {
+    alias {{ alias.target }};
+  }
+  {% endfor %}
+  {% endif %}
+
   ## See the blacklist.conf file at the parent dir: /etc/nginx.
   ## Deny access based on the User-Agent header.
   if ($bad_bot) {
