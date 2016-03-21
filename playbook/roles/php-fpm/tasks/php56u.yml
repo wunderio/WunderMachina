@@ -30,3 +30,4 @@
     - "{{ php_package }}-xml"
     - "{{ php_package }}-xmlrpc"
     - "{{ php_package }}-twig"
+    - "{{ php_package }}-bcmath"
