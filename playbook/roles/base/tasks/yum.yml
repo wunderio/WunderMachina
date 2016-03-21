@@ -41,5 +41,6 @@
     - iotop
     - sudo
     - yum-security
+    - mailx
 
 
