@@ -5,7 +5,7 @@ if true | openssl s_client -connect {{letsencrypt_domains.0}}:443 2>/dev/null | 
 else
   mkdir -p {{ letsencrypt_renewal_docroot }}
   cd /root/letsencrypt
-  ./letsencrypt-auto certonly --config /root/letsencrypt-scripts/cli.ini {% for domain in letsencrypt_domains %}-d {{ domain }} {% endfor %}
+  ./letsencrypt-auto renew --webroot -w {{ letsencrypt_renewal_docroot }}
 
   if [ $? -ne 0 ]
   then
