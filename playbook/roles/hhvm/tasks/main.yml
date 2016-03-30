@@ -1,0 +1,15 @@
+---
+
+- name: Install HHVM
+  yum: name=https://github.com/hkirsman/hhvm_centos7_rpms/raw/7e1d2d3b1c1bf85e46b992af1e6aff30c0a07e4e/hhvm-3.12.1.el7.centos.x86_64.rpm state=present
+
+- name: Copy configurations to /etc/hhvm/
+  file: path=/etc/hhvm state=directory
+- copy:
+    src=etc/hhvm/{{ item }}
+    dest=/etc/hhvm/{{ item }}
+  with_items:
+    - server.ini
+
+- name: Start/restart HHVM
+  service: name=hhvm state=restarted
