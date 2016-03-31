@@ -2,7 +2,7 @@
 
 - name: Create database for Drupal
   mysql_db:
-    name: "{{ item.name }}"
+    name: "{{ item.name | default('drupal') }}"
     collation: "{{ item.collation | default('utf8_swedish_ci') }}"
     encoding: "{{ item.encoding | default('utf8') }}"
     state: present
@@ -11,5 +11,5 @@
 - name: Create database users for Drupal
   mysql_user: name={{ item.0.user }} password={{ item.0.pass }} host={{ item.1 }} priv={{ item.0.name }}.*:ALL state=present
   with_subelements:
-    - databases
+    - "{{ databases }}"
     - hosts
