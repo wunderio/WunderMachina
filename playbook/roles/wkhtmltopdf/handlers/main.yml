@@ -1,0 +1,3 @@
+---
+- name: restart xvfb
+  service: name=xvfb state=restarted

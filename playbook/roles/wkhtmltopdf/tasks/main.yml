@@ -1,0 +1,39 @@
+---
+
+- name: Install needed packages to run wkhtmltopdf
+  yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - openssl
+    - xorg-x11-server-Xorg
+    - xorg-x11-server-Xvfb
+    - fontconfig
+    - libXrender
+    - libXext
+    - xorg-x11-fonts-Type1
+    - xorg-x11-fonts-75dpi
+    - freetype
+    - libpng
+    - zlib
+
+- name: Download wktohtmlpdf
+  shell: curl --retry 5 -s -o "/tmp/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz" "http://download.gna.org/wkhtmltopdf/0.12/0.12.3/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz"
+      creates="/tmp/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz"
+
+- name: Unpack wktohtmlpdf
+  shell: cd /tmp && tar xf "/tmp/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz" wkhtmltox/bin/wkhtmltopdf
+
+- shell: mv /tmp/wkhtmltox/bin/wkhtmltopdf /usr/bin/wkhtmltopdf && chmod 755 /usr/bin/wkhtmltopdf
+
+- copy:
+    src=xvfb.service
+    dest=/etc/systemd/system/xvfb.service
+  notify:
+    - restart xvfb
+
+- shell:
+    systemctl daemon-reload
+
+- name: Start xvfb
+  service: name=xvfb state=started enabled=yes
