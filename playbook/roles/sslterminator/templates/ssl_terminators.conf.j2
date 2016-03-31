@@ -143,6 +143,15 @@ server {
     # right hostname, so don't do any rewrites here.
     proxy_redirect             off;
 
+    proxy_connect_timeout  180s;
+    proxy_send_timeout  180s;
+    proxy_read_timeout  180s;
+
+    # Let's increase the buffer size
+    proxy_buffer_size   512k;
+    proxy_buffers   16 512k;
+    proxy_busy_buffers_size   512k;
+
     # Pass a bunch of headers to the downstream server
     # so they'll know what's going on.
     proxy_set_header           Host             $host;
