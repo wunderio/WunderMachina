@@ -43,6 +43,16 @@ acl internal {
   {% endfor %}
 }
 
+{% if varnish.acl_purge is defined %}
+# Define the purge network access.
+# These are used below to allow cache purging via BAN.
+acl purge {
+  {% for purge in varnish.acl_purge %}
+  "{{ purge.ip }}";
+  {% endfor %}
+}
+{% endif %}
+
 # List of upstream proxies we trust to set X-Forwarded-For correctly.
 acl upstream_proxy {
   {% for upstream_proxy in varnish.acl_upstream_proxy %}
@@ -74,6 +84,26 @@ sub vcl_recv {
 
   if (req.url == "/monit-check-url-happy") {
     return (synth(200, "Varnish up"));
+  }
+
+  # Only allow BAN requests from IP addresses in the 'purge' ACL.
+  if (req.method == "BAN") {
+    # Same ACL check as above:
+    if (!client.ip ~ purge) {
+        return (synth(403, "Not allowed."));
+    }
+
+    # Logic for the ban, using the X-Drupal-Cache-Tags header. For more info
+    # see https://github.com/geerlingguy/drupal-vm/issues/397.
+    if (req.http.X-Drupal-Cache-Tags) {
+        ban("obj.http.X-Drupal-Cache-Tags ~ " + req.http.X-Drupal-Cache-Tags);
+    }
+    else {
+        return (synth(403, "X-Drupal-Cache-Tags header missing."));
+    }
+
+    # Throw a synthetic page so the request won't go to the backend.
+    return (synth(200, "Ban added."));
   }
 
   # Send traffic to the correct site director, determined by request domain name.
@@ -163,6 +193,11 @@ sub vcl_recv {
       # Authenticated users should not be cached
       return (pass);
     }
+    {% if varnish.extra_cookies is defined %}
+    {% for cookie in varnish.extra_cookies %}
+    {{ cookie.cookie }}
+    {% endfor %}
+    {% endif %}
     else {
       # Non-authenticated requests do not vary on cookies
       unset req.http.Cookie;
@@ -258,6 +293,12 @@ sub vcl_hash {
 
   # Make sure HTTPS request (X-Forwarded-Proto=https) are cached separately
   hash_data(req.http.X-Forwarded-Proto);
+
+  {% if varnish.extra_hash is defined %}
+  {% for hash in varnish.extra_hash %}
+  {{ hash.hash }}
+  {% endfor %}
+  {% endif %}
 
   # hash cookies for requests that have them
   if (req.http.Cookie) {
@@ -431,6 +472,10 @@ sub vcl_deliver {
   # See "Smart banning" https://www.varnish-software.com/static/book/Cache_invalidation.html
   unset resp.http.x-url;
   unset resp.http.x-host;
+
+  # Comment these for easier Drupal cache tag debugging in development.
+  unset resp.http.X-Drupal-Cache-Tags;
+  unset resp.http.X-Drupal-Cache-Contexts;
 
   return (deliver);
 }
