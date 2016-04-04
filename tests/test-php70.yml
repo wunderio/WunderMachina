@@ -167,6 +167,8 @@
       memory: 1G
       acl_internal:
         - ip: 127.0.0.1
+      acl_purge:
+        - ip: 127.0.0.1
       acl_upstream_proxy:
         - ip: 127.0.0.1
       directors:
