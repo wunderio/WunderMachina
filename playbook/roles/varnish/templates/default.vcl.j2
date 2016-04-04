@@ -89,9 +89,11 @@ sub vcl_recv {
   # Only allow BAN requests from IP addresses in the 'purge' ACL.
   if (req.method == "BAN") {
     # Same ACL check as above:
+    {% if varnish.acl_purge is defined %}
     if (!client.ip ~ purge) {
         return (synth(403, "Not allowed."));
     }
+    {% endif %}
 
     # Logic for the ban, using the X-Drupal-Cache-Tags header. For more info
     # see https://github.com/geerlingguy/drupal-vm/issues/397.
