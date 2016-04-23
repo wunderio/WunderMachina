@@ -116,12 +116,6 @@ http {
   ## Hide the Nginx version number.
   server_tokens off;
 
-  # Handle HTTPS server variable setting here and in fastcgi_drupal.conf.
-  map $http_x_forwarded_proto $fe_https {
-    default off;
-    https on;
-  }
-
   ## Include nginx configs.
   include conf.d/nginx_*.conf;
 

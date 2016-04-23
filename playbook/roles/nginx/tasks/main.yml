@@ -44,6 +44,7 @@
     - conf.d/drupal.conf
     - conf.d/fastcgi_drupal.conf
     - conf.d/php_fpm_status.conf
+    - conf.d/nginx_map_https.conf
   notify:
     - restart nginx
 
