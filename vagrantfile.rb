@@ -17,7 +17,7 @@ FileUtils.mkdir_p dir + ANSIBLE_INVENTORY
 File.open(dir + ANSIBLE_INVENTORY + "/hosts", 'w') { |file| file.write("[vagrant]\n" + INSTANCE_IP) }
 # Link the ansible playbook
 unless File.exist?(dir + "ansible/playbook/vagrant.yml")
-	FileUtils.cp "../../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
+	FileUtils.cp "../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
 end
 
 # Support project-specific ansible roles
