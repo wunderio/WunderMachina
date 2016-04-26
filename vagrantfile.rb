@@ -17,7 +17,7 @@ FileUtils.mkdir_p dir + ANSIBLE_INVENTORY
 File.open(dir + ANSIBLE_INVENTORY + "/hosts", 'w') { |file| file.write("[vagrant]\n" + INSTANCE_IP) }
 # Link the ansible playbook
 unless File.exist?(dir + "ansible/playbook/vagrant.yml")
-	FileUtils.cp "../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
+	FileUtils.cp "../../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
 end
 
 # Support project-specific ansible roles
@@ -26,7 +26,7 @@ if File.exist?(dir + "local_ansible_roles")
 	Dir.foreach('local_ansible_roles') do |item|
 		next if item == '.' or item == '..'
 		unless File.exist?(dir + "ansible/playbook/roles/" + item)
-			#FileUtils.ln_s "../../../local_ansible_roles/" + item, dir + "ansible/playbook/roles"
+			FileUtils.cp "../../../local_ansible_roles/" + item, dir + "ansible/playbook/roles"
 		end
 	end
 end
