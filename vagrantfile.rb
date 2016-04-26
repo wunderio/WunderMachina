@@ -20,17 +20,6 @@ unless File.exist?(dir + "ansible/playbook/vagrant.yml")
 	FileUtils.cp "../../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
 end
 
-# Support project-specific ansible roles
-# Loops through local_ansible_roles if it exists and symlinks from ansible/playbook to all folders there.
-if File.exist?(dir + "local_ansible_roles")
-	Dir.foreach('local_ansible_roles') do |item|
-		next if item == '.' or item == '..'
-		unless File.exist?(dir + "ansible/playbook/roles/" + item)
-			FileUtils.cp "../../../local_ansible_roles/" + item, dir + "ansible/playbook/roles"
-		end
-	end
-end
-
 # And never anything below this line
 VAGRANTFILE_API_VERSION = "2"
 
