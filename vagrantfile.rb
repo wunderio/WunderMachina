@@ -26,7 +26,7 @@ if File.exist?(dir + "local_ansible_roles")
 	Dir.foreach('local_ansible_roles') do |item|
 		next if item == '.' or item == '..'
 		unless File.exist?(dir + "ansible/playbook/roles/" + item)
-			FileUtils.ln_s "../../../local_ansible_roles/" + item, dir + "ansible/playbook/roles"
+			#FileUtils.ln_s "../../../local_ansible_roles/" + item, dir + "ansible/playbook/roles"
 		end
 	end
 end
