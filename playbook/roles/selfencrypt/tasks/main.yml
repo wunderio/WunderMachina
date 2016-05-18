@@ -1,0 +1,9 @@
+---
+
+- name: create directory for ssl key
+  file: path=/etc/nginx/ssl state=directory
+
+- name: create self-signed SSL cert
+  command: openssl req -new -nodes -x509 -subj "/C=FI/ST=Helsinki/L=Helsinki/O=IT/CN={{ ansible_fqdn }}/subjectAltName={% for domain in letsencrypt_domains %}DNS.{{ loop.index }}={{ domain }},{% endfor %}" -days 3650 -keyout /etc/nginx/ssl/certificate.key -out /etc/nginx/certificate.crt -extensions v3_ca creates=/etc/nginx/certificate.crt
+  notify: 
+    - restart nginx
