@@ -8,6 +8,7 @@
   with_items:
     - blackfire-agent
     - blackfire-php
+  when: enable_blackfire== true
 
 # Add blackfire keys straight to the file (the config --register did not work).
 - replace:
@@ -17,6 +18,7 @@
     backup=yes
   notify:
     restart blackfire-agent
+  when: enable_blackfire== true
 
 - replace:
     dest=/etc/blackfire/agent
@@ -25,7 +27,7 @@
     backup=yes
   notify:
     restart blackfire-agent
-
+  when: enable_blackfire== true
 
 - template:
     src=blackfire.ini.j2
@@ -34,6 +36,7 @@
     mode=0600
   notify:
     restart blackfire-agent
+  when: enable_blackfire== true
 
 ##
 # Php XDebug.
