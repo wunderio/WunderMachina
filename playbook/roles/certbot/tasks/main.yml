@@ -1,0 +1,54 @@
+---
+
+# Install required packages
+- name: Install required packages
+  yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - python-pip
+    - python-devel
+    - python-virtualenv
+    - python-tools
+    - augeas-libs
+    - dialog
+    - libffi-devel
+    - openssl-devel
+    - redhat-rpm-config
+
+- shell: pip install requests[security]
+
+# Check if we have nginx already running in  port 80
+- name: Check if port 80 is already reserved
+  shell: netstat -tunlp | grep ":80 " | sed -e 's/.*\///'
+  register: port_80
+
+# Check if certbot folder already exists
+- name: Check if certbot folder already exists
+  stat: path="{{ certbot_src }}/certbot"
+  register: certbot_installed
+
+# Fetch certbot if it doesn't exist
+- name: Install certbot if it doesn't exist
+  shell: mkdir {{ certbot_src }}/certbot && cd {{ certbot_src }}/certbot && wget https://dl.eff.org/certbot-auto && chmod a+x certbot-auto
+  when: not certbot_installed.stat.exists
+
+- name: Run initial certificate request only if port 80 is free
+  command: "{{ certbot_command }}"
+  when: port_80.stdout.find('nginx') == -1
+
+- name: Create directory for certificate renewal scripts
+  file:
+    state=directory
+    path=/root/certbot-scripts
+    group=root
+    owner=root
+
+- template:
+    src=renewal.sh.j2
+    dest=/root/certbot-scripts/renewal.sh
+    owner=root
+    mode=755
+
+- cron: name="Certbot certificate renewal check" minute="0" hour="1" job="/root/certbot-scripts/renewal.sh > /dev/null 2>&1" state="present"
+

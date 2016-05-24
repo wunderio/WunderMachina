@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if true | openssl s_client -connect {{certbot_domains.0}}:443 2>/dev/null | \
+  openssl x509 -noout -checkend 2592000; then exit
+else
+  mkdir -p {{ certbot_renewal_docroot }}
+  cd /root/certbot
+  ./certbot-auto renew --webroot -w {{ certbot_renewal_docroot }}
+
+  if [ $? -ne 0 ]
+  then
+        ERRORLOG=`tail /var/log/certbot/certbot.log`
+        echo -e "The Lets Encrypt Cert has not been renewed! \n \n" $ERRORLOG | mail -s "Lets Encrypt Alert:{% for domain in certbot_domains %} {{ domain }} /{% endfor %}" fi.support@wunderkraut.com
+  else
+        /usr/bin/systemctl reload nginx
+  fi
+fi
+
+exit 0
