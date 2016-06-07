@@ -9,6 +9,12 @@
 - name: Make sure /usr/lib/composer exists
   action: file path=/usr/lib/composer state=directory
 
+- name: Ensure composer cache is writeable
+  file:
+    path: /usr/lib/composer/cache
+    mode: 0777
+    recurse: yes
+
 - name: Set up composer environment variables
   template: src=composer.sh.j2 dest=/etc/profile.d/composer.sh
 
@@ -17,4 +23,4 @@
     creates=/usr/bin/drush
 
 - name: Install prestissimo
-  shell: composer global require "hirak/prestissimo:^0.3"
+  shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require "hirak/prestissimo:^0.3"
