@@ -17,4 +17,13 @@
     creates=/usr/bin/drush
 
 - name: Install prestissimo
-  shell: composer global require "hirak/prestissimo:^0.3"
+  shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require "hirak/prestissimo:^0.3"
+
+- name: Ensure composer cache is writeable
+  file:
+    path: /usr/lib/composer/cache
+    state: directory
+    mode: 0777
+    recurse: yes
+
+
