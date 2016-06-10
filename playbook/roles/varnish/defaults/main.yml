@@ -2,6 +2,7 @@
 varnish:
   port: 8081
   memory: 1G
+  probe_resource_url: "_ping.php"
   acl_internal:
     - ip: 127.0.0.1
   acl_purge:
