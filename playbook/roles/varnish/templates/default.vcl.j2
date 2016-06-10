@@ -17,7 +17,7 @@ backend {{ backend.name }} {
 
   .probe = {
     .request =
-      "GET /_ping.php HTTP/1.1"
+      "GET /{{ varnish.probe_resource_url }} HTTP/1.1"
       "Host: {{ director.host }}"
       "Connection: close";
 
@@ -160,7 +160,7 @@ sub vcl_recv {
   }
 
   // No varnish for ping file (for monitoring tools)
-  if (req.url ~ "_ping.php") {
+  if (req.url ~ "{{ varnish.probe_resource_url }}") {
     return (pass);
   }
 

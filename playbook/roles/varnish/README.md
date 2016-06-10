@@ -4,6 +4,7 @@ Variables you can define:
 varnish:
 	port: 8081
 	memory: 1G
+	probe_resource_url: "_mycustomping.pgp"
 	acl_internal:
 	  - ip: 127.0.0.1
 	acl_upstream_proxy:
