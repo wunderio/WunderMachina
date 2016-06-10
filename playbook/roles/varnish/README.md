@@ -8,6 +8,7 @@ varnish:
 	  - ip: 127.0.0.1
 	acl_upstream_proxy:
 	  - ip: 127.0.0.1
+	enforce_ssl: 720
 	directors:
 	  # One app
 	  - name: test_com_director
