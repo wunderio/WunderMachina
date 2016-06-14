@@ -15,6 +15,7 @@ server {
 
 {% endif %}
 
+{% if site.docroot is defined %}
 # HTTP Site {{ site.server_name }} => php-fpm
 server {
   listen {{ site.http_port }};
@@ -49,5 +50,7 @@ server {
   include conf.d/drupal.conf;
   include conf.d/php_fpm_status.conf;
 }
+
+{% endif %}
 
 {% endfor %}
