@@ -12,3 +12,5 @@ disable_iptables: True
 
 # Default distribution CentOS 7
 distro: "centos7"
+
+wkv_site_env: default
