@@ -113,6 +113,11 @@
     dest=/etc/sysctl.conf
     line="net.ipv4.ip_local_port_range = 15000 65000"
     backup=yes
+ 
+- lineinfile:
+    dest=/etc/environment
+    line="WKV_SITE_ENV={{ wkv_site_env }}"
+    backup=yes
 
 # Disable firewalld and make sure it stays off, we rely on HARDWARE firewalls.
 - service: name=firewalld state=stopped
