@@ -19,6 +19,8 @@
   service: name=network-manager state=stopped enabled=no
   ignore_errors: True
 
+- service: name=ntpd state=started enabled=yes
+
 # Operating system tweaks:
 - replace:
     dest=/etc/security/limits.d/20-nproc.conf
@@ -113,7 +115,7 @@
     dest=/etc/sysctl.conf
     line="net.ipv4.ip_local_port_range = 15000 65000"
     backup=yes
- 
+
 - lineinfile:
     dest=/etc/environment
     line="WKV_SITE_ENV={{ wkv_site_env }}"
