@@ -120,7 +120,7 @@ check process xvfb MATCHING Xvfb
    stop program = "/usr/bin/systemctl stop xvfb"
 {% endif %}
 
-{% if monit_check_browsermob-proxy is defined %}
+{% if monit_check_browsermob_proxy is defined %}
 check process browsermob-proxy MATCHING browsermob-proxy
    group headless
    start program = "/usr/bin/systemctl start browsermob-proxy"
