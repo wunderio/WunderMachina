@@ -12,7 +12,7 @@ rm -f /lib/systemd/system/basic.target.wants/*; \
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 # Install Ansible
 RUN yum -y install epel-release
-RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc libffi-devel
+RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc libffi-devel openssl-devel
 RUN yum clean all
 RUN easy_install pip
 RUN pip install ansible
