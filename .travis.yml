@@ -5,7 +5,7 @@ env:
 - CONTAINER_ID=$(mktemp)
 branches:
   only:
-  - centos7
+  - master
 services:
 - docker
 before_install:
