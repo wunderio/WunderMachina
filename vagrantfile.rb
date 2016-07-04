@@ -25,6 +25,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	# Default configuration
 	########################################
 
+	# vagrant-hostmanager
+	if Vagrant.has_plugin?("vagrant-hostmanager")
+		config.hostmanager.enabled = true
+		config.hostmanager.manage_host = true
+		config.hostmanager.ignore_private_ip = false
+		config.hostmanager.include_offline = true
+  end
+
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX
 
