@@ -39,7 +39,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.network :private_network, ip: INSTANCE_IP
 
 	# Sync folders
-	config.vm.synced_folder ".", "/vagrant", type: :nfs
+	config.vm.synced_folder ".", "/vagrant", type: :nfs,  mount_options: ['rw', 'vers=3', 'tcp', 'fsc' ,'actimeo=1']
+  config.nfs.map_uid = Process.uid
+  config.nfs.map_gid = Process.gid
 
 	# Vagrant cachier
 	if Vagrant.has_plugin?("vagrant-cachier")
