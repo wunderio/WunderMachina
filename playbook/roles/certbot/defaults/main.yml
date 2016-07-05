@@ -5,4 +5,4 @@ certbot_email: test@example.com
 certbot_domains:
   - "{{ ansible_fqdn }}"
 certbot_renewal_docroot: /var/www/certbot-auto
-certbot_command: "{{ certbot_src }}/certbot/certbot-auto certonly --standalone --standalone-supported-challenges http-01 --agree-tos --text {% for domain in certbot_domains %}-d {{ domain }} {% endfor %}--email {{ certbot_email }}"
+certbot_command: "{{ certbot_src }}/certbot/certbot-auto certonly --keep-until-expiring --standalone --standalone-supported-challenges http-01 --agree-tos --text {% for domain in certbot_domains %}-d {{ domain }} {% endfor %}--email {{ certbot_email }}"
