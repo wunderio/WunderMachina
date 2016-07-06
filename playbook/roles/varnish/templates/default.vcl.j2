@@ -433,6 +433,11 @@ sub vcl_backend_response {
   return (deliver);
 }
 
+sub vcl_backend_error {
+  return(retry);
+}
+
+
 # The routine when we deliver the HTTP request to the user
 # Last chance to modify headers that are sent to the client
 sub vcl_deliver {
