@@ -45,7 +45,7 @@ query_cache_size = 80M
 
 # Basic Tuning.
 max_connections = {{ max_connections }}
-connect_timeout = 5
+connect_timeout = {{ connection_timeout }}
 wait_timeout = 60
 max_allowed_packet = {{ max_allowed_packet }}
 thread_cache_size = 128
