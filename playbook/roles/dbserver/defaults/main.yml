@@ -14,3 +14,5 @@ innodb_buffer_pool_instances: 6
 innodb_concurrency: 16
 
 connection_timeout: 5
+
+wait_timeout: 60
