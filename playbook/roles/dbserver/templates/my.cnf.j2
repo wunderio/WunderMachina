@@ -77,7 +77,7 @@ innodb_flush_method = O_DIRECT
 innodb_buffer_pool_size = {{ innodb_buffer_pool_size }}M
 
 # Reduce contention. Set to 4+ in MySQL 5.5+
-innodb_buffer_pool_instances    = 6
+innodb_buffer_pool_instances    = {{ innodb_buffer_pool_instances }}
 
 innodb_data_file_path = ibdata1:200M:autoextend
 innodb_log_buffer_size = 8M
