@@ -10,3 +10,5 @@ max_connections: 500
 max_allowed_packet: 256M
 
 innodb_buffer_pool_instances: 6
+
+innodb_concurrency: 16
