@@ -41,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	########################################
 
 	config.vm.hostname = INSTANCE_HOSTNAME
-	config.vm.box      = "centos-6.6-x86_64-v0"
+	config.vm.box      = "geerlingguy/centos6"
 
 	config.vm.network :private_network, ip: INSTANCE_IP
 #	config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
@@ -63,9 +63,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	# Configuration for virtualbox
 	########################################
 
-	config.vm.provider "virtualbox" do |v, override|
-		override.vm.box_url = "https://www.dropbox.com/s/mo7tjw15z5ep6p6/vb-centos-6.6-x86_64-v0.box?dl=1"
-	end
+	# config.vm.provider "virtualbox" do |v, override|
+	#	override.vm.box_url = "https://www.dropbox.com/s/mo7tjw15z5ep6p6/vb-centos-6.6-x86_64-v0.box?dl=1"
+	# end
 
 	config.vm.provider :virtualbox do |vb|
 		vb.name = INSTANCE_NAME
@@ -98,9 +98,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	# Configuration for vmware_fusion
 	########################################
 
-	config.vm.provider "vmware_fusion" do |v, override|
-		override.vm.box_url = "https://www.dropbox.com/s/tcp23ka9hlhhsel/vm-centos-6.6-x86_64-v0.box?dl=1"
-	end
+	# config.vm.provider "vmware_fusion" do |v, override|
+	#	override.vm.box_url = "https://www.dropbox.com/s/tcp23ka9hlhhsel/vm-centos-6.6-x86_64-v0.box?dl=1"
+	# end
 
 	config.vm.provider "vmware_fusion" do |vb|
 		vb.name = INSTANCE_NAME
