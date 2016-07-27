@@ -132,7 +132,7 @@ check process browsermob-proxy MATCHING browsermob-proxy
 {% if monit_check_selenium is defined %}
 check process selenium MATCHING selenium
    group headless
-   start program = "/usr/bin/systemctl start selenium"
+   start program = "/usr/bin/systemctl start selenium && sleep 2"
    stop program = "/usr/bin/systemctl stop selenium"
    if failed host 127.0.0.1 port 4444 then restart
    if 5 restarts within 15 cycles then timeout
