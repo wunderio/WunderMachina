@@ -41,7 +41,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	########################################
 
 	config.vm.hostname = INSTANCE_HOSTNAME
-	config.vm.box      = "geerlingguy/centos6"
+	config.vm.box      = INSTANCE_BOX
 
 	config.vm.network :private_network, ip: INSTANCE_IP
 #	config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
