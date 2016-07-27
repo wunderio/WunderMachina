@@ -130,7 +130,7 @@ check process browsermob-proxy MATCHING browsermob-proxy
 {% endif %}
 
 {% if monit_check_selenium is defined %}
-check process selenium
+check process selenium MATCHING selenium
    group headless
    start program = "/usr/bin/systemctl start selenium"
    stop program = "/usr/bin/systemctl stop selenium"
