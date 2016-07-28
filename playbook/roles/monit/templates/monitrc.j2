@@ -134,6 +134,5 @@ check process selenium MATCHING selenium
    group headless
    start program = "/usr/bin/systemctl start selenium"
    stop program = "/usr/bin/systemctl stop selenium"
-   if failed host 127.0.0.1 port 4444 then restart
    if 5 restarts within 15 cycles then timeout
 {% endif %}
