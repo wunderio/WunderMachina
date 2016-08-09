@@ -14,3 +14,5 @@ disable_iptables: True
 distro: "centos7"
 
 wkv_site_env: default
+
+sysctl_tcp_fin_timeout: 20

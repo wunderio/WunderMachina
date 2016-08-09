@@ -98,7 +98,7 @@
 
 - lineinfile:
     dest=/etc/sysctl.conf
-    line="net.ipv4.tcp_fin_timeout = 20"
+    line="net.ipv4.tcp_fin_timeout = {{ sysctl_tcp_fin_timeout }}"
     backup=yes
 
 - lineinfile:
