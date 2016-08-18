@@ -22,6 +22,14 @@
   notify:
     - restart varnish
 
+- template:
+    src=varnish.secret.j2
+    dest=/etc/varnish/secret
+    backup=yes
+  notify:
+    - restart varnish
+  when: varnish.control_key is defined
+
 - name: Add extra definitions
   blockinfile:
     dest: "{{ item.dest }}"

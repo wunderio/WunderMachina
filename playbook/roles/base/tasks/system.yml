@@ -121,6 +121,12 @@
     line="WKV_SITE_ENV={{ wkv_site_env }}"
     backup=yes
 
+- lineinfile:
+    dest=/etc/environment
+    line="VARNISH_CONTROL_KEY={{ varnish.control_key }}"
+    backup=yes
+  when: varnish.control_key is defined
+
 # Disable firewalld and make sure it stays off, we rely on HARDWARE firewalls.
 - service: name=firewalld state=stopped
   when:
