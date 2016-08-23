@@ -509,50 +509,53 @@ sub vcl_synth {
     set resp.http.Location = resp.reason;
     set resp.status = 302;
     return (deliver);
-  } elseif (resp.status >= 500){
-    // Custom error
-    set resp.http.Cache-Control = "no-cache, max-age: 0, must-revalidate";
-    set resp.http.x-sitename = "insert_sitename";
-    set resp.http.x-sitetitle = "insert_site_title";
-    set resp.http.x-ua = "insert_GA_code";
+  } elseif(resp.status >= 500) {
+      {% if varnish.custom_error_template is defined %}
+      {{ varnish.custom_error_template }}
+      {% else %}
+      // Custom error
+      set resp.http.Cache-Control = "{{ error_header_cache_control }}";
+      set resp.http.x-sitename = "{{ error_header_x_site_name }}";
+      set resp.http.x-sitetitle = "{{ error_header_x_sitetitle }}";
+      set resp.http.x-ua = "{{ error_header_x_ua }}";
 
-    synthetic( {"
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <link href="https://www.wunderkraut.fi/sites/default/files/error_page/style.css" rel="stylesheet" type="text/css">
-  <title>"} + resp.http.x-sitetitle + {" - Error loading the page</title>
+      synthetic( {"
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="https://www.wunderkraut.fi/sites/default/files/error_page/style.css" rel="stylesheet" type="text/css">
+        <title>{{ error_header_x_sitetitle }} - Error loading the page</title>
 
-  </head>
+        </head>
 
-  <body>
-    <div id="error-box">
-      &nbsp
-      <div id="error-message">
-        <h1>Our best people are on the case!</h1>
-        <h2>Please check back shortly</h2>
-        <h3>Error loading the page</h3>
-      </div>
-    </div>
+        <body>
+          <div id="error-box">
+            &nbsp
+            <div id="error-message">
+              <h1>Our best people are on the case!</h1>
+              <h2>Please check back shortly</h2>
+              <h3>Error loading the page</h3>
+            </div>
+          </div>
 
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', '"} + resp.http.x-ua + {"']); _gaq.push(['_trackPageview']);
-      _gaq.push(['_trackEvent', 'Errors', '"} + resp.status + {"', '"} + req.method + {" "']);
-      (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();
-    </script>
-    <!--"} + resp.status + {"-->
+          <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', '{{ error_header_x_ua }}']); _gaq.push(['_trackPageview']);
+            _gaq.push(['_trackEvent', 'Errors', '"} + resp.status + {"', '"} + req.method + {" "']);
+            (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();
+          </script>
+          <!--"} + resp.status + {"-->
 
-  </body>
-  </html>
-  "} );
-    return (deliver);
-  }
+        </body>
+        </html>
+      "} );
+      {% endif %}
+      return (deliver);
+    }
 
   return (deliver);
 }
-
 
 sub vcl_fini {
   # Called when VCL is discarded only after all requests have exited the VCL.

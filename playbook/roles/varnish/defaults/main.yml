@@ -17,6 +17,10 @@ varnish:
         - name: test1_web
           address: 127.0.0.1
           port: 8080
+  error_header_cache_control: "no-cache, max-age: 0, must-revalidate"
+  error_header_x_site_name: "insert_sitename"
+  error_header_x_sitetitle: "insert_site_title"
+  error_header_x_ua: "insert_GA_code"
 
 # # Multiple apps
 #   - name: test_com_director
