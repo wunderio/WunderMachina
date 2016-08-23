@@ -509,22 +509,7 @@ sub vcl_synth {
     set resp.http.Location = resp.reason;
     set resp.status = 302;
     return (deliver);
-  }
-
-  return (deliver);
-}
-
-
-sub vcl_fini {
-  # Called when VCL is discarded only after all requests have exited the VCL.
-  # Typically used to clean up VMODs.
-
-  return (ok);
-}
-
-sub vcl_synth{
-
-  if(resp.status >= 500){
+  } elseif (resp.status >= 500){
     // Custom error
     set resp.http.Cache-Control = "no-cache, max-age: 0, must-revalidate";
     set resp.http.x-sitename = "insert_sitename";
@@ -564,5 +549,14 @@ sub vcl_synth{
   "} );
     return (deliver);
   }
+
   return (deliver);
+}
+
+
+sub vcl_fini {
+  # Called when VCL is discarded only after all requests have exited the VCL.
+  # Typically used to clean up VMODs.
+
+  return (ok);
 }
