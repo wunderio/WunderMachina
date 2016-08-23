@@ -64,9 +64,11 @@ http {
   # Enable X-Frame-Options
   add_header X-Frame-Options "SAMEORIGIN" always;
 
+  {% if nginx_disable_content_security_policy is not defined %}
   # Enable Content Security Policy
-  add_header Content-Security-Policy "default-src https: data: 'unsafe-inline' 'unsafe-eval' {{ nginx_content_security|default('') }}" always;
-
+  add_header Content-Security-Policy "default-src https: data: 'unsafe-inline' 'unsafe-eval'{{ nginx_content_security|default('') }}" always;
+  {% endif %}
+  
   ## Enable the builtin cross-site scripting (XSS) filter available
   ## in modern browsers.  Usually enabled by default we just
   ## reinstate in case it has been somehow disabled for this

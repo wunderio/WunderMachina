@@ -12,11 +12,8 @@ rm -f /lib/systemd/system/basic.target.wants/*; \
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 # Install Ansible
 RUN yum -y install epel-release
-RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc
+RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc libffi-devel openssl-devel ansible
 RUN yum clean all
-RUN easy_install pip
-RUN pip install ansible
-RUN mkdir /etc/ansible
 RUN printf "[defaults]\nroles_path = /WunderMachina/playbook/roles" > /etc/ansible/ansible.cfg
 # Disable requiretty
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers

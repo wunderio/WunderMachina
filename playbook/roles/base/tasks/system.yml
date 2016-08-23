@@ -19,6 +19,8 @@
   service: name=network-manager state=stopped enabled=no
   ignore_errors: True
 
+- service: name=ntpd state=started enabled=yes
+
 # Operating system tweaks:
 - replace:
     dest=/etc/security/limits.d/20-nproc.conf
@@ -96,7 +98,7 @@
 
 - lineinfile:
     dest=/etc/sysctl.conf
-    line="net.ipv4.tcp_fin_timeout = 20"
+    line="net.ipv4.tcp_fin_timeout = {{ sysctl_tcp_fin_timeout }}"
     backup=yes
 
 - lineinfile:
@@ -113,6 +115,17 @@
     dest=/etc/sysctl.conf
     line="net.ipv4.ip_local_port_range = 15000 65000"
     backup=yes
+
+- lineinfile:
+    dest=/etc/environment
+    line="WKV_SITE_ENV={{ wkv_site_env }}"
+    backup=yes
+
+- lineinfile:
+    dest=/etc/environment
+    line="VARNISH_CONTROL_KEY={{ varnish.control_key }}"
+    backup=yes
+  when: varnish.control_key is defined
 
 # Disable firewalld and make sure it stays off, we rely on HARDWARE firewalls.
 - service: name=firewalld state=stopped

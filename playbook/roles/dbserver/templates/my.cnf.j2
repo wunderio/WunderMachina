@@ -44,10 +44,10 @@ query_cache_min_res_unit = 2k
 query_cache_size = 80M
 
 # Basic Tuning.
-max_connections = 500
-connect_timeout = 5
-wait_timeout = 60
-max_allowed_packet = 256M
+max_connections = {{ max_connections }}
+connect_timeout = {{ connection_timeout }}
+wait_timeout = {{ wait_timeout }}
+max_allowed_packet = {{ max_allowed_packet }}
 thread_cache_size = 128
 sort_buffer_size = 4M
 bulk_insert_buffer_size = 32M
@@ -77,17 +77,17 @@ innodb_flush_method = O_DIRECT
 innodb_buffer_pool_size = {{ innodb_buffer_pool_size }}M
 
 # Reduce contention. Set to 4+ in MySQL 5.5+
-innodb_buffer_pool_instances    = 6
+innodb_buffer_pool_instances    = {{ innodb_buffer_pool_instances }}
 
 innodb_data_file_path = ibdata1:200M:autoextend
 innodb_log_buffer_size = 8M
 innodb_file_per_table = 1
 innodb_open_files = 32768
 innodb_io_capacity = 400
-innodb_thread_concurrency = 16
+innodb_thread_concurrency = {{ innodb_concurrency }}
 innodb_additional_mem_pool_size = 10M
-innodb_read_io_threads = 16
-innodb_write_io_threads = 16
+innodb_read_io_threads = {{ innodb_concurrency }}
+innodb_write_io_threads = {{ innodb_concurrency }}
 innodb_flush_log_at_trx_commit = 0
 innodb_support_xa = 0
 innodb_max_dirty_pages_pct = 70

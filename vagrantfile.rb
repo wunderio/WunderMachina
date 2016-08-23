@@ -16,17 +16,6 @@ unless File.exist?(dir + "ansible/playbook/vagrant.yml")
 	FileUtils.ln_s "../../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
 end
 
-# Support project-specific ansible roles
-# Loops through local_ansible_roles if it exists and symlinks from ansible/playbook to all folders there.
-if File.exist?(dir + "local_ansible_roles")
-	Dir.foreach('local_ansible_roles') do |item|
-		next if item == '.' or item == '..'
-		unless File.exist?(dir + "ansible/playbook/roles/" + item)
-			FileUtils.ln_s "../../../local_ansible_roles/" + item, dir + "ansible/playbook/roles"
-		end
-	end
-end
-
 # And never anything below this line
 VAGRANTFILE_API_VERSION = "2"
 
@@ -35,6 +24,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	########################################
 	# Default configuration
 	########################################
+
+	# vagrant-hostmanager
+	if Vagrant.has_plugin?("vagrant-hostmanager")
+		config.hostmanager.enabled = true
+		config.hostmanager.manage_host = true
+		config.hostmanager.ignore_private_ip = false
+		config.hostmanager.include_offline = true
+  end
 
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX

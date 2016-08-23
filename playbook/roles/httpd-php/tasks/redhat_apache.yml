@@ -26,3 +26,5 @@
   notify:
     - restart httpd
 
+# Make sure httpd is ON and configured to start on boot
+- service: name=httpd state=started enabled=yes

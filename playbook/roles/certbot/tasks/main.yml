@@ -15,6 +15,7 @@
     - libffi-devel
     - openssl-devel
     - redhat-rpm-config
+    - mod_ssl
 
 - shell: pip install requests[security]
 

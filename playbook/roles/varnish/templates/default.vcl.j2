@@ -191,7 +191,7 @@ sub vcl_recv {
       unset req.http.Cookie;
       return (hash);
     }
-    elseif (req.http.Cookie ~ "(SESS[a-z0-9]+)") {
+    elseif (req.http.Cookie ~ "(SESS[a-z0-9]+|SSESS[a-z0-9]+)") {
       # Authenticated users should not be cached
       return (pass);
     }
@@ -432,6 +432,11 @@ sub vcl_backend_response {
 
   return (deliver);
 }
+
+sub vcl_backend_error {
+  return(retry);
+}
+
 
 # The routine when we deliver the HTTP request to the user
 # Last chance to modify headers that are sent to the client

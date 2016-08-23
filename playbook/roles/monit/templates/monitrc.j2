@@ -97,9 +97,42 @@ check process solr with pidfile "/var/run/jetty.pid"
     if failed host localhost port 8983 protocol http and request "/solr/{{monit_check_solr_collection}}/admin/ping" for 3 cycles then restart
     if 5 restarts within 15 cycles then timeout
 {% endif %}
+
 {% if monit_check_remote_syslog is defined %}
 check process remote_syslog MATCHING remote_syslog
    group logs
    start program = "/usr/bin/systemctl start remote_syslog"
    stop program = "/usr/bin/systemctl stop remote_syslog"
+{% endif %}
+
+{% if monit_check_elasticsearch is defined %}
+check process elasticsearch with pidfile /var/run/elasticsearch/elasticsearch.pid
+   start program = "/usr/bin/systemctl start elasticsearch"
+   stop  program = "/usr/bin/systemctl stop elasticsearch"
+   if failed host 127.0.0.1 port 9200 protocol http then restart
+   if 5 restarts within 15 cycles then timeout
+{% endif %}
+
+{% if monit_check_xvfb is defined %}
+check process xvfb MATCHING Xvfb
+   group headless
+   start program = "/usr/bin/systemctl start xvfb"
+   stop program = "/usr/bin/systemctl stop xvfb"
+{% endif %}
+
+{% if monit_check_browsermob_proxy is defined %}
+check process browsermob-proxy MATCHING browsermob-proxy
+   group headless
+   start program = "/usr/bin/systemctl start browsermob-proxy"
+   stop program = "/usr/bin/systemctl stop browsermob-proxy"
+   if failed host 127.0.0.1 port 9090 then restart
+   if 5 restarts within 15 cycles then timeout
+{% endif %}
+
+{% if monit_check_selenium is defined %}
+check process selenium MATCHING selenium
+   group headless
+   start program = "/usr/bin/systemctl start selenium"
+   stop program = "/usr/bin/systemctl stop selenium"
+   if 5 restarts within 15 cycles then timeout
 {% endif %}
