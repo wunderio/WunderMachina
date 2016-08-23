@@ -4,6 +4,7 @@ solr_path: /usr/local/share/solr
 solr_log_path: /var/log/solr
 solr_user: solr
 solr_group: solr
+solr_memory: 1024m
 
 cache_path: /tmp/solr-cache
 
