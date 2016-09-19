@@ -26,3 +26,6 @@
 
 - name: Ensure mongo is running and enabled on boot.
   service: "name={{ mongo_daemon }} state=started enabled=yes"
+
+- name: Install MongoDB support for PHP
+  package: name={{ php_package }}-pecl-mongo state=latest
