@@ -1,0 +1,23 @@
+[PHP]
+memory_limit = {{ php_memory_limit }}
+realpath_cache_size = 256K
+realpath_cache_ttl = 7200
+max_execution_time = 60
+max_input_time = 60
+post_max_size = 100M
+upload_max_filesize = 100M
+max_file_uploads = 40
+allow_url_fopen = True
+display_errors = True
+html_errors = True
+[DATE]
+date.timezone = Europe/Helsinki
+[OPCACHE]
+opcache.enable = 1
+opcache.validate_timestamps = 0
+opcache.opcache.revalidate_freq = 0
+opcache.memory_consumption = 256
+opcache.interned_strings_buffer = 8
+opcache.max_accelerated_files = 4000
+opcache.fast_shutdown = 1
+opcache.blacklist_filename = /etc/php.d/opcache*.blacklist

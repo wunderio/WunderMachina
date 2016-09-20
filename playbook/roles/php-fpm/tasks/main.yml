@@ -41,6 +41,10 @@
     - php-fpm.conf
 
 # PHP configuration ini file
+- template:
+    src=php.ini.j2
+    dest={{ php_ini_file }}
+
 - lineinfile:
     dest={{ php_ini_file }}
     regexp='^\[{{ item.section }}\]'
