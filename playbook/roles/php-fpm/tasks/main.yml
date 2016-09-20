@@ -43,7 +43,8 @@
 # PHP configuration ini file
 - lineinfile:
     dest={{ php_ini_file }}
-    regexp='^[{{ item.section }}]'
+    regexp='^\[{{ item.section }}\]'
+    state=present
     insertafter=EOF
     line='[{{ item.section }}]'
     create=True
