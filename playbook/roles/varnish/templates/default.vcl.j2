@@ -17,7 +17,7 @@ backend {{ backend.name }} {
 
   .probe = {
     .request =
-      "GET /{{ varnish.probe_resource_url }} HTTP/1.1"
+      "GET /{{ varnish.probe_resource_url | default('_ping.php') }} HTTP/1.1"
       "Host: {{ director.host }}"
       "Connection: close";
 
@@ -514,10 +514,10 @@ sub vcl_synth {
       {{ varnish.custom_error_template }}
       {% else %}
       // Custom error
-      set resp.http.Cache-Control = "{{ varnish.error_header_cache_control | default("no-cache, max-age: 0, must-revalidate") }}";
-      set resp.http.x-sitename = "{{ varnish.error_header_x_site_name | default("insert_sitename") }}";
-      set resp.http.x-sitetitle = "{{ varnish.error_header_x_sitetitle | default("insert_site_title") }}";
-      set resp.http.x-ua = "{{ varnish.error_header_x_ua | default("insert_GA_code") }}";
+      set resp.http.Cache-Control = "{{ varnish.error_header_cache_control | default('no-cache, max-age: 0, must-revalidate') }}";
+      set resp.http.x-sitename = "{{ varnish.error_header_x_site_name | default('insert_sitename') }}";
+      set resp.http.x-sitetitle = "{{ varnish.error_header_x_sitetitle | default('insert_site_title') }}";
+      set resp.http.x-ua = "{{ varnish.error_header_x_ua  | default('insert_GA_code')}}";
 
       synthetic( {"
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
