@@ -10,6 +10,7 @@ INSTANCE_MEM      = settings['mem']
 INSTANCE_CPUS     = settings['cpus']
 INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
+INSTANCE_ALIASES  = settings['aliases']
 
 # Link the ansible playbook
 unless File.exist?(dir + "ansible/playbook/vagrant.yml")
@@ -31,6 +32,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		config.hostmanager.manage_host = true
 		config.hostmanager.ignore_private_ip = false
 		config.hostmanager.include_offline = true
+    if INSTANCE_ALIASES.to_s != ''
+      config.hostmanager.aliases = INSTANCE_ALIASES
+    end
   end
 
 	config.vm.hostname = INSTANCE_HOSTNAME
