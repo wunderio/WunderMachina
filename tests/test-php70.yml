@@ -17,6 +17,7 @@
    - { role: datadog, tags: [ 'datadog' ] }
    - { role: monit, tags: [ 'monit' ] }
    - { role: elasticsearch, tags: [ 'elasticsearch' ] }
+   - { role: mongodb, tags: [ 'mongodb' ] }
 
   vars:
 

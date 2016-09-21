@@ -1,0 +1,3 @@
+---
+mongo_daemon: mongod
+mongo_conf_path: /etc/mongod.conf
