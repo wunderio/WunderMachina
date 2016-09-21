@@ -3,8 +3,6 @@ Ansible Role: Mongodb
 
 Installs [Mongodb](https://www.mongodb.com) on RHEL/CentOS or Debian/Ubuntu.
 
-[![Build Status](https://travis-ci.org/d4rkstar/ansible-role-mongodb.svg?branch=master)](https://travis-ci.org/d4rkstar/ansible-role-mongodb)
-
 ## Requirements
 
 None
@@ -13,7 +11,7 @@ None
 
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
-	mongo_storage_dbpath: /var/lib/mongodb
+	mongo_storage_dbpath: /var/lib/mongo
 	mongo_storage_journal_enabled: "true"
 	
 	# System log
@@ -30,16 +28,11 @@ Available variables are listed below, along with default values (see `defaults/m
 
 None.
 
-## Example Playbook
-
-    - hosts: all
-      roles:
-        - { role: d4rkstar.mongodb }
-
 ## License
 
 GPLv3
 
 ## Author Information
 
-This role was created in 2016 by [Bruno Salzano](http://brunosalzano.com/).
+This role was originally created in 2016 by [Bruno Salzano](http://brunosalzano.com/). You
+can find the "upstream" version in GitHub at https://github.com/d4rkstar/ansible-role-mongodb
