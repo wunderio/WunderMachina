@@ -64,10 +64,10 @@ sub vcl_init {
   # Called when VCL is loaded, before any requests pass through it.
   # Typically used to initialize VMODs.
   {% for director in varnish.directors %}
-  new {{ director.name }} = directors.round_robin();
+  new {{ director.name }} = directors.hash();
   {% for backend in director.backends %}
   {% if backend.ignore is not defined %}
-  {{ director.name }}.add_backend({{ backend.name }});
+  {{ director.name }}.add_backend({{ backend.name }}, 1);
   {% endif %}
   {% endfor %}
   {% endfor %}
@@ -112,9 +112,16 @@ sub vcl_recv {
   if (req.http.host == "") {
     return (synth(404, "Need a host header"));
   }
+  if(req.http.Cookie ~ "(SESS[a-z0-9]+)") {
+    set req.http.X-Session-String = regsub( req.http.Cookie, "^.*?(SESS[a-z0-9]+=)([^;]*);*.*$", "\2" );
+    set req.http.sticky = req.http.X-Session-String;
+  } else {
+    set req.http.sticky = std.random(1, 100);
+  }
+
   {% for director in varnish.directors %}
   elsif (req.http.host ~ "{{ director.host }}"){
-    set req.backend_hint = {{ director.name }}.backend();
+    set req.backend_hint = {{ director.name }}.backend(req.http.sticky);
   }
   {% endfor %}
   else {
