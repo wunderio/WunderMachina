@@ -11,6 +11,7 @@ INSTANCE_CPUS     = settings['cpus']
 INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
 INSTANCE_ALIASES  = settings['aliases']
+SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
 
 # Link the ansible playbook
 unless File.exist?(dir + "ansible/playbook/vagrant.yml")
@@ -53,6 +54,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			type: :nfs,
 			mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
 		}
+	end
+
+	# SSH configuration - requires config.ssh.forward_agent: true in vagrant_local.yml
+	if SSH_FORWARD_AGENT
+	  config.ssh.forward_agent = true
 	end
 
 	########################################
