@@ -82,13 +82,13 @@ http {
   sendfile                on;
   tcp_nopush              on;
   tcp_nodelay             on;
-  client_header_timeout   10;
-  client_body_timeout     120;
-  send_timeout            120;
-  keepalive_timeout       15 10;
-  client_max_body_size    100M;
-  client_body_buffer_size 128k;
-  proxy_read_timeout      60;
+  client_header_timeout   {{ nginx_conf.client_header_timeout | default(10) }};
+  client_body_timeout     {{ nginx_conf.client_body_timeout | default(120) }};
+  send_timeout            {{ nginx_conf.send_timeout | default(120) }};
+  keepalive_timeout       {{ nginx_conf.keepalive_timeout | default("15 10") }};
+  client_max_body_size    {{ nginx_conf.client_max_body_size | default("100M") }};
+  client_body_buffer_size {{ nginx_conf.client_body_buffer_size | default("128k") }};
+  proxy_read_timeout      {{ nginx_conf.proxy_read_timeout | default(60) }};
 
   ## Reset lingering timed out connections. Deflect DDoS.
   reset_timedout_connection on;
