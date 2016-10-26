@@ -1,0 +1,31 @@
+---
+
+# Install required packages
+- name: Install required packages
+  yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - cyrus-sasl-lib
+    - cyrus-sasl-plain
+
+# Add settings to /etc/postfix/main.cf
+- name: Add settings to /etc/postfix/main.cf
+  blockinfile:
+    dest: dest=/etc/postfix/main.cf
+    insertafter: EOF
+    block: |
+      smtp_sasl_auth_enable = yes
+      smtp_sasl_security_options = noanonymous
+      smtp_sasl_password_maps = {{ external_smtp_sasl_password_maps }}
+      smtp_tls_security_level = {{ external_smtp_tls_security_level }}
+      smtp_tls_loglevel = 1
+      header_size_limit = 4096000
+      relayhost = {{ external_smtp_relayhost }}
+    notify:
+      - restart postfix
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - postfix

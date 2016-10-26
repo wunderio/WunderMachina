@@ -1,0 +1,5 @@
+---
+
+external_smtp_sasl_password_maps: 'static:random-string-1:random-string-2'
+external_smtp_tls_security_level: 'encrypt'
+external_smtp_relayhost: '[smtp.sparkpostmail.com]:587'
