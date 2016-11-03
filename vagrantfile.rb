@@ -10,6 +10,7 @@ INSTANCE_MEM      = settings['mem']
 INSTANCE_CPUS     = settings['cpus']
 INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
+INSTANCE_VERSION  = settings['box_version']
 ANSIBLE_INVENTORY = "ansible/inventory"
 
 # Write the inventory file for ansible
@@ -42,6 +43,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX
+
+  # Set default box version
+	if INSTANCE_VERSION.to_s != ''
+		config.vm.box_version = INSTANCE_VERSION
+	else
+		config.vm.box_version = '1.1.3'
+	end
 
 	config.vm.network :private_network, ip: INSTANCE_IP
 #	config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
