@@ -11,6 +11,7 @@ INSTANCE_CPUS     = settings['cpus']
 INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
 INSTANCE_ALIASES  = settings['aliases']
+INSTANCE_VERSION  = settings['box_version']
 SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
 
 # Link the ansible playbook
@@ -40,6 +41,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX
+
+  # Set default box version
+	if INSTANCE_VERSION.to_s != ''
+		config.vm.box_version = INSTANCE_VERSION
+	else
+		config.vm.box_version = '1.1.3'
+	end
 
 	config.vm.network :private_network, ip: INSTANCE_IP
 
