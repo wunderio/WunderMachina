@@ -37,6 +37,20 @@ server {
   {% endfor %}
   {% endif %}
 
+  {% if basicauth_no_ssl_enabled == True %}
+
+  satisfy  any;
+  {% for ip in basicauth_ip %}
+  allow {{ ip.address }};
+  {% endfor %}
+  deny   all;
+
+  auth_basic "Restricted";
+  auth_basic_user_file /etc/nginx/.htpasswd;
+
+  {% endif %}
+
+
   ## See the blacklist.conf file at the parent dir: /etc/nginx.
   ## Deny access based on the User-Agent header.
   if ($bad_bot) {
