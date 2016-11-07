@@ -21,3 +21,5 @@ papertrail_enabled: False
 
 # Default distribution CentOS 7
 distro: "centos7"
+
+basicauth_no_ssl_enabled: False
