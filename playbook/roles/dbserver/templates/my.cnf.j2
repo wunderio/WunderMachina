@@ -80,12 +80,13 @@ innodb_buffer_pool_size = {{ innodb_buffer_pool_size }}M
 innodb_buffer_pool_instances    = {{ innodb_buffer_pool_instances }}
 
 innodb_data_file_path = ibdata1:200M:autoextend
-innodb_log_buffer_size = 8M
+innodb_log_buffer_size = {{ innodb_log_buffer_size }}
+innodb_log_file_size = {{ innodb_log_file_size }}
 innodb_file_per_table = 1
 innodb_open_files = 32768
 innodb_io_capacity = 400
 innodb_thread_concurrency = {{ innodb_concurrency }}
-innodb_additional_mem_pool_size = 10M
+innodb_additional_mem_pool_size = {{ innodb_additional_mem_pool_size }}
 innodb_read_io_threads = {{ innodb_concurrency }}
 innodb_write_io_threads = {{ innodb_concurrency }}
 innodb_flush_log_at_trx_commit = 0
@@ -109,4 +110,4 @@ slow_query_log = 0
 [mysqldump]
 quick
 quote-names
-max_allowed_packet  = 128M
+max_allowed_packet  = {{ max_allowed_packet }}
