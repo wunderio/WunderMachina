@@ -6,13 +6,15 @@
     name={{ item }}
     state=present
   with_items:
+    - postfix
     - cyrus-sasl-lib
     - cyrus-sasl-plain
 
 # Add settings to /etc/postfix/main.cf
 - name: Add settings to /etc/postfix/main.cf
   blockinfile:
-    dest: dest=/etc/postfix/main.cf
+    dest: /etc/postfix/main.cf
+    create: yes
     insertafter: EOF
     block: |
       smtp_sasl_auth_enable = yes
@@ -22,8 +24,7 @@
       smtp_tls_loglevel = 1
       header_size_limit = 4096000
       relayhost = {{ external_smtp_relayhost }}
-    notify:
-      - restart postfix
+  notify: restart postfix
 
 # Make sure all services are ON and configured to start on boot
 - service: name={{ item }} state=started enabled=yes
