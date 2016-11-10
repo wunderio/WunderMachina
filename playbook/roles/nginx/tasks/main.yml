@@ -88,3 +88,18 @@
     dest=/etc/nginx/sites-enabled/nginx_test.conf
   notify:
     - restart nginx
+
+
+- name: Allow extra PHP scripts
+  blockinfile:
+    dest: "/etc/nginx/conf.d/drupal.conf"
+    insertbefore: "## Allow running _ping.php"
+    content: |
+      location = /{{ item }} {
+        include conf.d/fastcgi_drupal.conf;
+        fastcgi_param  SCRIPT_FILENAME    $document_root/{{ item }};
+        fastcgi_pass phpcgi;
+      }
+  with_items: nginx_extra_php
+  when: nginx_extra_php is defined
+
