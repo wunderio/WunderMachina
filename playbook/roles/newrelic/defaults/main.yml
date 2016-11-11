@@ -2,3 +2,4 @@
 
 newrelic_enabled: True
 newrelic_license_key: "this-is-a-fake-key-replace-with-a-real-1"
+newrelic_appname: "Wunder App"
