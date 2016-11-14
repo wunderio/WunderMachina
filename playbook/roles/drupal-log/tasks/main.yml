@@ -1,0 +1,14 @@
+---
+
+- replace:
+    dest=/etc/rsyslog.conf
+    regexp='\*\.info;mail\.none;authpriv\.none;cron\.none'
+    replace='*.info;mail.none;authpriv.none;cron.none;local6.none'
+    backup=yes
+
+- lineinfile:
+    dest=/etc/rsyslog.conf
+    line="local6.*                                                /var/log/drupal.log"
+    backup=yes
+  notify:
+    - restart rsyslog
