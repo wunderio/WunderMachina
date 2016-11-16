@@ -1,5 +1,6 @@
 ---
 partition_var_lib_mysql: True
+var_lib_mysql_disk: /var/vdc
 
 mariadb_root_password: root
 

@@ -1,0 +1,33 @@
+---
+
+# Create /var/log partition for secondary hard drive
+# Secondary hard drive added in the UpCloud UI (recognized as /dev/vdb)
+
+- name: Check if partition named '/nfs-files' exists
+  shell: "mountpoint /nfs-files"
+  register: nfs_files
+  ignore_errors: True
+- name: Create partition to drive
+  shell: echo -e "n\np\n1\n\n\nw\n" | fdisk "{{ nfs_share_disk }}"
+  when: nfs_files.rc != 0
+- name: Format the partition in the secondary drive
+  shell: mkfs.ext4 "{{ nfs_share_disk }}"1
+  when: nfs_files.rc != 0
+- name: Create temp mount point to copy files from current /nfs-files
+  shell: mkdir -p /mnt/nfs-files && mount "{{ nfs_share_disk }}"1 /mnt/nfs-files
+  when: nfs_files.rc != 0
+- name: Copy files from old /nfs-files
+  shell: cp -rpf /nfs-files/* /mnt/nfs-files/.
+  when: nfs_files.rc != 0
+- name: Unmount temp mount and delete current /var/log
+  shell: umount /mnt/nfs-files && rm -rf /mnt/nfs-files && rm -rf /nfs-files
+  when: nfs_files.rc != 0
+- name: Create /nfs-files mount point and mount the partition
+  shell: mkdir -p /nfs-files && mount "{{ nfs_share_disk }}"1 /nfs-files
+  when: nfs_files.rc != 0
+- name: Get UUID of disk
+  shell: blkid "{{ nfs_share_disk }}"1 -o value
+  register: nfs_share_uuid
+- name: Add automount for the drive
+  lineinfile: dest=/etc/fstab line="UUID={{ nfs_share_uuid.stdout_lines[0] }} /nfs-files ext4 defaults 0 0"
+  when: nfs_files.rc != 0
