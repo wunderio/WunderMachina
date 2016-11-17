@@ -6,6 +6,7 @@ elasticsearch_home_dir: /usr/share/elasticsearch
 # "shortname" variable is used when removing it.
 # (due to how the plugin binary works in elasticsearch2.0).
 
-# by default the kopf ui plugin is installed.
+# by default the kopf ui and hq plugin are installed.
 elasticsearch_plugins:
   - { name: 'lmenezes/elasticsearch-kopf/2.0', shortname: 'kopf'}
+  - { name: 'royrusso/elasticsearch-HQ', shortname: 'hq'}
