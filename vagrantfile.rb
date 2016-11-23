@@ -42,11 +42,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX
 
-  # Set default box version
-	if INSTANCE_VERSION.to_s != ''
-		config.vm.box_version = INSTANCE_VERSION
-	else
-		config.vm.box_version = '1.1.3'
+	#Virtualbox has issues with the latest Centos7 box (1.1.4) so we forcing previous version.
+
+	config.vm.provider :virtualbox do |vb|
+	  # Set default box version
+		if INSTANCE_VERSION.to_s != ''
+			config.vm.box_version = INSTANCE_VERSION
+		else
+			config.vm.box_version = '1.1.3'
+		end
 	end
 
 	config.vm.network :private_network, ip: INSTANCE_IP
