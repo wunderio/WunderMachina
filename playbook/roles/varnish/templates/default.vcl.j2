@@ -108,7 +108,7 @@ sub vcl_recv {
     return (synth(200, "Ban added."));
   }
 
-  # Set sticky session identifier based on session. 
+  # Set sticky session identifier based on session.
   if(req.http.Cookie ~ "(SESS[a-z0-9]+)") {
     set req.http.X-Session-String = regsub( req.http.Cookie, "^.*?(SESS[a-z0-9]+=)([^;]*);*.*$", "\2" );
     set req.http.sticky = req.http.X-Session-String;
@@ -151,6 +151,14 @@ sub vcl_recv {
 
   # Implementing websocket support (https://www.varnish-cache.org/docs/4.0/users-guide/vcl-example-websockets.html)
   if (req.http.Upgrade ~ "(?i)websocket") {
+    return (pipe);
+  }
+
+  # Slow connections with big file uploads may lead to 503 errors, regardless of timeout
+  # settings. We can avoid problems by piping those POST uploads.
+  # More info: https://www.varnish-cache.org/lists/pipermail/varnish-bugs/2011-April/003684.html
+  # Unresolved ticket : https://www.varnish-cache.org/trac/ticket/849
+  if (req.method == "POST" && req.http.Content-Type ~ "multipart/form-data") {
     return (pipe);
   }
 
@@ -269,8 +277,7 @@ sub vcl_pipe {
   # set bereq.http.connection = "close";
   # here.  It is not set by default as it might break some broken web
   # applications, like IIS with NTLM authentication.
-
-  # set bereq.http.Connection = "Close";
+  set bereq.http.Connection = "Close";
 
   # Implementing websocket support (https://www.varnish-cache.org/docs/4.0/users-guide/vcl-example-websockets.html)
   if (req.http.upgrade) {
