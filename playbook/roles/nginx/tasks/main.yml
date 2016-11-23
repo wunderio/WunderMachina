@@ -100,6 +100,6 @@
         fastcgi_param  SCRIPT_FILENAME    $document_root/{{ item }};
         fastcgi_pass phpcgi;
       }
-  with_items: "{{ nginx_extra_php }}"
+  with_items: "{{ nginx_extra_php | default([]) }}"
   when: nginx_extra_php is defined
 
