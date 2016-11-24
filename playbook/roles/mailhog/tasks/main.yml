@@ -18,10 +18,10 @@
 - name: MAILHOG | Install the daemonize package.
   yum: pkg=daemonize state=installed
 
-- name: MAILHOG | Copy mailhog init script into place.
-  copy:
-    src: mailhog
-    dest: /etc/init.d/mailhog
+- name: Copy mailhog systemd unit file into place
+  template:
+    src: mailhog.unit.j2
+    dest: /etc/systemd/system/mailhog.service
     owner: root
     group: root
     mode: 0755
