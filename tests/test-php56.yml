@@ -19,6 +19,7 @@
    - { role: elasticsearch, tags: [ 'elasticsearch' ] }
    - { role: mongodb, tags: [ 'mongodb' ] }
    - { role: external-smtp, tags: [ 'external-smtp' ] }
+   - { role: mailhog, tags: [ 'mailhog' ] }
 
   vars:
 
