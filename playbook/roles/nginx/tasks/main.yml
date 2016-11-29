@@ -103,3 +103,11 @@
   with_items: "{{ nginx_extra_php | default([]) }}"
   when: nginx_extra_php is defined
 
+- name: Create webroot folders
+  file:
+    path={{ item.docroot }}
+    owner=www-admin
+    group=www-admin
+    mode=0755
+    state=directory
+  with_items: "{{ apps }}"
