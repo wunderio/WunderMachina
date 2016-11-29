@@ -4,6 +4,7 @@
   remote_user: root
   roles:
    - { role: base, tags: [ 'base' ] }
+   - { role: nginx, tags: [ 'nginx' ] }
    - { role: php-fpm, tags: [ 'php-fpm' ] }
 
   vars:
