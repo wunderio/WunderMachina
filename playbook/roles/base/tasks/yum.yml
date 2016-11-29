@@ -17,6 +17,9 @@
     - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
   when: distro == "centos7"
 
+- name: update caches
+  yum: update_cache=yes
+
 # Install generic packages and tools we need to have everywhere.
 - yum:
     pkg={{item}}
@@ -43,4 +46,7 @@
     - yum-security
     - mailx
 
+- name: Update the system on first run
+  yum: name=* state=latest
+  when: first_run is defined
 
