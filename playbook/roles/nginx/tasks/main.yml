@@ -111,3 +111,4 @@
     mode=0755
     state=directory
   with_items: "{{ apps }}"
+  when: create_webroot is defined
