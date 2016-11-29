@@ -38,6 +38,7 @@
     state=present
   with_items:
     - { regexp: 'network\.host', line: 'network.host: 0.0.0.0' }
+    - { regexp: 'node\.name', line: 'node.name: node-1' }
   notify: restart elasticsearch
 
 - name: Start Elasticsearch.
