@@ -16,7 +16,7 @@ SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
 
 # Link the ansible playbook
 unless File.exist?(dir + "ansible/playbook/vagrant.yml")
-	FileUtils.ln_s "../../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
+	exec('ln -s "../../conf/vagrant.yml" "ansible/playbook/vagrant.yml"')
 end
 
 # And never anything below this line
@@ -56,16 +56,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.network :private_network, ip: INSTANCE_IP
 
 	# Sync folders
-	config.vm.synced_folder ".", "/vagrant", type: :nfs
+	if Gem.win_platform?
+		config.vm.synced_folder ".", "/vagrant"
+	else
+		config.vm.synced_folder ".", "/vagrant", type: :nfs
+	end
 
 	# Vagrant cachier
 	if Vagrant.has_plugin?("vagrant-cachier")
 		config.cache.scope = :box
 		config.cache.enable :yum
-		config.cache.synced_folder_opts = {
-			type: :nfs,
-			mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
-		}
+		if Gem.win_platform?
+			config.cache.synced_folder_opts = {
+				mount_options: ['rw']
+			}
+		else
+			config.cache.synced_folder_opts = {
+				type: :nfs,
+				mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
+			}
+		end
 	end
 
 	# SSH configuration - requires config.ssh.forward_agent: true in vagrant_local.yml
@@ -83,7 +93,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.provider :virtualbox do |vb|
 		vb.name = INSTANCE_NAME
-		version = `VBoxManage --version`
+		if Gem.win_platform?
+			version = `"C:/Program Files/Oracle/VirtualBox/VBoxManage.exe" --version`
+		else
+			version = `VBoxManage --version`
+		end
 		if version[0] == "5"
 			# Set up some VirtualBox 5 specific things
 			vb.customize [
