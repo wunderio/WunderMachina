@@ -14,11 +14,6 @@ INSTANCE_ALIASES  = settings['aliases']
 INSTANCE_VERSION  = settings['box_version']
 SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
 
-# Link the ansible playbook
-unless File.exist?(dir + "ansible/playbook/vagrant.yml")
-	exec('ln -s "../../conf/vagrant.yml" "ansible/playbook/vagrant.yml"')
-end
-
 # And never anything below this line
 VAGRANTFILE_API_VERSION = "2"
 
@@ -143,7 +138,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.provision "ansible" do |ansible|
 		#ansible.verbose        = "v"
     ansible.extra_vars     = dir + "conf/variables.yml"
-		ansible.playbook       = dir + "ansible/playbook/vagrant.yml"
+		ansible.playbook       = dir + "conf/vagrant.yml"
 		ansible.limit          = "all"
 	end
 
