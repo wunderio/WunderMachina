@@ -40,3 +40,15 @@
     group: root
     mode: 0644
 
+# PHP configuration files
+- ini_file: dest={{ php_ini_file }}
+    section="{{ item.0.section }}"
+    option="{{ item.1.key }}"
+    value="{{ item.1.val }}"
+  with_subelements:
+    - "{{ mailhog_php_ini }}"
+    - options
+  notify:
+    - restart php-fpm
+
+
