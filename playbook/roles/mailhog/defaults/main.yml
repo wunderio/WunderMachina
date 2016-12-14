@@ -14,5 +14,5 @@ mailhog_php_ini:
  - section: PHP
    options:
     - key: sendmail_path
-      val: val: "/usr/sbin/ssmtp -t"
+      val: "/usr/sbin/ssmtp -t"
  
