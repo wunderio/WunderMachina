@@ -37,7 +37,7 @@
     section="newrelic"
     option="newrelic.appname"
     value="{{ newrelic_appname }}"
- 
+
 
 # Make sure all services are ON and configured to start on boot
 - service: name={{ item }} state=started enabled=yes
