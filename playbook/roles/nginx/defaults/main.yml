@@ -23,12 +23,12 @@ papertrail_enabled: False
 distro: "centos7"
 
 nginx_conf:
-  - client_header_timeout: 10
-  - client_body_timeout: 120
-  - send_timeout: 120
-  - keepalive_timeout: "15 10"
-  - client_max_body_size: 100M
-  - client_body_buffer_size: 128k
-  - proxy_read_timeout: 60
+  client_header_timeout: 10
+  client_body_timeout: 120
+  send_timeout: 120
+  keepalive_timeout: "15 10"
+  client_max_body_size: 100M
+  client_body_buffer_size: 128k
+  proxy_read_timeout: 60
 
 
