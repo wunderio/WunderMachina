@@ -146,6 +146,7 @@
 - shell: systemctl disable firewalld
   when:
     disable_iptables == True
+  ignore_errors: True
 
 # Copy logrotation definitions
 - copy:
