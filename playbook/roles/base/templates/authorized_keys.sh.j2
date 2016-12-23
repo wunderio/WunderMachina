@@ -5,7 +5,7 @@
 ################################################################################
 
 {% if base_pubkeys_auth is defined %}
-curl -u {{ base_pubkeys_auth }} "{{ base_pubkeys_url }}"
+echo "$(curl -u {{ base_pubkeys_auth }} '{{ base_pubkeys_url }}')"
 {% else %}
-curl "{{ base_pubkeys_url }}"
+echo "$(curl '{{ base_pubkeys_url }}')"
 {% endif %}
