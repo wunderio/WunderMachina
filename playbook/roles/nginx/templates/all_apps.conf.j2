@@ -50,6 +50,12 @@ server {
   {% endfor %}
   {% endif %}
 
+  {% if site.extra_forwards is defined %}
+  {% for forward in site.extra_forwards %}
+  rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+  {% endfor %}
+  {% endif %}
+
   ## See the blacklist.conf file at the parent dir: /etc/nginx.
   ## Deny access based on the User-Agent header.
   if ($bad_bot) {
