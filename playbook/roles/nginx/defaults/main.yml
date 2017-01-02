@@ -17,6 +17,12 @@ apps:
     http_port: 8080
     docroot: /var/www/test2.com/current
 
+extradomainforwards:
+  - forward_domain: "http://blog.example.com"
+    forward_to: http://example.com/blog
+    type: permanent
+    port: 8080
+
 papertrail_enabled: False
 
 # Default distribution CentOS 7
