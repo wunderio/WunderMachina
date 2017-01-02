@@ -2,6 +2,19 @@
 # This file is provisioned automatically - you have been warned :)
 ################################################################################
 
+{% if extradomainforwards is defined %}
+{% for forward in extradomainforwards %}
+# HTTP Forwarder
+server {
+    listen {{ forward.port }};
+    server_name {{ forward.forward_domain }};
+
+    rewrite ^(.*) {{ forward.forward_to }} {{ forward.type }};
+}
+{% endfor %}
+{% endif %}
+
+
 {% for site in apps %}
 
 {% if site.server_forwards is defined %}
@@ -34,6 +47,12 @@ server {
   location {{ alias.path }} {
     alias {{ alias.target }};
   }
+  {% endfor %}
+  {% endif %}
+
+  {% if site.extra_forwards is defined %}
+  {% for forward in site.extra_forwards %}
+  rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
   {% endfor %}
   {% endif %}
 
