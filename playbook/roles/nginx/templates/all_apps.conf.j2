@@ -28,6 +28,15 @@ server {
 
 {% endif %}
 
+{% if site.redirect_to_https is defined %}
+# Redirect to https
+server {
+    listen {{ site.http_port }};
+    server_name {{ site.server_name }};
+    return 301 https://$server_name$request_uri;
+}
+{% endif %}
+
 {% if site.docroot is defined %}
 # HTTP Site {{ site.server_name }} => php-fpm
 server {
