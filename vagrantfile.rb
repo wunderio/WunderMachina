@@ -1,4 +1,5 @@
 require 'yaml'
+require File.dirname(__FILE__)+"/dependency_manager/dependency_manager.rb"
 
 dir = File.dirname(__FILE__) + '/../'
 # local variables
@@ -13,6 +14,9 @@ INSTANCE_BOX      = settings['box']
 INSTANCE_ALIASES  = settings['aliases']
 INSTANCE_VERSION  = settings['box_version']
 SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
+
+# Check depedency plugins and automatically install them if needed.
+check_plugins ["vagrant-hostmanager", "vagrant-cachier", "vagrant-vbguest"]
 
 # And never anything below this line
 VAGRANTFILE_API_VERSION = "2"
