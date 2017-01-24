@@ -40,6 +40,10 @@
     group: root
     mode: 0644
 
+- name: MAILHOG | Specify HTTP authentication password file
+  shell: echo "{{ mailhog_http_authuser }}:`{{ mailhog_install_dir }}/mailhog bcrypt {{ mailhog_http_authpass | default(mailhog_http_authuser) }}`" > /etc/ssmtp/http_auth
+  when: mailhog_http_authuser is defined
+
 # PHP configuration files
 - ini_file: dest="{{ php_ini_file }}"
     section="{{ item.0.section }}"
