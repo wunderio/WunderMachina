@@ -15,8 +15,18 @@ INSTANCE_ALIASES  = settings['aliases']
 INSTANCE_VERSION  = settings['box_version']
 SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
 
-# Check depedency plugins and automatically install them if needed.
-check_plugins ["vagrant-hostmanager", "vagrant-cachier", "vagrant-vbguest"]
+# Check depedencies during initial setup.
+if Dir.glob("#{dir}.vagrant/machines/default/*").empty?
+
+  # Optional depedency check.
+  print "Allow vagrant to check for plugin depedencies? (y or n)"
+  check_dep = STDIN.gets.chomp
+
+  # Check depedency plugins and automatically install them if needed.
+  if check_dep == "y"
+    check_plugins ["vagrant-hostmanager", "vagrant-cachier", "vagrant-vbguest"]
+  end
+end
 
 # And never anything below this line
 VAGRANTFILE_API_VERSION = "2"
