@@ -13,7 +13,7 @@ INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
 INSTANCE_ALIASES  = settings['aliases']
 INSTANCE_VERSION  = settings['box_version']
-SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
+SSH_FORWARD_AGENT  = settings['ssh_forward_agent']
 
 # Check depedencies during initial setup.
 if Dir.glob("#{dir}.vagrant/machines/default/*").empty?
