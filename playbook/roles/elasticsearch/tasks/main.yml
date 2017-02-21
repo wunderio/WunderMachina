@@ -39,7 +39,18 @@
   with_items:
     - { regexp: 'network\.host', line: 'network.host: 0.0.0.0' }
     - { regexp: 'node\.name', line: 'node.name: node-1' }
+ notify: restart elasticsearch
+
+- name: Configure Elasticsearch.
+  lineinfile: >
+    dest=/systemconfig/elasticsearch
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+    state=present
+  with_items:
+    - { regexp: 'ES_HEAP_SIZE', line: 'ES_HEAP_SIZE: {{ elasticsearch_heap_size }}' }
   notify: restart elasticsearch
+
 
 - name: Start Elasticsearch.
   service: name=elasticsearch state=started enabled=yes
