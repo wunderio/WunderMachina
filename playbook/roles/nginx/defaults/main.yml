@@ -12,6 +12,9 @@ apps:
     server_forwards: test.com
     http_port: 8080
     docroot: /var/www/test.com/current
+#    extra_headers:
+#      - { name: "Access-Control-Allow-Origin", value: "https://www.somesite1.com", location: "/some/location" }
+#      - { name: "Access-Control-Allow-Origin", value: "https://www.somesite2.com" }
   - server_name: test2.com
     server_aliases: www.example35.com www.example53.com
     http_port: 8080

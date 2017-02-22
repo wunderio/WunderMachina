@@ -68,6 +68,19 @@ server {
 
   include conf.d/drupal.conf;
   include conf.d/php_fpm_status.conf;
+
+  {% if site.extra_headers is defined %}
+  # Extra headers.
+  {% for header in site.extra_headers %}
+  {% if header.location is defined %}
+  location {{ header.location }} {
+    add_header {{ header.name }} {{header.value}};
+  }
+  {% else %}
+  add_header {{ header.name }} {{header.value}};
+  {% endif %}
+  {% endfor %}
+  {% endif %}
 }
 
 {% endif %}
