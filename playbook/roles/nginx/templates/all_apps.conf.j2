@@ -74,6 +74,8 @@ server {
   {% for header in site.extra_headers %}
   {% if header.location is defined %}
   location {{ header.location }} {
+    include conf.d/fastcgi_drupal.conf;
+    fastcgi_pass phpcgi;
     add_header {{ header.name }} {{header.value}};
   }
   {% else %}
