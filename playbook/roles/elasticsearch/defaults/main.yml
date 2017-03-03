@@ -10,3 +10,5 @@ elasticsearch_home_dir: /usr/share/elasticsearch
 elasticsearch_plugins:
   - { name: 'lmenezes/elasticsearch-kopf/2.0', shortname: 'kopf'}
   - { name: 'royrusso/elasticsearch-HQ', shortname: 'hq'}
+
+elasticsearch_heap_size: 2g
