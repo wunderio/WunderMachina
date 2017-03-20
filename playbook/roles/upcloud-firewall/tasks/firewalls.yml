@@ -1,0 +1,35 @@
+# This creates a list of firewall ssh openings in upcloud_firewall format
+- set_fact:
+    upcloud_firewall_rules: >
+      {{ upcloud_firewall_rules|default([]) +
+        [ {
+          'source_address_start': item,
+          'source_address_end': item,
+          'action': 'accept',
+          'destination_port_start': '22',
+          'destination_port_end': '22',
+          'direction': 'in',
+          'protocol': 'tcp',
+          'family': 'IPv4'
+        } ]
+      }}
+  with_flattened:
+    - "{{ vpn_ip_list|default([]) }}"
+    - "{{ deployment_server_ip_list|default([]) }}"
+
+# Add 80/443 ports too if this is a load balancer
+- set_fact:
+    upcloud_firewall_rules: "{{ upcloud_firewall_rules }} + {{ web_firewall_rules }}"
+  when: "'load-balancer' in group_names"
+
+# default rule last
+- set_fact:
+    upcloud_firewall_rules: "{{ upcloud_firewall_rules }} + {{ default_firewall_rules }}"
+
+# This uses upcloud_firewall directive
+# source: https://github.com/UpCloudLtd/upcloud-ansible
+- name: Setup firewalls
+  upcloud_firewall:
+    state: present
+    uuid: "{{ upcloud_uuid }}"
+    firewall_rules: "{{ upcloud_firewall_rules }}"

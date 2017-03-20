@@ -1,0 +1,2 @@
+- include: firewalls.yml
+  when: upcloud_uuid is defined
