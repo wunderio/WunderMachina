@@ -10,7 +10,7 @@ else
   if [ $? -ne 0 ]
   then
         ERRORLOG=`tail /var/log/letsencrypt/letsencrypt.log`
-        echo -e "The Lets Encrypt Cert has not been renewed! \n \n" $ERRORLOG | mail -s "Lets Encrypt Alert:{% for domain in letsencrypt_domains %} {{ domain }} /{% endfor %}" fi.support@wunderkraut.com
+        echo -e "The Let's Encrypt cert has not been renewed! \n \n" $ERRORLOG | mail -s "Let's Encrypt Alert:{% for domain in letsencrypt_domains %} {{ domain }} /{% endfor %}" support@example.com
   else
         /usr/bin/systemctl reload nginx
   fi
