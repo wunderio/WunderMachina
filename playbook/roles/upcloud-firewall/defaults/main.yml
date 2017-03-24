@@ -1,0 +1,26 @@
+# These contain the IP addresses from the admin VPN
+vpn_ip_list:
+
+# These servers will do the automatic deployments into the machines
+deployment_server_ip_list:
+
+# These are the basic rules for load balancers
+web_firewall_rules:
+  - direction: in
+    family: IPv4
+    protocol: tcp
+    destination_port_start: 80
+    destination_port_end: 80
+    action: accept
+
+  - direction: in
+    family: IPv4
+    protocol: tcp
+    destination_port_start: 443
+    destination_port_end: 443
+    action: accept
+
+# This needs to be last so that firewalls will be enabled
+default_firewall_rules:
+  - direction: in,
+    action: reject
