@@ -38,5 +38,5 @@ web_firewall_rules:
 
 # This needs to be last so that firewalls will be enabled
 default_firewall_rules:
-  - direction: in,
+  - direction: in
     action: reject
