@@ -1,14 +1,15 @@
 # This creates a list of firewall ssh openings in upcloud_firewall format
-- set_fact:
+- name: Allow admins and deployment servers to connect into machines
+  set_fact:
     upcloud_firewall_rules: >
       {{ upcloud_firewall_rules|default([]) +
         [ {
+          'direction': 'in',
           'source_address_start': item,
           'source_address_end': item,
           'action': 'accept',
           'destination_port_start': '22',
           'destination_port_end': '22',
-          'direction': 'in',
           'protocol': 'tcp',
           'family': 'IPv4'
         } ]
@@ -17,19 +18,66 @@
     - "{{ vpn_ip_list|default([]) }}"
     - "{{ deployment_server_ip_list|default([]) }}"
 
-# Add 80/443 ports too if this is a load balancer
-- set_fact:
-    upcloud_firewall_rules: "{{ upcloud_firewall_rules }} + {{ web_firewall_rules }}"
-  when: "'load-balancer' in group_names"
+- name: Allow members of the cluster in the firewall
+  set_fact: 
+    upcloud_firewall_rules: >
+      {{ upcloud_firewall_rules|default([]) +
+        [ {
+          'direction': 'in',
+          'source_address_start': item,
+          'source_address_end': item,
+          'action': 'accept',
+          'family': 'IPv4'
+        } ]
+      }}
+  with_items:
+    - "{{ groups['all'] }}"
+
+- name: Allow private network (eth1) of the cluster members in the firewall
+  set_fact: 
+    upcloud_firewall_rules: >
+      {{ upcloud_firewall_rules|default([]) +
+        [ {
+          'direction': 'in',
+          'source_address_start': hostvars[item]['ansible_eth1']['ipv4']['address'],
+          'source_address_end': hostvars[item]['ansible_eth1']['ipv4']['address'],
+          'action': 'accept',
+          'family': 'IPv4'
+        } ]
+      }}
+  with_items:
+    - "{{ groups['all'] }}"
+  when: hostvars[item]['ansible_eth1'] is defined
 
 # default rule last
-- set_fact:
+- name: Deny all other connections by default
+  set_fact:
     upcloud_firewall_rules: "{{ upcloud_firewall_rules }} + {{ default_firewall_rules }}"
 
-# This uses upcloud_firewall directive
+# Setup firewalls using custom upcloud_firewall  directive
 # source: https://github.com/UpCloudLtd/upcloud-ansible
-- name: Setup firewalls
+- name: Ensure legacy firewall rules are not used
+  upcloud_firewall:
+    state: absent
+    ip_address: "{{ item }}"
+    firewall_rules: "{{ removable_legacy_firewall_rules }}"
+  with_items: "{{ groups['all'] }}"
+  when: removable_legacy_firewall_rules is defined
+
+- name: Setup basic rules in firewall
   upcloud_firewall:
     state: present
-    uuid: "{{ upcloud_uuid }}"
+    ip_address: "{{ item }}"
     firewall_rules: "{{ upcloud_firewall_rules }}"
+  with_items: "{{ groups['all'] }}"
+
+# Allow web ports only to machines with nginx
+- name: Setup web ports in firewall
+  upcloud_firewall:
+    state: present
+    ip_address: "{{ item }}"
+    firewall_rules: "{{ web_firewall_rules }}"
+  with_flattened:
+    - "{{ groups['wundertools-dev']|default([]) }}"
+    - "{{ groups['wundertools-stage']|default([]) }}"
+    - "{{ groups['wundertools-prod-lb']|default([]) }}"
