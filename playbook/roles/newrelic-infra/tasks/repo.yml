@@ -1,0 +1,13 @@
+---
+
+# Setup all of our New Relic - Infra related repositories.
+
+- name: Install repository
+  copy:
+    src=newrelic-infra/repo/newrelic-infra-el7.repo
+    dest=/etc/yum.repos.d/newrelic-infra.repo
+
+#- name: Install license
+#  copy:
+#    src=newrelic-infra/license/newrelic-infra.yml
+#    dest=/etc/newrelic-infra.yml
