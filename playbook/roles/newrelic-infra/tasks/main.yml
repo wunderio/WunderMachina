@@ -10,8 +10,10 @@
 # Install Newrelic-infra
 
 - yum:
-    name=newrelic-infra
+    name={{ item }}
     state=present
+  with_items:
+    - newrelic-infra
   when:
     newrelic_infra_enabled == True
 
