@@ -18,6 +18,7 @@
    - { role: elasticsearch, tags: [ 'elasticsearch' ] }
    - { role: monit, tags: [ 'monit' ] }
    - { role: newrelic, tags: [ 'newrelic' ] }
+   - { role: newrelic-infra, tags: [ 'newrelic-infra' ] }
 
   tasks:
 
@@ -37,6 +38,7 @@
     partition_var_log: True
 
     newrelic_enabled: True
+    newrelic_infra_enabled: True
 
     base_pubkeys_enable: True
 
