@@ -7,14 +7,17 @@
   stat: path=/var/lib/mysql
   register: mysql_installed
 - name: Create partition to secondary drive
-  shell: sudo echo -e "n\np\n1\n\n\nw\n" | fdisk /dev/vdc
+  shell: sudo echo -e "n\np\n1\n\n\nw\n" | fdisk "{{ var_lib_mysql_disk }}"
   when: not mysql_installed.stat.exists
 - name: Format the partition in the secondary drive
-  shell: sudo mkfs.xfs -i size=512 /dev/vdc1
+  shell: sudo mkfs.xfs -i size=512 "{{ var_lib_mysql_disk }}"1
   when: not mysql_installed.stat.exists
 - name: Create /var/lib/mysql mount point and mount the partition
-  shell: sudo mkdir -p /var/lib/mysql && mount /dev/vdc1 /var/lib/mysql
+  shell: mkdir -p /var/lib/mysql && mount "{{ var_lib_mysql_disk }}"1 /var/lib/mysql
   when: not mysql_installed.stat.exists
-- name: Add automount for secondary drive as /export/vdc1 (type=xfs)
-  lineinfile: dest=/etc/fstab line="/dev/vdc1 /var/lib/mysql xfs noatime,nodiratime,nobarrier,inode64 0 0"
+- name: Get UUID of disk
+  shell: blkid "{{ var_lib_mysql_disk }}"1 -o value
+  register: var_lib_mysql_uuid
+- name: Add automount for secondary drive (type=xfs)
+  lineinfile: dest=/etc/fstab line="UUID={{ var_lib_mysql_uuid.stdout_lines[0] }} /var/lib/mysql xfs noatime,nodiratime,nobarrier,inode64 0 0"
   when: not mysql_installed.stat.exists

@@ -1,6 +1,7 @@
 ---
 
 partition_var_log: True
+var_log_disk: /dev/vdb
 
 base_pubkeys_enable: True
 base_pubkeys_auth: username:password

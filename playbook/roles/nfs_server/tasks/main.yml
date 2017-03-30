@@ -12,6 +12,9 @@
     - nfslock
     - nfs
 
+- include: "fdisk.yml"
+  when:
+    partition_nfs_share == True
 
 - name: Ensure directories to export exist
   file: 'path="{{ item.strip().split()[0] }}" state=directory'
