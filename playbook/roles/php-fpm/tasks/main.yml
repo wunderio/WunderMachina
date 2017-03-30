@@ -7,7 +7,7 @@
   when: php_package == "php56u"
 
 - include: "php70u.yml"
-  when: php_package == "php70u"
+  when: php_package == "php70u" or php_package == "php71u"
 
 - yum:
     name={{ item }}
@@ -33,7 +33,7 @@
 - template:
     src=www.conf.php7.j2
     dest=/etc/php-fpm.d/www.conf
-  when: php_package == "php70u"
+  when: php_package == "php70u" or php_package == "php71u"
 - copy:
     src=php-fpm/{{ item }}
     dest=/etc/{{ item }}
