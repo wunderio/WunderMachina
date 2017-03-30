@@ -28,3 +28,4 @@
     #- "{{ php_package }}-pecl-uploadprogress"
     - "{{ php_package }}-xml"
     - "{{ php_package }}-xmlrpc"
+    - "{{ php_package }}-pecl-apcu"
