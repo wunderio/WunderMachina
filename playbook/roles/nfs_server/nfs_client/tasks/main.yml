@@ -1,0 +1,12 @@
+---
+- name: install nfs client
+  action: yum pkg=nfs-utils state=present
+
+- name: Ensure rpcbind is running
+  action: service name=rpcbind state=started enabled=yes
+
+- name: Ensure {{nfsmount}} directory exists
+  action: file path={{nfsmount}} state=directory
+
+- name: configure /etc/fstab on clients
+  action: mount name={{nfsmount}} src={{nfsserver}}:{{nfspath}} fstype=nfs opts={{nfsopts}} state=mounted
