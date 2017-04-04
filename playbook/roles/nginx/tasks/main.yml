@@ -100,6 +100,7 @@
         fastcgi_param  SCRIPT_FILENAME    $document_root/{{ item }};
         fastcgi_pass phpcgi;
       }
+    marker: "# {mark} ANSIBLE MANAGED BLOCK ({{item}})"
   with_items: "{{ nginx_extra_php | default([]) }}"
   when: nginx_extra_php is defined
 
