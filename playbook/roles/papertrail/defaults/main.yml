@@ -7,3 +7,4 @@ papertrail_host: "logs.papertrailapp.com"
 papertrail_port: 12345
 papertrail_logs:
   - /var/log/secure
+  - /var/log/maillog
