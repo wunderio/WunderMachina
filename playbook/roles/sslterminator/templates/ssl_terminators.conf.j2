@@ -19,7 +19,11 @@ server {
 
     location ~* /.well-known/acme-challenge {
       default_type "text/plain";
+    {% if certbot_renewal_docroot is defined %}
+      root        {{ certbot_renewal_docroot }};
+    {% else  %}
       root        /var/www/letsencrypt-auto;
+    {% endif %}
     }
 
     {% if site.extra_forwards is defined %}
