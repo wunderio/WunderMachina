@@ -35,8 +35,3 @@ web_firewall_rules:
     destination_port_start: 443
     destination_port_end: 443
     action: accept
-
-# This needs to be last so that firewalls will be enabled
-default_firewall_rules:
-  - direction: in
-    action: reject
