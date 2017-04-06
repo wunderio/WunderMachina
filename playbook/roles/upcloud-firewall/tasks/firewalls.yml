@@ -49,11 +49,6 @@
     - "{{ groups['all'] }}"
   when: hostvars[item]['ansible_eth1'] is defined
 
-# default rule last
-- name: Deny all other connections by default
-  set_fact:
-    upcloud_firewall_rules: "{{ upcloud_firewall_rules }} + {{ default_firewall_rules }}"
-
 # Setup firewalls using custom upcloud_firewall  directive
 # source: https://github.com/UpCloudLtd/upcloud-ansible
 - name: Ensure legacy firewall rules are not used
@@ -81,3 +76,14 @@
     - "{{ groups['wundertools-dev']|default([]) }}"
     - "{{ groups['wundertools-stage']|default([]) }}"
     - "{{ groups['wundertools-prod-lb']|default([]) }}"
+
+# Default rule is to block connections
+- name: Block all other connections
+  upcloud_firewall:
+    state: present
+    ip_address: "{{ item }}"
+    firewall_rules:
+      - direction: in
+        action: reject
+        position: 1000
+  with_items: "{{ groups['all'] }}"
