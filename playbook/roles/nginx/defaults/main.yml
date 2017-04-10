@@ -6,6 +6,10 @@ nginx_papertrail_follow:
   - /var/log/drupal.log
   - /var/log/nginx/http-*error.log
 
+# Add this to ansible configuration to disable the default x-frame-option (SAME ORIGIN)
+# to allow applications to control the header.
+# nginx_disable_default_xframe_options: True
+
 apps:
   - server_name: www.test.com
     server_aliases: bob.com
@@ -39,5 +43,3 @@ nginx_conf:
   client_max_body_size: 100M
   client_body_buffer_size: 128k
   proxy_read_timeout: 60
-
-
