@@ -67,8 +67,10 @@ http {
   # Enable HSTS;
   add_header Strict-Transport-Security max-age=31536000;
 
+  {% if nginx_disable_default_xframe_options is not defined %}
   # Enable X-Frame-Options
   add_header X-Frame-Options "SAMEORIGIN" always;
+  {% endif %}
 
   {% if nginx_disable_content_security_policy is not defined %}
   # Enable Content Security Policy
