@@ -68,7 +68,7 @@ php_fpm_pm_max_spare_servers: '35'
 php_fpm_pm_max_requests: '500'
 
 # Default PHP version
-php_package: "php56u"
+php_package: "php71u"
 
 # Default distribution CentOS 7
 distro: "centos7"
