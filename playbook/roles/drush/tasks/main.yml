@@ -7,7 +7,12 @@
     creates=/usr/bin/composer
 
 - name: Make sure /usr/lib/composer exists
-  action: file path=/usr/lib/composer state=directory
+  file:
+    state=directory
+    path=/usr/lib/composer
+    group=vagrant
+    owner=vagrant
+    mode=755
 
 - name: Set up composer environment variables
   template: src=composer.sh.j2 dest=/etc/profile.d/composer.sh
