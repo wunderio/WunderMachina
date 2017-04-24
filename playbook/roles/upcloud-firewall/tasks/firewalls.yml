@@ -1,22 +1,46 @@
-# This creates a list of firewall ssh openings in upcloud_firewall format
-- name: Allow admins and deployment servers to connect into machines
+- name: Allow admins to connect into servers with ssh
   set_fact:
     upcloud_firewall_rules: >
       {{ upcloud_firewall_rules|default([]) +
         [ {
           'direction': 'in',
-          'source_address_start': item,
-          'source_address_end': item,
+          'source_address_start': item.1,
+          'source_address_end': item.1,
           'action': 'accept',
           'destination_port_start': '22',
           'destination_port_end': '22',
           'protocol': 'tcp',
-          'family': 'IPv4'
+          'family': 'IPv4',
+          'comment': item.0.name|default('Admin IP')
         } ]
       }}
-  with_flattened:
-    - "{{ vpn_ip_list|default([]) }}"
-    - "{{ deployment_server_ip_list|default([]) }}"
+  with_subelements:
+    - "{{ vpn_ip_list }}"
+    - addresses
+    - flags:
+      skip_missing: True
+
+- name: Allow Deployment servers to connect into servers with ssh
+  set_fact:
+    upcloud_firewall_rules: >
+      {{ upcloud_firewall_rules|default([]) +
+        [ {
+          'direction': 'in',
+          'source_address_start': item.1,
+          'source_address_end': item.1,
+          'action': 'accept',
+          'destination_port_start': '22',
+          'destination_port_end': '22',
+          'protocol': 'tcp',
+          'family': 'IPv4',
+          'comment': item.0.name|default('Deployment Server')
+        } ]
+      }}
+  with_subelements:
+    - "{{ deployment_server_ip_list }}"
+    - addresses
+    - flags:
+      skip_missing: True
 
 - name: Allow members of the cluster in the firewall
   set_fact: 
@@ -27,7 +51,8 @@
           'source_address_start': item,
           'source_address_end': item,
           'action': 'accept',
-          'family': 'IPv4'
+          'family': 'IPv4',
+          'comment': 'Member of this cluster'
         } ]
       }}
   with_items:
@@ -49,9 +74,14 @@
     - "{{ groups['all'] }}"
   when: hostvars[item]['ansible_eth1'] is defined
 
+- name: Add default rules to all machines as last rules
+  set_fact:
+    upcloud_firewall_rules: >
+      {{ upcloud_firewall_rules + default_firewall_rules }}
+
 # Setup firewalls using custom upcloud_firewall  directive
 # source: https://github.com/UpCloudLtd/upcloud-ansible
-- name: Ensure legacy firewall rules are not used
+- name: Ensure legacy firewall rules are removed
   upcloud_firewall:
     state: absent
     ip_address: "{{ item }}"
@@ -59,31 +89,22 @@
   with_items: "{{ groups['all'] }}"
   when: removable_legacy_firewall_rules is defined
 
-- name: Setup basic rules in firewall
-  upcloud_firewall:
-    state: present
-    ip_address: "{{ item }}"
-    firewall_rules: "{{ upcloud_firewall_rules }}"
-  with_items: "{{ groups['all'] }}"
-
 # Allow web ports only to machines with nginx
-- name: Setup web ports in firewall
+- name: Setup firewalls to all load balancer machines
   upcloud_firewall:
     state: present
     ip_address: "{{ item }}"
-    firewall_rules: "{{ web_firewall_rules }}"
+    firewall_rules: "{{ web_firewall_rules +  upcloud_firewall_rules }}"
   with_flattened:
     - "{{ groups['wundertools-dev']|default([]) }}"
     - "{{ groups['wundertools-stage']|default([]) }}"
     - "{{ groups['wundertools-prod-lb']|default([]) }}"
 
-# Default rule is to block connections
-- name: Block all other connections
+- name: Setup firewalls for the backend groups
   upcloud_firewall:
     state: present
     ip_address: "{{ item }}"
-    firewall_rules:
-      - direction: in
-        action: reject
-        position: 1000
-  with_items: "{{ groups['all'] }}"
+    firewall_rules: "{{ upcloud_firewall_rules }}"
+  with_flattened:
+    - "{{ groups['wundertools-prod-db']|default([]) }}"
+    - "{{ groups['wundertools-prod-front']|default([]) }}"
