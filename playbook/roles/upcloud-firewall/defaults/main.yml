@@ -1,24 +1,36 @@
 # These contain the IP addresses from the admin VPN
 vpn_ip_list:
-  - 127.0.0.1
-  - 127.0.0.2
+  #- name: Offices
+  #  addresses:
+  #    - 10.0.0.1
+  #    - 10.0.0.0
+  #- name: VPN Access
+  #  addresses:
+  #    - 10.0.0.2
+  #    - 10.0.0.3
 
 # These servers will do the automatic deployments into the machines
 deployment_server_ip_list:
-  - 10.254.254.254
-  - 10.0.0.1
+  #- name: Service name here
+  #addresses:
+  #  - 10.0.0.1
+  #  - 10.0.0.0
+  #- name: This is other service
+  #  addresses:
+  #    - 10.0.0.2
+  #    - 10.0.0.3
 
 # Remove older IP addresses which are not needed anymore
 removable_legacy_firewall_rules:
   # This is older deploybot address space
-  - direction: in
-    family: IPv4
-    protocol: tcp
-    source_address_end: 127.0.0.1
-    source_address_start: 127.0.0.255
-    destination_port_start: 22
-    destination_port_end: 22
-    action: accept
+  #- direction: in
+  #  family: IPv4
+  #  protocol: tcp
+  #  source_address_end: 127.0.0.1
+  #  source_address_start: 127.0.0.255
+  #  destination_port_start: 22
+  #  destination_port_end: 22
+  #  action: accept
 
 # These are the basic rules for load balancers
 web_firewall_rules:
@@ -40,3 +52,8 @@ web_firewall_rules:
 default_firewall_rules:
   - direction: in
     action: reject
+    
+# Regex for ipv4 address
+# This is used for matching the ip_address from inventory file
+# source: http://www.regular-expressions.info/ip.html
+upcloud_ipv4_regex: (?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)
