@@ -29,3 +29,5 @@
     - "{{ php_package }}-xml"
     - "{{ php_package }}-xmlrpc"
     - "{{ php_package }}-pecl-apcu"
+    - "{{ php_package }}-bcmath"
+
