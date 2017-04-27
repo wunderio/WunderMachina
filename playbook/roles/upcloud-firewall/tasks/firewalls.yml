@@ -134,6 +134,7 @@
     - "{{ groups['wundertools-dev']|default([]) }}"
     - "{{ groups['wundertools-stage']|default([]) }}"
     - "{{ groups['wundertools-prod-lb']|default([]) }}"
+  ignore_errors: yes
 
 - name: Setup firewalls for the backend groups
   upcloud_firewall:
@@ -143,3 +144,4 @@
   with_flattened:
     - "{{ groups['wundertools-prod-db']|default([]) }}"
     - "{{ groups['wundertools-prod-front']|default([]) }}"
+  ignore_errors: yes
