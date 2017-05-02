@@ -103,10 +103,13 @@
     - "{{ groups['all'] }}"
   when: item[0] != item[1] and hostvars[ item[1] ]['ansible_eth1'] is defined
 
+- set_fact:
+    removable_upcloud_firewall_rules: []
+    
 - name: Remove legacy firewall rules
   set_fact:
     removable_upcloud_firewall_rules: >
-      {{ removable_upcloud_firewall_rules|default([]) +
+      {{ removable_upcloud_firewall_rules +
         [{
           'machine': item[0],
           'rule': {
@@ -124,7 +127,12 @@
       }}
   with_nested:
     - "{{ groups['all'] }}"
-    - "{{ remove_ssh_firewall_rules|default([]) }}"
+    - "{{ remove_ssh_firewall_rules }}"
+  when: remove_ssh_firewall_rules is defined and remove_ssh_firewall_rules.0 is defined
+
+- set_fact:
+    project_additional_firewall_rules: []
+  when: project_additional_firewall_rules is not defined or project_additional_firewall_rules.0 is not defined
 
 # Prefer populated data from the server
 - name: Setup upcloud firewalls for successfully connected machines
