@@ -47,6 +47,9 @@ options:
     firewall_rules:
         description:
         - List of firewall rules (strings)
+    default_rules:
+        description:
+        - The default rules for the firewall, These are the last rules if no other rule were matched.
 notes:
     - UPCLOUD_API_USER and UPCLOUD_API_PASSWD environment variables may be used instead of api_user and api_passwd
     - Better description of UpCloud's API available at U(www.upcloud.com/api/)
@@ -121,6 +124,19 @@ EXAMPLES = '''
     hostname: www13.example.com
     firewall_rules:
       - direction: in
+
+
+# Setup the default firewall rule to reject all traffic to in
+
+- name: delete the first firewall rule
+  upcloud_firewall:
+    state: present
+    hostname: www13.example.com
+    default_rules:
+      - destination: in
+        action: reject
+      - destination: out
+        action: accept
 '''
 
 from distutils.version import LooseVersion
@@ -201,6 +217,67 @@ class FirewallManager():
 
         return False, -1
 
+    def set_default_rule(self, uuid, default_rule, host_rules):
+        """
+        Sets this rule as default rule for it's direction ( either 'in' or 'out')
+        """
+        changed = False
+        if default_rule == None or default_rule['direction'] == None:
+            return changed
+
+        # Search and destroy any other global rules from previous runs
+        actions = ['drop','reject','accept']
+        # Move our wanted directive to the end of the array so it's dealt with last
+        actions.remove(default_rule['action'])
+        actions.append(default_rule['action'])
+
+        for action in actions:
+            # Delete all rules matching this action
+            while True:
+                rule = {
+                    "direction": default_rule['direction'],
+                    "action": action,
+                    "source_address_end": "",
+                    "source_address_start": "",
+                    "source_port_start": "",
+                    "source_port_end": "",
+                    "destination_address_start": "",
+                    "destination_address_end": "",
+                    "destination_port_start": "",
+                    "destination_port_end": "",
+                    "comment": ""
+                }
+                matched, position = self.match_firewall_rules(rule, host_rules)
+
+                # Check the position of existing default rule (Hint: it's the last rule
+                rules_for_this_direction = [ rule for rule in host_rules if rule.direction == default_rule['direction'] ]
+
+                # Don't delete the default rule if it's the one we would want to add
+                if (action == default_rule['action'] and
+                    len(rules_for_this_direction) > 0 and
+                    position == rules_for_this_direction[-1].position and
+                    rules_for_this_direction[-1].direction == default_rule['direction']):
+                    break
+                # If the rule is unneccessary delete it
+                elif matched:
+                    self.manager.delete_firewall_rule(uuid, position)
+                    # update host_rules from API to get new positions
+                    host_rules = self.manager.get_firewall_rules(uuid)
+                    changed = True
+                else:
+                    break
+
+
+        matched, position = self.match_firewall_rules(default_rule, host_rules)
+        # Create the default rule if it wasn't created yet
+        if not matched:
+            self.manager.create_firewall_rule(uuid, default_rule)
+            changed = True
+
+        # Nothing was changed
+        return changed
+
+
 
 def run(module, firewall_manager):
     """
@@ -211,11 +288,12 @@ def run(module, firewall_manager):
         delete any given rule that matches an existing one
     """
 
-    state =          module.params['state']
+    state          = module.params['state']
     firewall_rules = module.params['firewall_rules']
-    uuid =           module.params.get('uuid')
-    hostname =       module.params.get('hostname')
-    ip_address =     module.params.get('ip_address')
+    default_rules  = module.params['default_rules']
+    uuid           = module.params.get('uuid')
+    hostname       = module.params.get('hostname')
+    ip_address     = module.params.get('ip_address')
 
     changed = False
 
@@ -229,30 +307,49 @@ def run(module, firewall_manager):
 
     # match every rule against host_rules
     if state == 'present':
-        for rule in firewall_rules:
-            matched, position = firewall_manager.match_firewall_rules(rule, host_rules)
+        if firewall_rules:
+            for rule in firewall_rules:
+                matched, position = firewall_manager.match_firewall_rules(rule, host_rules)
 
-            # create any given rule that didn't match existing rules
-            if not matched:
-                firewall_manager.manager.create_firewall_rule(uuid, rule)
-                changed = True
+                # create any given rule that didn't match existing rules
+                if not matched:
+                    firewall_manager.manager.create_firewall_rule(uuid, rule)
+                    changed = True
 
+        if default_rules:
+            for rule in default_rules:
+
+                result = firewall_manager.set_default_rule(uuid, rule, host_rules)
+                if result:
+                    changed = True
 
     # delete any given rule that matches an existing one
     if state == 'absent':
-        for rule in firewall_rules:
+        if firewall_rules:
+            for rule in firewall_rules:
 
-            # each given rule can match multiple times
-            while True:
-                matched, position = firewall_manager.match_firewall_rules(rule, host_rules)
+                # each given rule can match multiple times
+                while True:
+                    matched, position = firewall_manager.match_firewall_rules(rule, host_rules)
+                    if matched:
+                        firewall_manager.manager.delete_firewall_rule(uuid, position)
+                        changed = True
+
+                        # update host_rules from API to get new positions
+                        host_rules = firewall_manager.manager.get_firewall_rules(uuid)
+                    else:
+                        break
+
+        # Remove the default rules
+        if default_rules:
+            for rule in default_rules:
+
+                matched, position = firewall_manager.match_firewall_rules( rule, host_rules )
                 if matched:
                     firewall_manager.manager.delete_firewall_rule(uuid, position)
-                    changed = True
-
                     # update host_rules from API to get new positions
                     host_rules = firewall_manager.manager.get_firewall_rules(uuid)
-                else:
-                    break
+                    changed = True
 
     module.exit_json(changed=changed)
 
@@ -270,11 +367,13 @@ def main():
             hostname = dict(type='str'),
             ip_address = dict(type='str'),
             uuid = dict(aliases=['id'], type='str'),
-            firewall_rules = dict(type='list', required=True)
+            firewall_rules = dict(type='list'),
+            default_rules = dict(type='list'),
         ),
         required_one_of = (
             ['uuid', 'hostname','ip_address'],
-        )
+            ['firewall_rules', 'default_rules'],
+        ),
     )
 
 
