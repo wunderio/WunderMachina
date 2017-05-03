@@ -34,15 +34,14 @@
     replace='inet_protocols = ipv4'
     backup=yes
 
-- lineinfile:
+- name: Set security/limits.conf limits
+  lineinfile:
     dest=/etc/security/limits.conf
-    line="*    soft    nofile    65535"
+    line="{{ item }}"
     backup=yes
-
-- lineinfile:
-    dest=/etc/security/limits.conf
-    line="*    hard    nofile    65535"
-    backup=yes
+  with_items:
+    - "*    soft    nofile    65535"
+    - "*    hard    nofile    65535"
 
 # Check if sysctl.conf exists
 - stat: path="/etc/sysctl.conf"
@@ -51,91 +50,47 @@
 - action: file path=/etc/sysctl.conf state=touch owner=root group=root mode=0644
   when: not sysctl_exists.stat.exists
 
-- lineinfile:
+- name: set sysctl.conf values
+  lineinfile:
     dest=/etc/sysctl.conf
-    line="fs.file-max = 65536"
+    line="{{ item }}"
     backup=yes
+  with_items:
+    - "fs.file-max = 65536"
+    - "fs.inotify.max_user_watches = 1048576"
+    - "net.core.somaxconn = 20000"
+    - "vm.swappiness = 1"
+    - "kernel.panic = 10"
+    - "net.core.rmem_max = 16777216"
+    - "net.ipv4.tcp_rmem = 4096 87380 16777216"
+    - "net.core.wmem_max = 16777216"
+    - "net.ipv4.tcp_wmem = 4096 16384 16777216"
+    - "net.ipv4.tcp_fin_timeout = {{ sysctl_tcp_fin_timeout }}"
+    - "net.ipv4.tcp_tw_reuse = 1"
+    - "net.core.netdev_max_backlog = 10000"
+    - "net.ipv4.ip_local_port_range = 15000 65000"
 
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="fs.inotify.max_user_watches = 1048576"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.core.somaxconn = 20000"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="vm.swappiness = 1"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="kernel.panic = 10"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.core.rmem_max = 16777216"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.ipv4.tcp_rmem = 4096 87380 16777216"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.core.wmem_max = 16777216"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.ipv4.tcp_wmem = 4096 16384 16777216"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.ipv4.tcp_fin_timeout = {{ sysctl_tcp_fin_timeout }}"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.ipv4.tcp_tw_reuse = 1"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.core.netdev_max_backlog = 10000"
-    backup=yes
-
-- lineinfile:
-    dest=/etc/sysctl.conf
-    line="net.ipv4.ip_local_port_range = 15000 65000"
-    backup=yes
-
-- lineinfile:
+- name: Add wkv_site_env environment variable
+  lineinfile:
     dest=/etc/environment
     line="WKV_SITE_ENV={{ wkv_site_env }}"
     backup=yes
 
-- lineinfile:
+- name: Add varnish_control_key environment variable
+  lineinfile:
     dest=/etc/environment
     line="VARNISH_CONTROL_KEY={{ varnish.control_key }}"
     backup=yes
-  when: varnish.control_key is defined
+  when: varnish is defined and varnish.control_key is defined
 
-- lineinfile:
+- name: Set locales
+  lineinfile:
     dest=/etc/locale.conf
-    line="LC_CTYPE=en_US.utf8"
+    line="{{ item }}"
     backup=yes
-
-- lineinfile:
-    dest=/etc/locale.conf
-    line="LC_ALL=en_US.utf8"
-    backup=yes
+  with_items:
+    - "LC_CTYPE=en_US.utf8"
+    - "LC_ALL=en_US.utf8"
 
 # Disable firewalld and make sure it stays off, we rely on HARDWARE firewalls.
 - service: name=firewalld state=stopped
@@ -149,7 +104,8 @@
   ignore_errors: True
 
 # Copy logrotation definitions
-- copy:
+- name: Copy logrotate configs
+  copy:
     src=logrotate/{{ item }}
     dest=/etc/logrotate.d/{{ item }}
   with_items:
