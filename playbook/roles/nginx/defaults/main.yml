@@ -23,6 +23,13 @@ apps:
     server_aliases: www.example35.com www.example53.com
     http_port: 8080
     docroot: /var/www/test2.com/current
+#   custom_app: |
+#     By default we assume drupal app is running on this host
+#     However sometimes it's something else, here you can define custom handling for
+#     upstream locations instead of using our drupal defaults
+#     location / {
+#        proxy_pass: http://127.0.0.1:5601;
+#      }
 
 #extradomainforwards:
 #  - forward_domain: "http://blog.example.com"

@@ -66,8 +66,12 @@ server {
     return 444;
   }
 
+  {% if site.custom_app is defined %}
+  {{ site.custom_app }}
+  {% else %}
   include conf.d/drupal.conf;
   include conf.d/php_fpm_status.conf;
+  {% endif %}
 
   {% if site.extra_headers is defined %}
   # Extra headers.
