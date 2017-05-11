@@ -1,3 +1,5 @@
 ansible==2.2.1.0
+# Required for 'ipaddr' filter in ansible playbooks
+netaddr==0.7.19
 # Install upcloud-api from github master
 git+git://github.com/UpCloudLtd/upcloud-python-api@577becf292e08484eb5ad54fe2a73651ce41b811#egg=upcloud-api
