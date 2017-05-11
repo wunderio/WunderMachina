@@ -263,6 +263,11 @@ class ServerManager():
     # Ensures that backups are enabled
     def ensure_storage_devices(self, server, module):
         server_spec = self.collect_server_params(module)
+
+        # If this request wasn't about the disks just skip this section
+        if not 'storage_devices' in server_spec:
+            return
+
         server_info = server.to_dict()
 
         # Loop all created disks from the server
