@@ -72,3 +72,9 @@ php_package: "php71u"
 
 # Default distribution CentOS 7
 distro: "centos7"
+
+php_env_vars:
+  - key: "WKV_SITE_ENV"
+    value: "{{ wkv_site_env }}"
+
+php_env_vars_include_db: False
