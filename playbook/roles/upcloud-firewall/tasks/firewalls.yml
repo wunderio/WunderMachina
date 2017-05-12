@@ -1,3 +1,7 @@
+- set_fact:
+    project_additional_ssh_firewall_rules: []
+  when: project_additional_ssh_firewall_rules is not defined or project_additional_ssh_firewall_rules.0 is not defined
+
 - name: Allow SSH for Admins and Deployment Services
   set_fact:
     all_upcloud_firewall_rules: >
@@ -19,7 +23,7 @@
       }}
   with_nested:
     - "{{ groups['all'] }}"
-    - "{{ firewall_ssh_allowed + project_additional_ssh_firewall_rules|default([]) }}"
+    - "{{ firewall_ssh_allowed + project_additional_ssh_firewall_rules }}"
 
 - name: Allow web traffic to web servers
   set_fact:
