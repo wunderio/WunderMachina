@@ -151,7 +151,7 @@ EXAMPLES = '''
 '''
 
 from distutils.version import LooseVersion
-from pprint import pprint
+
 import os
 
 # make sure that upcloud-api is installed
@@ -191,7 +191,8 @@ class ServerManager():
 
         # try with hostname, if given and nothing was found with uuid
         if hostname:
-            servers = self.manager.get_servers()
+            # Get all servers with populated data
+            servers = self.manager.get_servers(True)
 
             found_servers = []
             for server in servers:
@@ -230,6 +231,10 @@ class ServerManager():
 
         server_dict = self.collect_server_params(module)
 
+        # These paramaters are not supported when modifying the server
+        for item in ['zone','storage_devices','login_user']:
+            del server_dict[item]
+
         return self.manager.modify_server(uuid, **server_dict)
 
     # filter out 'filter_keys' and those who equal None from items to get server's attributes for POST request
@@ -255,6 +260,39 @@ class ServerManager():
         
         return server_dict
 
+    # Ensures that backups are enabled
+    def ensure_storage_devices(self, server, module):
+        server_spec = self.collect_server_params(module)
+
+        # If this request wasn't about the disks just skip this section
+        if not 'storage_devices' in server_spec:
+            return
+
+        server_info = server.to_dict()
+
+        # Loop all created disks from the server
+        for disk in server_info['storage_devices']:
+
+            # Filter disks which have same title as the created disk
+            disk_specs = [d for d in server_spec['storage_devices'] if d['title'] == disk['storage_title'].encode('UTF-8') ]
+
+            if len(disk_specs) > 1:
+                raise Exception("Multiple titles from server " + server_info['hostname'] + " storage_devices match disk: "+disk['storage'])
+            elif len(disk_specs) == 0:
+                raise Exception("No title in server "+ server_info['hostname'] + " storage_devices match disk: "+disk['storage'])
+            else:
+                disk_spec = disk_specs[0]
+
+                uuid = disk['storage']
+                size = disk_spec['size']
+                title = disk_spec['title']
+                backup_rule = {}
+                if 'backup_rule' in disk_spec:
+                    backup_rule = disk_spec['backup_rule']
+
+                # Update the storage settings
+                self.manager.modify_storage(uuid, size, title, backup_rule)
+
 
 def run(module, server_manager):
     """create/destroy/start server based on its current state and desired state"""
@@ -265,6 +303,7 @@ def run(module, server_manager):
     ip_address = module.params.get('ip_address')
 
     changed = True
+    modifications = None
 
     if state == 'present':
         server = server_manager.find_server(uuid, hostname, ip_address)
@@ -273,29 +312,39 @@ def run(module, server_manager):
             # create server, if one was not found
             server = server_manager.create_server(module)
         else:
-
             # Check if user requested any changes 
             server_wanted = server_manager.collect_server_params(module)
             changed = False
 
+            modifications = dict()
             for field in server_wanted:
                 if hasattr(server,field):
+                    attrs = getattr(server, field)
                     if getattr(server, field) != server_wanted[field]:
+                        if field == 'zone':
+                            raise Exception('Changing server zone is not supported')
+                        if field == 'storage_devices':
+                            continue # Storage devices can't be changed from server api. These will be handled later.
+
+                        modifications[str(field)] = { 'before': getattr(server, field), 'after': server_wanted[field] }
                         changed = True
 
-            # Do the requested changes
-            server = server_manager.modify_server(server.uuid, module)
+            if changed:
+                server = server_manager.modify_server(server.uuid, module)
+
+        # Checks the state of disk backups
+        server_manager.ensure_storage_devices(server, module)
 
         server.ensure_started()
 
-        module.exit_json(changed=changed, server=server.to_dict(), public_ip=server.get_public_ip())
+        module.exit_json(changed=changed, modifications=modifications, server=server.to_dict(), public_ip=server.get_public_ip())
 
     elif state == 'absent':
-        server = server_manager.find_server(uuid, hostname)
+        server = server_manager.find_server(uuid, hostname, ip_address)
 
         if server:
             server.stop_and_destroy()
-            module.exit_json(changed=True, msg="destroyed" + server.hostname)
+            module.exit_json(changed=True, msg="destroyed: " + server.hostname)
 
         module.exit_json(changed=False, msg="server absent (didn't exist in the first place)")
 
