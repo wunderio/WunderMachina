@@ -38,3 +38,9 @@
     state: directory
     mode: 0777
     recurse: yes
+
+
+- name: Write drushrc.php
+  template:
+    src=drushrc.php.j2
+    dest=/etc/drush/drushrc.php

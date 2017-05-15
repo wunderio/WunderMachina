@@ -9,6 +9,7 @@
 
 - name: Install php packages
   yum: pkg={{ item }} state=present
+  ignore_errors: yes
   with_items:
     - "{{ php_package }}-cli"
     - "{{ php_package }}-common"
@@ -30,4 +31,24 @@
     - "{{ php_package }}-xmlrpc"
     - "{{ php_package }}-pecl-apcu"
     - "{{ php_package }}-bcmath"
+
+
+- name: add db credentials to php_env_vars
+  set_fact:
+    php_env_vars: >
+      {{ php_env_vars +
+        [
+          {
+            "key": 'DB_USER_' + item.name|upper,
+            "value": item.user
+          },
+          {
+            "key": 'DB_PASS_' + item.name|upper,
+            "value": item.pass
+          }
+        ]
+      }}
+  with_items:
+    - "{{ databases }}"
+  when: php_env_vars_include_db == True
 
