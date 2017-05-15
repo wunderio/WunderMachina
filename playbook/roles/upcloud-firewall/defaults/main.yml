@@ -29,3 +29,20 @@ project_additional_firewall_rules:
 #  destination_port_start: 22
 #  destination_port_end: 22
 #  action: accept
+
+upcloud_default_firewall_rules:
+  - direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 53
+    source_port_end: 53
+    destination_port_start: 32768
+    destination_port_end: 61000
+    comment: Allow DNS Responses
+  - direction: in
+    family: IPv4
+    protocol: icmp
+    action: accept
+    icmp_type: 0
+    comment: Allow Ping Responses
