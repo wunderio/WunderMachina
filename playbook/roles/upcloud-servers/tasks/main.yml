@@ -1,0 +1,2 @@
+- include: create.yml
+  when: upcloud_server_spec_list is defined and upcloud_server_hostname_base_domain is defined

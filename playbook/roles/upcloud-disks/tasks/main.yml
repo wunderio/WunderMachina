@@ -1,0 +1,52 @@
+- name: Create a list of drives to be mounted
+  set_fact:
+    upcloud_mountable_disks: >
+      {{ upcloud_mountable_disks|default([]) +
+        [{
+          'path': item.0.mount.path,
+          'fstype': item.0.mount.fstype|default('ext4'),
+          'dev': upcloud_blockdevice_mapping_list[ item.1.address ],
+          'opts': item.0.mount.opts|default('defaults'),
+          'state': item.0.mount.state|default('mounted'),
+          'address': item.1.address
+        }]
+      }}
+  with_nested:
+    - "{{ upcloud_disk_specs }}"
+    - "{{ upcloud_created_disks }}"
+  when: item.0.title == item.1.storage_title and item.0.mount is defined and item.0.mount.path is defined
+
+- name: Prepare extra disks
+  block:
+    - name: Format all newly created block devices
+      filesystem:
+        fstype: "{{ item.fstype }}"
+        dev: "{{ item.dev }}"
+        resizefs: yes
+      with_items: "{{ upcloud_mountable_disks }}"
+      when: item.fstype != 'swap' and item.dev != '/dev/vda'
+
+    - name: Format swap devices
+      command: "mkswap {{ item.dev }}"
+      with_items: "{{ upcloud_mountable_disks }}"
+      when: item.fstype == 'swap' and ansible_swaptotal_mb < 1
+
+    - name: Setup Mounts
+      mount:
+        state: "{{ item.state }}"
+        src: "{{ item.dev }}"
+        name: "{{ item.path }}"
+        opts: "{{ item.opts }}"
+        fstype: "{{ item.fstype }}"
+      with_items: "{{ upcloud_mountable_disks }}"
+      when: item.dev != '/dev/vda'
+      register: upcloud_setup_mounts
+      notify:
+        - reboot machine
+
+    - name: Setup Swap partitions
+      command: "swapon {{ item.dev }}"
+      with_items: "{{ upcloud_mountable_disks }}"
+      when: item.fstype == 'swap' and ansible_swaptotal_mb < 1
+
+  when: upcloud_mountable_disks is defined
