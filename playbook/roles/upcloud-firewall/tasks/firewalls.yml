@@ -141,14 +141,14 @@
 # Prefer populated data from the server
 - name: Setup upcloud firewalls for successfully connected machines
   upcloud_firewall:
-    state: absent
+    state: present
     ip_address: "{{ hostvars[item]['ansible_eth0']['ipv4']['address'] }}"
     firewall_rules: >
         {{  all_upcloud_firewall_rules |
           default([]) |
           selectattr('machine', 'equalto', item) |
           map(attribute='rule') |
-          list + project_additional_firewall_rules
+          list + project_additional_firewall_rules + upcloud_default_firewall_rules
         }}
   with_items:
     - "{{ groups['all'] }}"
@@ -164,7 +164,7 @@
           default([]) |
           selectattr('machine', 'equalto', item) |
           map(attribute='rule') |
-          list + project_additional_firewall_rules
+          list + project_additional_firewall_rules + upcloud_default_firewall_rules
         }}
   with_items:
     - "{{ groups['all'] }}"
