@@ -1,5 +1,8 @@
-ansible==2.2.1.0
+ansible==2.3.0.0
+pyOpenSSL==16.2.0
+# Required for 'json_query' filter in ansible playbooks
+jmespath==0.9.2
 # Required for 'ipaddr' filter in ansible playbooks
 netaddr==0.7.19
 # Install upcloud-api from Wunder fork github master
-git+git://github.com/UpCloudLtd/upcloud-python-api@master#egg=upcloud-api
+git+git://github.com/wunderkraut/upcloud-python-api@master#egg=upcloud-api
