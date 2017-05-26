@@ -8,6 +8,8 @@
 #  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8gOdvY...
 #
 
+upcloud_default_zone: de-fra1
+
 ##
 # Example machine configuration
 ##
