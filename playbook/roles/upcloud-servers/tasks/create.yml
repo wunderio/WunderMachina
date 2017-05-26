@@ -1,7 +1,7 @@
 - name: Create UpCloud Servers
   upcloud_server:
     state: "{{ item.1.state | default('present') }}"
-    hostname: "{{ item.1.name }}.{{ item.0.group }}.{{ upcloud_server_hostname_base_domain }}"
+    hostname: "{{ item.0.group }}.{{ item.1.name }}.{{item.0.settings.zone | default(upcloud_default_zone)}}.{{ upcloud_server_hostname_base_domain }}"
     title: "{{ upcloud_project_name }} - {{ item.0.group }} {{ item.1.name }}"
     zone: "{{ item.0.settings.zone | default(upcloud_default_zone) }}"
     timezone: "{{ item.0.settings.timezone | default('Europe/Helsinki') }}"
