@@ -8,4 +8,4 @@
       failed_when: False
 
     - name: Wait for machine to come back online
-      wait_for: host={{ ansible_default_ipv4.address }} port={{ ansible_port|default(22) }} delay=5 timeout=320 state=started
+      local_action: wait_for host={{ ansible_default_ipv4.address }} port={{ ansible_port|default(22) }} delay=5 timeout=320 state=started

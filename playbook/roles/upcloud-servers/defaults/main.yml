@@ -8,6 +8,8 @@
 #  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC8gOdvY...
 #
 
+upcloud_default_zone: de-fra1
+
 ##
 # Example machine configuration
 ##
@@ -40,15 +42,6 @@
 #                # These are the same as Mozilla is using for their servers: https://bugzilla.mozilla.org/show_bug.cgi?id=874039
 #                opts: defaults,noatime,data=writeback,barrier=0,dioread_nolock
 #              backup_rule: { interval: daily, time: '0430', retention: 14 }
-#            # Swap is recommended for system stability and when it's a partition it can be excluded from backups
-#            # Upcloud minimum partition is 10gb
-#            - title: swap
-#              size: 10
-#              mount:
-#                path: none
-#                fstype: swap
-#                state: present
-#                opts: sw
 #      - group: stage
 #        members:
 #          - { name: web1, state: present }

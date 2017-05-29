@@ -1,2 +1,7 @@
+# Loads all initial ssh keys for root user from pubkeys server
+- include: ssh-keys-from-pubkey-server.yml
+  when: base_pubkeys_auth is definde and base_pubkeys_host is defined
+
+# Creates the servers
 - include: create.yml
-  when: upcloud_server_spec_list is defined and upcloud_server_hostname_base_domain is defined
+  when: upcloud_project_name is defined and upcloud_server_spec_list is defined and upcloud_server_hostname_base_domain is defined
