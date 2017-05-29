@@ -8,7 +8,7 @@
     upcloud_server_admin_ssh_keys: "{{ upcloud_admin_keys|default([]) + [ item ] }}"
   with_url:
     - "{{ upcloud_basekeys_url }}"
-  when: basekeys_auth is defined and base_pubkeys_host is defined
+  when: base_pubkeys_auth is defined and base_pubkeys_host is defined
 
 - fail:
     msg: "Can't load ssh keys from {{ basekeys_auth }}"
