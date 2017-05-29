@@ -1,0 +1,15 @@
+- set_fact:
+    upcloud_basekeys_url: "https://{{ base_pubkeys_auth }}@{{ base_pubkeys_host }}/auth?hostname=upcloud"
+  when: upcloud_basekeys_url is not defined
+
+# This loads ssh keys from pubkey server
+- name: Load ssh keys from key server
+  set_fact:
+    upcloud_server_admin_ssh_keys: "{{ upcloud_admin_keys|default([]) + [ item ] }}"
+  with_url:
+    - "{{ upcloud_basekeys_url }}"
+  when: basekeys_auth is defined and base_pubkeys_host is defined
+
+- fail:
+    msg: "Can't load ssh keys from {{ basekeys_auth }}"
+  when: upcloud_server_admin_ssh_keys.0 is not defined

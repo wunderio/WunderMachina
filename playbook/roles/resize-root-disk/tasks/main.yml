@@ -1,0 +1,58 @@
+# Lookup information abouth the root blockdevice and partition
+- set_fact:
+    root_mount: "{{ ansible_mounts | selectattr('mount', 'equalto', '/') | first }}" 
+- set_fact:
+    root_device_name: "{{ item }}"
+  with_items: "{{ ansible_devices }}"
+  when: "{{ root_mount.uuid in ansible_devices[item].partitions|json_query('*.uuid') }}"
+- set_fact:
+    root_device: "{{ ansible_devices[root_device_name] }}"
+- set_fact:
+    root_partition_name: "{{ root_device.partitions|first }}"
+  when: root_device.partitions|length == 1
+- set_fact:
+    root_partition: "{{ root_device.partitions[root_partition_name] }}"
+  when: root_partition_name is defined
+
+## Enlarge root if there's only one partition and unused space in the devic
+- block:
+    - name: Lookup root partition id
+      shell: sfdisk --print-id /dev/{{root_device_name}} 1
+      register: root_partion_check
+      changed_when: False
+
+    - set_fact:
+        root_partion_id: "{{ root_partion_check.stdout|int }}"
+      when: root_partion_check.stdout|int > 0
+
+    - name: Resize root partition to max size
+      shell: echo "{{ root_partition.start }}",,"{{ root_partion_id }}",- | sfdisk --force -uS /dev/{{root_device_name}}
+      when: root_partion_id is defined
+      register: resize_root_partition
+      failed_when: "'Successfully wrote the new partition table' not in resize_root_partition.stdout"
+
+    - name: Reboot the machine to enable new partitions
+      shell: sleep 2 && shutdown -r now
+      async: 1
+      poll: 0
+      changed_when: True
+      ignore_errors: true
+      failed_when: False
+      when: resize_root_partition.changed
+
+    - name: Wait for machine to come back online
+      local_action: wait_for host={{ ansible_default_ipv4.address }} port={{ ansible_port|default(22) }} delay=10 timeout=320 connect_timeout=15 state=started
+
+    - name: Grow XFS root filesystem to max size
+      shell: xfs_growfs "{{ root_mount.device }}"
+      when: root_mount.fstype == 'xfs'
+
+    - name: Grow EXT root filesystem to max size
+      shell: resize2fs "{{ root_mount.device }}"
+      when: root_mount.fstype in ['ext2','ext3','ext4']
+
+    - name: Grow ReiserFS root filesystem to max
+      shell: resize_reiserfs "{{ root_mount.device }}"
+      when: root_mount.fstype == 'reiserfs'
+  
+  when: allow_reboot_on_resize and root_device is defined and root_device.partitions|length == 1 and root_device.size|regex_replace(' GB', '') > root_partition.size|regex_replace(' GB', '')

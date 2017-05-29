@@ -1,0 +1,44 @@
+- set_fact:
+    upcloud_project_slug: "{{ upcloud_project_name | regex_replace('\\s+','-') | lower }}"
+
+- name: Create UpCloud Servers
+  upcloud_server:
+    state: "{{ item.1.state | default('present') }}"
+    hostname: "{{ item.0.group }}-{{ item.1.name }}.{{ upcloud_project_slug }}.{{item.0.settings.zone | default(upcloud_default_zone)}}.{{ upcloud_server_hostname_base_domain }}"
+    title: "{{ upcloud_project_name }} - {{ item.0.group }} {{ item.1.name }}"
+    zone: "{{ item.0.settings.zone | default(upcloud_default_zone) }}"
+    timezone: "{{ item.0.settings.timezone | default('Europe/Helsinki') }}"
+    firewall: "{{ item.0.settings.firewall | default('on') }}"
+    plan: "{{ item.0.settings.plan }}"
+    storage_devices: "{{ item.0.settings.storage_devices }}"
+    allow_reboot_on_resize: "{{ item.0.settings.allow_reboot_on_resize }}"
+    user: "{{ upcloud_deploy_user | default('root') }}"
+    ssh_keys: "{{ upcloud_server_admin_ssh_keys }}"
+  with_subelements:
+    - "{{ upcloud_server_spec_list }}"
+    - members
+  register: upcloud_created_instances
+  tags: ['create']
+
+- name: Add all created machines to ansible
+  add_host:
+    name: "{{ item['server']['hostname'] }}"
+    groups:  "{{ item['item'] | json_query( '[*].group' ) }} + {{ [ 'upcloud_created_servers' ] }}"
+    ansible_host: "{{ item['public_ip'] }}"
+    ansible_user: "{{ upcloud_deploy_user | default('root') }}"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    ansible_ssh_extra_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+    allow_reboot_on_resize: "{{ item['invocation']['module_args']['allow_reboot_on_resize']|default(False) }}"
+    upcloud_disk_specs: "{{ item['invocation']['module_args']['storage_devices'] }}"
+    upcloud_created_disks: "{{ item['server']['storage_devices'] }}"
+    upcloud_resized_disks: "{{ item['modifications']['storage_devices'] }}"
+  with_items:
+    - "{{ upcloud_created_instances.results }}"
+  when: item.server is defined and item.server.state == 'started'
+  tags: ['create']
+
+- name: Wait for SSH to come up
+  wait_for: host={{ item.public_ip }} port={{ ansible_port|default(22) }} delay=1 timeout=60 state=started
+  with_flattened:
+    - "{{ upcloud_created_instances.results }}"
+  when: item.public_ip is defined
