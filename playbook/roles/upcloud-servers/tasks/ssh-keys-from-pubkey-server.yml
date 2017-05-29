@@ -5,7 +5,7 @@
 # This loads ssh keys from pubkey server
 - name: Load ssh keys from key server
   set_fact:
-    upcloud_server_admin_ssh_keys: "{{ upcloud_admin_keys|default([]) + [ item ] }}"
+    upcloud_server_admin_ssh_keys: "{{ upcloud_server_admin_ssh_keys|default([]) + [ item ] }}"
   with_url:
     - "{{ upcloud_basekeys_url }}"
   when: base_pubkeys_auth is defined and base_pubkeys_host is defined
