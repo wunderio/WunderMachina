@@ -41,6 +41,7 @@
     - iotop
     - sudo
     # This is not available in the new machines anymore
+    # Use `yum --security upgrade` instead
     #- yum-security
     - mailx
 
