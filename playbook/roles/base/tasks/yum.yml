@@ -40,7 +40,8 @@
     - htop
     - iotop
     - sudo
-    - yum-security
+    # This is not available in the new machines anymore
+    #- yum-security
     - mailx
 
 - name: Update the system on first run
