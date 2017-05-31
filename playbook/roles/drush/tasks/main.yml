@@ -13,7 +13,7 @@
   template: src=composer.sh.j2 dest=/etc/profile.d/composer.sh
 
 - name: Install drush
-  shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require drush/drush:{{ drush.version }} && drush
+  shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require webflo/drush-shim && drush
     creates=/usr/bin/drush
 
 - name: Install prestissimo
