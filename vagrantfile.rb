@@ -62,7 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		end
 	end
 
-	config.vm.network :private_network, ip: INSTANCE_IP
+	config.vm.network :private_network, type: "dhcp"
 
 	# Sync folders
 	if Gem.win_platform?
