@@ -1,9 +1,8 @@
-elasticsearch_plugin_dir: /usr/share/elasticsearch/plugins
-elasticsearch_home_dir: /usr/share/elasticsearch
-
 elasticsearch_config:
   node_name: node1
   cluster_name: cluster1
+  plugin_dir: /usr/share/elasticsearch/plugins
+  home_dir: /usr/share/elasticsearch
 
 # by default the kopf ui and hq plugin are installed.
 elasticsearch_plugins:
