@@ -38,7 +38,8 @@
     state=present
   with_items:
     - { regexp: 'network\.host', line: 'network.host: 0.0.0.0' }
-    - { regexp: 'node\.name', line: 'node.name: node-1' }
+    - { regexp: 'cluster\.name', line: 'cluster.name: {{ elasticsearch_config.cluster_name }}' }
+    - { regexp: 'node\.name', line: 'node.name: {{ elasticsearch_config.node_name }}' }
   notify: restart elasticsearch
 
 - name: Configure Elasticsearch.
