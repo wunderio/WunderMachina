@@ -32,7 +32,7 @@ php_value[soap.wsdl_cache_dir]  = /var/lib/php/fpm/wsdlcache
 
 {% if php_env_vars is defined %}
 {% for variable in php_env_vars %}
-env[{{ variable.key }}] = {{ variable.value }}
+env[{{ variable.key }}] = "{{ variable.value }}"
 {% endfor %}
 {% endif %}
 
