@@ -45,6 +45,10 @@
           {
             "key": 'DB_PASS_' + item.name|upper,
             "value": item.pass
+          },
+          {
+            "key": 'DB_HOST_' + item.name|upper,
+            "value": item.host
           }
         ]
       }}
