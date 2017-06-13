@@ -30,6 +30,10 @@
           {
             "key": 'DB_HOST_' + item.name|upper,
             "value": item.host|default('127.0.0.1')
+          },
+          {
+            "key": 'DB_PORT_' + item.name|upper,
+            "value": item.port|default('3306')
           }
         ]
       }}
