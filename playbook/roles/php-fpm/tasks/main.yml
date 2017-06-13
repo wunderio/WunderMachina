@@ -9,6 +9,38 @@
 - include: "php70u.yml"
   when: php_package == "php70u" or php_package == "php71u"
 
+# Add db credentials as ENV for the php-fpm
+- name: add db credentials to php_env_vars
+  set_fact:
+    php_env_vars: >
+      {{ php_env_vars +
+        [
+          {
+            "key": 'DB_NAME_' + item.name|upper,
+            "value": item.name
+          },
+          {
+            "key": 'DB_USER_' + item.name|upper,
+            "value": item.user
+          },
+          {
+            "key": 'DB_PASS_' + item.name|upper,
+            "value": item.pass
+          },
+          {
+            "key": 'DB_HOST_' + item.name|upper,
+            "value": item.host|default('127.0.0.1')
+          },
+          {
+            "key": 'DB_PORT_' + item.name|upper,
+            "value": item.port|default('3306')
+          }
+        ]
+      }}
+  with_items:
+    - "{{ databases }}"
+  when: php_env_vars_include_db == True
+
 - yum:
     name={{ item }}
     state=present
@@ -30,10 +62,12 @@
     src=www.conf.j2
     dest=/etc/php-fpm.d/www.conf
   when: php_package == "php56u"
+
 - template:
     src=www.conf.php7.j2
     dest=/etc/php-fpm.d/www.conf
   when: php_package == "php70u" or php_package == "php71u"
+
 - copy:
     src=php-fpm/{{ item }}
     dest=/etc/{{ item }}

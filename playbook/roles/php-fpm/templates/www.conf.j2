@@ -26,7 +26,17 @@ rlimit_files = 131072
 rlimit_core = unlimited
 php_admin_value[error_log] = /var/log/php-fpm/www-error.log
 php_admin_flag[log_errors] = on
+
+{% if php_env_vars is defined %}
+{# This is the new way to handle sites. All envs are included here. #}
+{% for variable in php_env_vars %}
+env[{{ variable.key }}] = "{{ variable.value }}"
+{% endfor %}
+{% elif wkv_site_env is defined %}
+{# This is the legacy way of handling only WKV_SITE_ENV #}
 env[WKV_SITE_ENV] = "{{ wkv_site_env }}"
+{% endif %}
+
 {% if varnish is defined %}
 {% if varnish.control_key is defined %}
 env[VARNISH_CONTROL_KEY] = "{{ varnish.control_key }}"
