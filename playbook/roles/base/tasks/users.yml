@@ -60,6 +60,8 @@
 # Register host to our auth management system
 - shell:
     curl -u {{ base_pubkeys_auth }} {{ base_addhost_url }}
+  when: base_pubkeys_enable == True
+
 
 - lineinfile:
     dest=/etc/ssh/sshd_config
