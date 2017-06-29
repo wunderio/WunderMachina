@@ -33,6 +33,11 @@ sql_mode = NO_ENGINE_SUBSTITUTION,TRADITIONAL
 # Network.
 bind-address = 0.0.0.0
 
+# Ignore data fragments found by fsck
+# These will be there if /var/lib/mysql is mounted to it's own block device
+# When machine is rebooted it runs fsck on the block device and collects non referenced data fragments to that folder
+ignore-db-dir=lost+found
+
 # There's no reason to waste time resolving domain names.
 # Faster & Safer. Do not use host names in GRANTs.
 skip-name-resolve
