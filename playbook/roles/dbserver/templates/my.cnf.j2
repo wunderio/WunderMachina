@@ -44,9 +44,9 @@ skip-name-resolve
 
 # Query cache
 query_cache_type = 1
-query_cache_limit = 256K
-query_cache_min_res_unit = 2k
-query_cache_size = 80M
+query_cache_limit = {{ mysql_query_cache_limit | default('256K') }}
+query_cache_min_res_unit = {{ query_cache_min_res_unit | default('2k') }}
+query_cache_size = {{ mysql_query_cache_size | default('80M') }}
 
 # Basic Tuning.
 max_connections = {{ max_connections }}
