@@ -234,7 +234,8 @@ class ServerManager():
 
         # These paramaters are not supported when modifying the server
         for item in ['zone','storage_devices','login_user','allow_reboot_on_resize']:
-            del server_dict[item]
+            if item in server_dict:
+                del server_dict[item]
 
         return self.manager.modify_server(uuid, **server_dict)
 
