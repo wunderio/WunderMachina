@@ -16,6 +16,8 @@ httpforwards:
   - server_name: www.test.com
     forwarded_domains: 'test.com www.test.com'
 
+httpsforwards:
+
 basicauth_enabled: False
 basicauth_username: wunder
 basicauth_password: wunder123
