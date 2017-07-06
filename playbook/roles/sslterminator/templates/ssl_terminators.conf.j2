@@ -9,9 +9,10 @@ server {
   return 444;
 }
 
-{% for site in httpforwards %}
+{% if httpforwards is defined and httpforwards|length > 0 %}
+  {% for site in httpforwards %}
+    {% if site.forwarded_domains is defined %}
 
-{% if site.forwarded_domains is defined %}
 # HTTP Forwarder
 server {
     listen 80;
@@ -37,11 +38,11 @@ server {
     }
 }
 
+    {% endif %}
+  {% endfor %}
 {% endif %}
 
-{% endfor %}
-
-{% if httpsforwards is defined %}
+{% if httpsforwards is defined and httpsforwards|length > 0 %}
   {% for site in httpsforwards %}
     {% if site.forwarded_domains is defined %}
 
