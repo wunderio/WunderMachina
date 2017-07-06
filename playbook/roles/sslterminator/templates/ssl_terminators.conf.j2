@@ -41,9 +41,10 @@ server {
 
 {% endfor %}
 
-{% for site in httpsforwards %}
+{% if httpsforwards is defined %}
+  {% for site in httpsforwards %}
+    {% if site.forwarded_domains is defined %}
 
-{% if site.forwarded_domains is defined %}
 # HTTPS Forwarder
 server {
     listen 443 http2 ssl;
@@ -66,9 +67,9 @@ server {
     }
 }
 
+    {% endif %}
+  {% endfor %}
 {% endif %}
-
-{% endfor %}
 
 {% if httpextraforwards is defined %}
 {% for site in httpextraforwards %}
