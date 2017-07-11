@@ -1,0 +1,80 @@
+---
+#
+# IOJS Tasks
+#
+# IOJS is no longer available via NVM, but can be downloaded on the web.
+# IOJS was a NodeJS compatible platform based upon an earlier NodeJS release.
+# IOJS was merged into NodeJS in version 4, and is in every version this role installs.
+#
+
+- name: "IOJS | Get versions"
+  become: yes
+  become_user: "{{ fubarhouse_user }}"
+  shell: "/usr/local/bin/ivm ls"
+  register: iojs_available_versions
+  changed_when: false
+
+- name: "IOJS | Check for local default install"
+  become: yes
+  become_user: "{{ fubarhouse_user }}"
+  stat:
+    path: "/usr/local/ivm/versions/{{ node_version }}"
+  register: fubarhouse_npm_io_install_result
+  changed_when: false
+  failed_when: false
+  when: '"{{ node_version }}" in iojs_available_versions.stdout_lines'
+
+- name: "IOJS | Check for all local installs"
+  become: yes
+  become_user: "{{ fubarhouse_user }}"
+  stat:
+    path: "/usr/local/ivm/versions/{{ item }}"
+  register: fubarhouse_npm_io_install_results
+  changed_when: false
+  failed_when: false
+  when: '"{{ item }}" in iojs_available_versions.stdout'
+  with_items: "{{ node_versions }}"
+
+- name: "IOJS | Install default"
+  become: yes
+  become_user: root
+  shell:  "/usr/local/bin/ivm {{ node_version }}"
+  when:
+    - fubarhouse_npm_io_install_result is defined
+    - '"{{ node_version }}" not in fubarhouse_npm_io_install_results.results'
+    - '"{{ node_version }}" in iojs_available_versions.stdout'
+  changed_when: false
+
+- name: "IOJS | Install all"
+  become: yes
+  become_user: root
+  shell:  "/usr/local/bin/ivm {{ item }}"
+  when: 'iojs_available_versions is defined and "{{ item }}" in iojs_available_versions.stdout'
+  with_items:
+   - "{{ node_versions }}"
+  changed_when: false
+
+- name: "IOJS | Unalias default NVM alias"
+  become: yes
+  become_user: "{{ fubarhouse_user }}"
+  shell: "{{ nvm_symlink_exec }} unalias default"
+  changed_when: false
+  failed_when: false
+  when: '"{{ node_version }}" in iojs_available_versions.stdout'
+
+- name: "IOJS | Switch"
+  become: yes
+  become_user: root
+  file:
+    src: "/usr/local/ivm/versions/{{ node_version }}/bin/node"
+    dest: "/usr/local/bin/iojs"
+    state: link
+    force: yes
+  when: '"{{ node_version }}" in iojs_available_versions.stdout'
+
+- name: "IOJS | Verify version in use"
+  shell: "/usr/local/bin/ivm ls | grep ο | cat"
+  register: iojs_current_version
+  changed_when: false
+  failed_when: 'iojs_current_version.stdout.find("{{ node_version }}") == -1'
+  when: '"{{ node_version }}" in iojs_available_versions.stdout'

@@ -1,0 +1,30 @@
+---
+# Tasks file for NPM
+
+- name: "NPM | Make sure NPM can be found"
+  become: yes
+  become_user: "{{ fubarhouse_user }}"
+  shell: which npm | cat
+  failed_when: false
+  changed_when: false
+  register: which_npm
+
+- name: "NPM | Configure"
+  become: yes
+  become_user: "{{ fubarhouse_user }}"
+  shell: "{{ which_npm.stdout }} config set prefix /usr/local"
+  when: '"npm" in "{{ which_npm.stdout }}"'
+  changed_when: false
+  failed_when: false
+  when: '"npm" in which_npm.stdout'
+
+- name: "NPM | Ensure installed and updated"
+  become: yes
+  become_user: root
+  npm:
+    name: "{{ item }}"
+    executable: "{{ which_npm.stdout }}"
+    global: yes
+  with_items:
+    - "{{ node_packages }}"
+  when: '"npm" in which_npm.stdout'
