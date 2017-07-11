@@ -1,5 +1,6 @@
 .vagrant
 .DS_Store
+.Idea
 
 # Ignore python virtualenv created by pip
 .virtualenv
