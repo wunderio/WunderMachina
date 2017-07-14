@@ -43,7 +43,7 @@ upcloud_default_firewall_rules:
   - direction: in
     action: accept
     family: IPv4
-    protocol: udp
+    protocol: tcp
     source_port_start: 53
     source_port_end: 53
     destination_port_start: 32768
