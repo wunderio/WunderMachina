@@ -46,3 +46,12 @@ upcloud_default_firewall_rules:
     action: accept
     icmp_type: 0
     comment: Allow Ping Responses
+  - comment: Allow Sync with NTP servers
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 123
+    source_port_end: 123
+    destination_port_start: 123
+    destination_port_end: 123
