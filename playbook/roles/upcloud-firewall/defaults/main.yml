@@ -39,7 +39,16 @@ upcloud_default_firewall_rules:
     source_port_end: 53
     destination_port_start: 32768
     destination_port_end: 61000
-    comment: Allow DNS Responses
+    comment: Allow DNS Responses (UPD)
+  - direction: in
+    action: accept
+    family: IPv4
+    protocol: tcp
+    source_port_start: 53
+    source_port_end: 53
+    destination_port_start: 32768
+    destination_port_end: 61000
+    comment: Allow DNS Responses (TCP)
   - direction: in
     family: IPv4
     protocol: icmp
