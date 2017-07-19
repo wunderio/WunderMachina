@@ -1,10 +1,8 @@
-elasticsearch_plugin_dir: /usr/share/elasticsearch/plugins
-elasticsearch_home_dir: /usr/share/elasticsearch
-
-# Define one or more plugins to install with Elasticsearch.
-# The "name" variable is used when installing a plugin, and the
-# "shortname" variable is used when removing it.
-# (due to how the plugin binary works in elasticsearch2.0).
+elasticsearch_config:
+  node_name: node1
+  cluster_name: cluster1
+  plugin_dir: /usr/share/elasticsearch/plugins
+  home_dir: /usr/share/elasticsearch
 
 # by default the kopf ui and hq plugin are installed.
 elasticsearch_plugins:

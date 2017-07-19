@@ -1,7 +1,7 @@
 - set_fact:
     upcloud_project_slug: "{{ upcloud_project_name | regex_replace('\\s+','-') | lower }}"
 
-- name: Create UpCloud Servers
+- name: Create or Update UpCloud Servers
   upcloud_server:
     state: "{{ item.1.state | default('present') }}"
     hostname: "{{ item.0.group }}-{{ item.1.name }}.{{ upcloud_project_slug }}.{{item.0.settings.zone | default(upcloud_default_zone)}}.{{ upcloud_server_hostname_base_domain }}"

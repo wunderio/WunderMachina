@@ -237,7 +237,29 @@ class ServerManager():
             if item in server_dict:
                 del server_dict[item]
 
-        return self.manager.modify_server(uuid, **server_dict)
+        try:
+            # Try to do the server modifications without restarting the server
+            return self.manager.modify_server(uuid, **server_dict)
+        except UpCloudAPIError as e:
+            # The change might be denied if the server is running
+            # Check if allow_reboot_on_resize was used and stop the server when doing the resize
+            if e.error_code == 'SERVER_STATE_ILLEGAL' and module.params.get('allow_reboot_on_resize'):
+
+                server = self.manager.get_server(uuid)
+
+                # Allow longer timeout for starting/stopping the machine
+                self.manager.timeout=360
+
+                server.ensure_stopped()
+
+                result = self.manager.modify_server(uuid, **server_dict)
+
+                server.ensure_started()
+
+                return result
+
+            else:
+                raise
 
     # filter out 'filter_keys' and those who equal None from items to get server's attributes for POST request
     def collect_server_params(self, module):
@@ -315,7 +337,7 @@ class ServerManager():
 
             initial_timeout = self.manager.timeout
 
-            # Allow longer timeout for starting/stopped the machine
+            # Allow longer timeout for starting/stopping the machine
             self.manager.timeout=360
 
             # Stop the machine and wait until it's shutdown
