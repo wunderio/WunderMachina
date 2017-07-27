@@ -1,7 +1,7 @@
 ---
 - name: Install JRE
   yum: pkg=jre state=installed
-  
+
 - name: Include OS-Specific variables
   include_vars: "{{ ansible_os_family }}.yml"
   tags: [configuration, selenium]
@@ -24,7 +24,7 @@
   package: name=firefox state=present
   when: selenium_install_firefox
   tags: [configuration, selenium, selenium-firefox]
-  
+
 - name: Get the latest release for geckodriver
   shell: 'curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep "browser_download_url.*linux64.tar.gz" | cut -d : -f 2,3 | tr -d \"'
   register: geckodriver_latest
@@ -49,7 +49,7 @@
 
 - name: Install chromedriver
   unarchive:
-    src: "http://chromedriver.storage.googleapis.com/2.30/chromedriver_linux64.zip"
+    src: "http://chromedriver.storage.googleapis.com/{{ selenium_chromedriver }}/chromedriver_linux64.zip"
     dest: /usr/bin
     mode: 0755
     copy: no
@@ -59,7 +59,7 @@
 - name: Install xvfb
   package: name={{ selenium_xvfb_package }}
   tags: [configuration, selenium, selenium-xvfb]
-  
+
 - name: Install xvfb systemd unit file (for systemd systems)
   template:
     src: "xvfb-unit.j2"
@@ -89,7 +89,7 @@
     mode: 0755
   when: "ansible_service_mgr == 'systemd'"
   tags: [configuration, selenium, selenium-install]
-  
+
 - name: Register xvfb systemd service status (for systemd systems)
   shell: 'systemctl status xvfb | grep "active (running)"'
   when: "ansible_service_mgr == 'systemd'"
