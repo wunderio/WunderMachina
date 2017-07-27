@@ -7,6 +7,8 @@ varnish:
   error_header_x_site_name: "insert_sitename"
   error_header_x_sitetitle: "insert_site_title"
   error_header_x_ua: "insert_GA_code"
+  hotlink_forbidden: false
+  hotlink_filetype_pattern: "pdf|doc|xls|ppt|zip|bz2|gzip"
   acl_internal:
     - ip: 127.0.0.1
   acl_purge:
