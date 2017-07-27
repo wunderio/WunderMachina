@@ -116,6 +116,11 @@ sub vcl_recv {
     set req.http.sticky = std.random(1, 100);
   }
 
+  {% if varnish.hotlink_forbidden %}
+  # Call hotlink prevention sub.
+  call hotlink;
+  {% endif %}
+
   # Send traffic to the correct site director, determined by request domain name.
   if (req.http.host == "") {
     return (synth(404, "Need a host header"));
@@ -577,4 +582,30 @@ sub vcl_fini {
   # Typically used to clean up VMODs.
 
   return (ok);
+}
+
+sub hotlink {
+  # Prevent hotlinking of files. Called optionally from vcl_recv if hotlinking is forbidden.
+
+  if ((
+    {% for director in varnish.directors %}
+    req.http.host == "{{ director.host }}" {% if not loop.last %} || {% endif %}
+    {% endfor %}) &&
+    req.url ~ "^/sites/default/files/" &&
+    req.url ~ "\.({{ varnish.hotlink_filetype_pattern }})(\?.*)?$"
+  ) {
+    # Only allow if referer is from one of our host.
+    if (
+      {% if varnish.hotlink_allow_no_referer %}
+      req.http.referer &&
+      {% endif %}
+      !(
+      {% for director in varnish.directors %}
+      req.http.referer ~ "^(http|https)://{{ director.host}}" {% if not loop.last %} || {% endif %}
+      {% endfor %}
+      )
+    ) {
+      return (synth(403, "Not allowed."));
+    }
+  }
 }
