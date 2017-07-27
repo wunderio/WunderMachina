@@ -9,6 +9,7 @@ varnish:
   error_header_x_ua: "insert_GA_code"
   hotlink_forbidden: false
   hotlink_filetype_pattern: "pdf|doc|xls|ppt|zip|bz2|gzip"
+  hotlink_allow_no_referer: true
   acl_internal:
     - ip: 127.0.0.1
   acl_purge:

@@ -178,6 +178,7 @@
         - ip: 127.0.0.1
       hotlink_forbidden: true
       hotlink_filetype_pattern: "pdf|doc"
+      hotlink_allow_no_referer: true
       directors:
         # One app
         - name: test_com_director

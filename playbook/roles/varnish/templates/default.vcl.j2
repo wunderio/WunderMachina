@@ -595,7 +595,11 @@ sub hotlink {
     req.url ~ "\.({{ varnish.hotlink_filetype_pattern }})(\?.*)?$"
   ) {
     # Only allow if referer is from one of our host.
-    if (!(
+    if (
+      {% if varnish.hotlink_allow_no_referer %}
+      req.http.referer &&
+      {% endif %}
+      !(
       {% for director in varnish.directors %}
       req.http.referer ~ "^(http|https)://{{ director.host}}" {% if not loop.last %} || {% endif %}
       {% endfor %}
