@@ -176,6 +176,7 @@
         - ip: 127.0.0.1
       acl_upstream_proxy:
         - ip: 127.0.0.1
+      hotlink_forbidden: true
       directors:
         # One app
         - name: test_com_director
