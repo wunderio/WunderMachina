@@ -115,3 +115,12 @@
     - syslog
   notify:
     - restart rsyslog
+
+
+- name: Disable IPv6 DNS
+  replace:
+    dest: "/etc/sysconfig/network-scripts/ifcfg-eth2"
+    regexp: "^DHCPV6C"
+    replace: "#DHCPV6C"
+  notify:
+      - restart network
