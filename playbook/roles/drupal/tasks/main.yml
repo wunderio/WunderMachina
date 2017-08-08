@@ -23,11 +23,31 @@
   shell: source /etc/profile.d/composer.sh && composer global require drush/drush:{{ drush.version }} && drush
     creates=/usr/bin/drush
 
+- name: Install prestissimo
+  shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require "hirak/prestissimo:^0.3"
+
+- name: Make sure /usr/share/drush/commands exists
+  action: file path=/usr/share/drush/commands state=directory
+
+- name: Install juampynr/syncdb for database sync
+  shell: wget -O /usr/share/drush/commands/syncdb.drush.inc https://raw.githubusercontent.com/juampynr/syncdb/master/syncdb.drush.inc
+
+- name: Use OpenSuse repo for parallel on CentOS 6
+  yum_repository:
+    name: tange_centos_6
+    description: tange's Home Project (CentOS_CentOS-6)
+    baseurl: http://download.opensuse.org/repositories/home:/tange/CentOS_CentOS-6/
+
+- name: Install parallel for syncdb
+  yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - parallel
+
 - name: Ensure drupal/files dir exists and set it to world writable
   file: path=/vagrant/{{ drupal_files }} state=directory mode=0777
 
 # - name: Install drush sql-sync-pipe
 #   shell: cd {{ composer.path }}/vendor/drush/drush/commands && git clone https://github.com/mvance/sql-sync-pipe.git
 #     creates={{ composer.path }}/vendor/drush/drush/commands/sql-sync-pipe/sql_sync_pipe.drush.inc
-
-
