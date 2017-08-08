@@ -33,15 +33,20 @@ sql_mode = NO_ENGINE_SUBSTITUTION,TRADITIONAL
 # Network.
 bind-address = 0.0.0.0
 
+# Ignore data fragments found by fsck
+# These will be there if /var/lib/mysql is mounted to it's own block device
+# When machine is rebooted it runs fsck on the block device and collects non referenced data fragments to that folder
+ignore-db-dir=lost+found
+
 # There's no reason to waste time resolving domain names.
 # Faster & Safer. Do not use host names in GRANTs.
 skip-name-resolve
 
 # Query cache
 query_cache_type = 1
-query_cache_limit = 256K
-query_cache_min_res_unit = 2k
-query_cache_size = 80M
+query_cache_limit = {{ mysql_query_cache_limit | default('256K') }}
+query_cache_min_res_unit = {{ query_cache_min_res_unit | default('2k') }}
+query_cache_size = {{ mysql_query_cache_size | default('80M') }}
 
 # Basic Tuning.
 max_connections = {{ max_connections }}

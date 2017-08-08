@@ -1,0 +1,2 @@
+# This flag needs to be set in order resize root system
+allow_reboot_on_resize: false

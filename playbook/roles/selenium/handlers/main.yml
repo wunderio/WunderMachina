@@ -1,0 +1,7 @@
+---
+# handlers file for selenium
+- name: restart selenium
+  service: name=selenium state=restarted daemon_reload=yes
+
+- name: restart xvfb
+  service: name=xvfb state=restarted daemon_reload=yes

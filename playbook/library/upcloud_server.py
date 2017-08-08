@@ -151,7 +151,9 @@ EXAMPLES = '''
 '''
 
 from distutils.version import LooseVersion
+from upcloud_api.errors import UpCloudClientError, UpCloudAPIError
 
+import itertools
 import os
 
 # make sure that upcloud-api is installed
@@ -191,7 +193,6 @@ class ServerManager():
 
         # try with hostname, if given and nothing was found with uuid
         if hostname:
-            # Get all servers with populated data
             servers = self.manager.get_servers(True)
 
             found_servers = []
@@ -232,10 +233,33 @@ class ServerManager():
         server_dict = self.collect_server_params(module)
 
         # These paramaters are not supported when modifying the server
-        for item in ['zone','storage_devices','login_user']:
-            del server_dict[item]
+        for item in ['zone','storage_devices','login_user','allow_reboot_on_resize']:
+            if item in server_dict:
+                del server_dict[item]
 
-        return self.manager.modify_server(uuid, **server_dict)
+        try:
+            # Try to do the server modifications without restarting the server
+            return self.manager.modify_server(uuid, **server_dict)
+        except UpCloudAPIError as e:
+            # The change might be denied if the server is running
+            # Check if allow_reboot_on_resize was used and stop the server when doing the resize
+            if e.error_code == 'SERVER_STATE_ILLEGAL' and module.params.get('allow_reboot_on_resize'):
+
+                server = self.manager.get_server(uuid)
+
+                # Allow longer timeout for starting/stopping the machine
+                self.manager.timeout=360
+
+                server.ensure_stopped()
+
+                result = self.manager.modify_server(uuid, **server_dict)
+
+                server.ensure_started()
+
+                return result
+
+            else:
+                raise
 
     # filter out 'filter_keys' and those who equal None from items to get server's attributes for POST request
     def collect_server_params(self, module):
@@ -267,8 +291,11 @@ class ServerManager():
         # If this request wasn't about the disks just skip this section
         if not 'storage_devices' in server_spec:
             return
-
+            
         server_info = server.to_dict()
+
+        # Disk resize commands can fail if machine is not stopped
+        resize_commands = []
 
         # Loop all created disks from the server
         for disk in server_info['storage_devices']:
@@ -286,12 +313,50 @@ class ServerManager():
                 uuid = disk['storage']
                 size = disk_spec['size']
                 title = disk_spec['title']
-                backup_rule = {}
                 if 'backup_rule' in disk_spec:
                     backup_rule = disk_spec['backup_rule']
+                else:
+                    backup_rule = {}
 
                 # Update the storage settings
-                self.manager.modify_storage(uuid, size, title, backup_rule)
+                try:
+                    self.manager.modify_storage(uuid, size, title, backup_rule)
+                except UpCloudAPIError as e:
+                    if e.error_code == 'SERVER_STATE_ILLEGAL' and server_info['state'] == 'started':
+                        # These commands will only succeed if the machine is turned off
+                        resize_commands.append({
+                            'uuid': uuid,
+                            'size': size,
+                            'storage_title': title,
+                            'backup_rule': backup_rule,
+                            'address': disk['address']
+                        })
+
+        # Reboot is needed for these commands: 
+        if resize_commands and module.params.get('allow_reboot_on_resize'):
+
+            initial_timeout = self.manager.timeout
+
+            # Allow longer timeout for starting/stopping the machine
+            self.manager.timeout=360
+
+            # Stop the machine and wait until it's shutdown
+            server.ensure_stopped()
+
+            # Resize all disks
+            for disk in resize_commands:
+                self.manager.modify_storage(disk['uuid'], disk['size'], disk['storage_title'], disk['backup_rule'])
+
+            # Start the machine and wait until it's back online
+            server.ensure_started()
+
+            self.manager.timeout = initial_timeout
+
+            return resize_commands
+
+        return {}
+
+
 
 
 def run(module, server_manager):
@@ -308,6 +373,8 @@ def run(module, server_manager):
     if state == 'present':
         server = server_manager.find_server(uuid, hostname, ip_address)
 
+        modifications = dict()
+
         if not server:
             # create server, if one was not found
             server = server_manager.create_server(module)
@@ -316,7 +383,6 @@ def run(module, server_manager):
             server_wanted = server_manager.collect_server_params(module)
             changed = False
 
-            modifications = dict()
             for field in server_wanted:
                 if hasattr(server,field):
                     attrs = getattr(server, field)
@@ -332,10 +398,14 @@ def run(module, server_manager):
             if changed:
                 server = server_manager.modify_server(server.uuid, module)
 
-        # Checks the state of disk backups
-        server_manager.ensure_storage_devices(server, module)
-
         server.ensure_started()
+
+        # Checks the state of disk backups
+        modifications['storage_devices'] = server_manager.ensure_storage_devices(server, module)
+
+        if modifications['storage_devices']:
+            # Update the information about new disk sizes
+            server = server_manager.find_server(uuid, hostname, ip_address)
 
         module.exit_json(changed=changed, modifications=modifications, server=server.to_dict(), public_ip=server.get_public_ip())
 
@@ -378,6 +448,7 @@ def main():
             firewall = dict(type='bool'),
             ssh_keys = dict(type='list'),
             user = dict(type='str'),
+            allow_reboot_on_resize = dict(type='bool', default=False),
 
             # optional, nice-to-have
             vnc = dict(type='bool'),

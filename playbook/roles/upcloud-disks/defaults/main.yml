@@ -1,0 +1,8 @@
+# This is the order how upcloud creates the additional blockdevices
+# We need to match the virtual addresses in order to know the device addresses
+upcloud_blockdevice_mapping_list:
+  'virtio:0': '/dev/vda'
+  'virtio:1': '/dev/vdb'
+  'virtio:2': '/dev/vdc'
+  'virtio:3': '/dev/vdd'
+  'virtio:4': '/dev/vde'
