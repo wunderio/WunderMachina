@@ -41,8 +41,8 @@ upcloud_default_firewall_rules:
     source_port_end: 53
     source_address_start: 8.8.8.8
     source_address_end: 8.8.8.8
-    destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_start: 1024
+    destination_port_end: 65000
   - comment: Allow DNS Responses (UDP) - Google DNS
     direction: in
     action: accept
@@ -52,8 +52,8 @@ upcloud_default_firewall_rules:
     source_port_end: 53
     source_address_start: 8.8.4.4
     source_address_end: 8.8.4.4
-    destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_start: 1024
+    destination_port_end: 65000
   - comment: Allow DNS Responses (TCP) - Google DNS
     direction: in
     action: accept
@@ -64,7 +64,7 @@ upcloud_default_firewall_rules:
     source_address_start: 8.8.8.8
     source_address_end: 8.8.8.8
     destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_end: 65000
   - comment: Allow DNS Responses (TCP) - Google DNS
     direction: in
     action: accept
@@ -75,7 +75,7 @@ upcloud_default_firewall_rules:
     source_address_start: 8.8.4.4
     source_address_end: 8.8.4.4
     destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_end: 65000
   - comment: Allow DNS Responses (UDP) - UpCloud DNS
     direction: in
     action: accept
@@ -85,8 +85,8 @@ upcloud_default_firewall_rules:
     source_port_end: 53
     source_address_start: 94.237.127.9
     source_address_end: 94.237.127.9
-    destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_start: 1024
+    destination_port_end: 65000
   - comment: Allow DNS Responses (UDP) - UpCloud DNS
     direction: in
     action: accept
@@ -96,8 +96,8 @@ upcloud_default_firewall_rules:
     source_port_end: 53
     source_address_start: 94.237.40.9
     source_address_end: 94.237.40.9
-    destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_start: 1024
+    destination_port_end: 65000
   - comment: Allow DNS Responses (TCP) - UpCloud DNS
     direction: in
     action: accept
@@ -108,7 +108,7 @@ upcloud_default_firewall_rules:
     source_address_start: 94.237.127.9
     source_address_end: 94.237.127.9
     destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_end: 65000
   - comment: Allow DNS Responses (TCP) - UpCloud DNS
     direction: in
     action: accept
@@ -119,7 +119,7 @@ upcloud_default_firewall_rules:
     source_address_start: 94.237.40.9
     source_address_end: 94.237.40.9
     destination_port_start: 15000
-    destination_port_end: 61000
+    destination_port_end: 65000
   - comment: Allow Ping Responses
     direction: in
     family: IPv4
