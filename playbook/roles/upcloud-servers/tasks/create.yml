@@ -23,7 +23,9 @@
 - name: Add all created machines to ansible
   add_host:
     name: "{{ item['server']['hostname'] }}"
-    groups:  "{{ item['item'] | json_query( '[*].group' ) }} + {{ [ 'upcloud_created_servers' ] }}"
+    # This is super ugly but the data from upcloud_created_instances.results is in such a format that it's hard to combine without hacks
+    # This line combines group + secondary_groups from upcloud_server_spec_list and adds 'upcloud_created_servers'
+    groups:  "{{ ( item['item'] | json_query( '[*].secondary_groups'|default([]) ) + [ ['upcloud_created_servers']|list + item['item'] | json_query( '[*].group' ) ] ) | sum(start=[]) }}"
     ansible_host: "{{ item['public_ip'] }}"
     ansible_user: "{{ upcloud_deploy_user | default('root') }}"
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
