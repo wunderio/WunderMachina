@@ -1,0 +1,211 @@
+- set_fact:
+    project_additional_ssh_firewall_rules: []
+  when: project_additional_ssh_firewall_rules is not defined or project_additional_ssh_firewall_rules.0 is not defined
+
+- name: Allow SSH for Admins and Deployment Services
+  set_fact:
+    all_upcloud_firewall_rules: >
+      {{ all_upcloud_firewall_rules|default([]) +
+        [{
+          'machine': item[0],
+          'rule': {
+            'direction': 'in',
+            'source_address_start': item[1].ip,
+            'source_address_end': item[1].ip,
+            'action': 'accept',
+            'destination_port_start': hostvars[ item[0] ]['ansible_port']|default('22'),
+            'destination_port_end': hostvars[ item[0] ]['ansible_port']|default('22'),
+            'protocol': 'tcp',
+            'family': 'IPv4',
+            'comment': item[1].comment|default('')
+          }
+        }]
+      }}
+  with_nested:
+    - "{{ groups['all'] }}"
+    - "{{ firewall_ssh_allowed + project_additional_ssh_firewall_rules }}"
+
+- name: Allow web traffic to web servers
+  set_fact:
+    all_upcloud_firewall_rules: >
+      {{ all_upcloud_firewall_rules +
+        [
+          {
+            'machine': item,
+            'rule':
+              {
+                'direction': 'in',
+                'action': 'accept',
+                'destination_port_start': 443,
+                'destination_port_end': 443,
+                'protocol': 'tcp',
+                'family': 'IPv4',
+                'comment': 'HTTPS Traffic'
+              }
+          },
+          {
+            'machine': item,
+            'rule':
+              {
+                'direction': 'in',
+                'action': 'accept',
+                'destination_port_start': 80,
+                'destination_port_end': 80,
+                'protocol': 'tcp',
+                'family': 'IPv4',
+                'comment': 'HTTP Traffic'
+              }
+          }
+        ]
+      }}
+  with_items:
+    - "{{ groups['all'] }}"
+  when: item in groups['firewall_web']
+
+
+- name: Allow all machines to connect to eachother (eth0)
+  set_fact:
+    all_upcloud_firewall_rules: >
+      {{ all_upcloud_firewall_rules|default([]) +
+        [{
+          'machine': item[0],
+          'rule': {
+            'direction': 'in',
+            'source_address_start': hostvars[ item[1] ]['ansible_eth0']['ipv4']['address'],
+            'source_address_end': hostvars[ item[1] ]['ansible_eth0']['ipv4']['address'],
+            'action': 'accept',
+            'protocol': 'tcp',
+            'family': 'IPv4',
+            'comment': 'Member of the cluster'
+          }
+        }]
+      }}
+  with_nested:
+    - "{{ groups['all'] }}"
+    - "{{ groups['all'] }}"
+  when: item[0] != item[1] and hostvars[ item[1] ]['ansible_eth0'] is defined
+
+- name: Allow all machines to connect to eachother (eth1)
+  set_fact:
+    all_upcloud_firewall_rules: >
+      {{ all_upcloud_firewall_rules|default([]) +
+        [{
+          'machine': item[0],
+          'rule': {
+            'direction': 'in',
+            'source_address_start': hostvars[ item[1] ]['ansible_eth1']['ipv4']['address'],
+            'source_address_end': hostvars[ item[1] ]['ansible_eth1']['ipv4']['address'],
+            'action': 'accept',
+            'protocol': 'tcp',
+            'family': 'IPv4',
+            'comment': 'Member of the cluster'
+          }
+        }]
+      }}
+  with_nested:
+    - "{{ groups['all'] }}"
+    - "{{ groups['all'] }}"
+  when: item[0] != item[1] and hostvars[ item[1] ]['ansible_eth1'] is defined
+
+- set_fact:
+    removable_upcloud_firewall_rules: []
+    
+- name: Remove legacy firewall rules
+  set_fact:
+    removable_upcloud_firewall_rules: >
+      {{ removable_upcloud_firewall_rules +
+        [{
+          'machine': item[0],
+          'rule': {
+            'direction': 'in',
+            'source_address_start': item[1].ip,
+            'source_address_end': item[1].ip,
+            'action': 'accept',
+            'destination_port_start': hostvars[ item[0] ]['ansible_port']|default('22'),
+            'destination_port_end': hostvars[ item[0] ]['ansible_port']|default('22'),
+            'protocol': 'tcp',
+            'family': 'IPv4',
+            'comment': item[1].comment|default('')
+          }
+        }]
+      }}
+  with_nested:
+    - "{{ groups['all'] }}"
+    - "{{ remove_ssh_firewall_rules }}"
+  when: remove_ssh_firewall_rules is defined and remove_ssh_firewall_rules.0 is defined
+
+- set_fact:
+    project_additional_firewall_rules: []
+  when: project_additional_firewall_rules is not defined or project_additional_firewall_rules.0 is not defined
+
+# Prefer populated data from the server
+- name: Setup upcloud firewalls for successfully connected machines
+  upcloud_firewall:
+    state: present
+    ip_address: "{{ hostvars[item]['ansible_eth0']['ipv4']['address'] }}"
+    firewall_rules: >
+        {{  all_upcloud_firewall_rules |
+          default([]) |
+          selectattr('machine', 'equalto', item) |
+          map(attribute='rule') |
+          list + project_additional_firewall_rules + upcloud_default_firewall_rules
+        }}
+  with_items:
+    - "{{ groups['all'] }}"
+  when: hostvars[item]['ansible_eth0'] is defined
+
+# Fallback for the one in inventory name
+- name: Setup upcloud firewalls for all machines in inventory
+  upcloud_firewall:
+    state: present
+    ip_address: "{{ hostvars[item]['ansible_host']|default(item) }}"
+    firewall_rules: >
+        {{  all_upcloud_firewall_rules |
+          default([]) |
+          selectattr('machine', 'equalto', item) |
+          map(attribute='rule') |
+          list + project_additional_firewall_rules + upcloud_default_firewall_rules
+        }}
+  with_items:
+    - "{{ groups['all'] }}"
+  when: hostvars[item]['ansible_eth0'] is not defined and hostvars[item]['ansible_host'] is defined or item|ipaddr
+
+# Prefer populated data from the server
+- name: Remove legacy firewalls for successfully connected machines
+  upcloud_firewall:
+    state: absent
+    ip_address: "{{ hostvars[item]['ansible_eth0']['ipv4']['address'] }}"
+    firewall_rules: "{{ removable_upcloud_firewall_rules|default([]) }}"
+  with_items:
+    - "{{ groups['all'] }}"
+  when: hostvars[item]['ansible_eth0'] is defined
+
+# Fallback for the one in inventory name
+- name: Remove legacy firewalls for all machines in inventory
+  upcloud_firewall:
+    state: absent
+    ip_address: "{{ hostvars[item]['ansible_host']|default(item) }}"
+    firewall_rules: "{{ removable_upcloud_firewall_rules|default([]) }}"
+  with_items:
+    - "{{ groups['all'] }}"
+  when: hostvars[item]['ansible_eth0'] is not defined and hostvars[item]['ansible_host'] is defined or item|ipaddr
+
+- name: Block all other connections
+  upcloud_firewall:
+    state: present
+    ip_address: "{{ hostvars[item]['ansible_host']|default(item) }}"
+    default_rules:
+      - direction: in
+        action: drop
+      - direction: out
+        action: accept
+  with_items:
+    - "{{ groups['all'] }}"
+
+- name: Enable firewall for all machines
+  upcloud_server:
+    state: present
+    ip_address: "{{ hostvars[item]['ansible_host']|default(item) }}"
+    firewall: yes
+  with_items:
+    - "{{ groups['all'] }}"

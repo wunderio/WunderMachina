@@ -152,6 +152,7 @@ def main():
     to_install = []
     to_update = []
     to_remove = []
+    update_all = False
 
     if state == 'present':
         for pkg in packages:
@@ -170,33 +171,44 @@ def main():
                     to_install.append(pkg)
 
     elif state == 'latest':
-        for pkg in packages:
-            if not is_installed(pkg):
-                to_install.append(pkg)
-            else:
-                to_update.append(pkg)
+        if '*' in packages:
+            update_all = True
+        else:
+            for pkg in packages:
+                if not is_installed(pkg):
+                    to_install.append(pkg)
+                else:
+                    to_update.append(pkg)
+    
     elif state == 'absent':
         for pkg in packages:
             if is_installed(pkg):
                 to_remove.append(pkg)
 
-    if to_install:
-        module.run_command(cmd + ' install ' + ' '.join(to_install),
-                           check_rc=True)
+
+    if update_all:
+        module.run_command(cmd + ' update', check_rc=True)
         changed = True
 
-    if to_update:
-        old = get_version(' '.join(to_update))
-        module.run_command(cmd + ' update ' + ' '.join(to_update),
-                           check_rc=True)
-        new = get_version(' '.join(to_update))
-        if old != new:
+    else:
+
+        if to_install:
+            module.run_command(cmd + ' install ' + ' '.join(to_install),
+                               check_rc=True)
             changed = True
 
-    if to_remove:
-        module.run_command(cmd + ' remove ' + ' '.join(to_remove),
-                           check_rc=True)
-        changed = True
+        if to_update:
+            old = get_version(' '.join(to_update))
+            module.run_command(cmd + ' update ' + ' '.join(to_update),
+                               check_rc=True)
+            new = get_version(' '.join(to_update))
+            if old != new:
+                changed = True
+
+        if to_remove:
+            module.run_command(cmd + ' remove ' + ' '.join(to_remove),
+                               check_rc=True)
+            changed = True
 
     module.exit_json(msg='OK', changed=changed)
 

@@ -64,10 +64,10 @@ sub vcl_init {
   # Called when VCL is loaded, before any requests pass through it.
   # Typically used to initialize VMODs.
   {% for director in varnish.directors %}
-  new {{ director.name }} = directors.round_robin();
+  new {{ director.name }} = directors.hash();
   {% for backend in director.backends %}
   {% if backend.ignore is not defined %}
-  {{ director.name }}.add_backend({{ backend.name }});
+  {{ director.name }}.add_backend({{ backend.name }}, 1);
   {% endif %}
   {% endfor %}
   {% endfor %}
@@ -108,13 +108,26 @@ sub vcl_recv {
     return (synth(200, "Ban added."));
   }
 
+  # Set sticky session identifier based on session.
+  if(req.http.Cookie ~ "(SESS[a-z0-9]+)") {
+    set req.http.X-Session-String = regsub( req.http.Cookie, "^.*?(SESS[a-z0-9]+=)([^;]*);*.*$", "\2" );
+    set req.http.sticky = req.http.X-Session-String;
+  } else {
+    set req.http.sticky = std.random(1, 100);
+  }
+
+  {% if varnish.hotlink_forbidden %}
+  # Call hotlink prevention sub.
+  call hotlink;
+  {% endif %}
+
   # Send traffic to the correct site director, determined by request domain name.
   if (req.http.host == "") {
     return (synth(404, "Need a host header"));
   }
   {% for director in varnish.directors %}
   elsif (req.http.host ~ "{{ director.host }}"){
-    set req.backend_hint = {{ director.name }}.backend();
+    set req.backend_hint = {{ director.name }}.backend(req.http.sticky);
   }
   {% endfor %}
   else {
@@ -143,6 +156,14 @@ sub vcl_recv {
 
   # Implementing websocket support (https://www.varnish-cache.org/docs/4.0/users-guide/vcl-example-websockets.html)
   if (req.http.Upgrade ~ "(?i)websocket") {
+    return (pipe);
+  }
+
+  # Slow connections with big file uploads may lead to 503 errors, regardless of timeout
+  # settings. We can avoid problems by piping those POST uploads.
+  # More info: https://www.varnish-cache.org/lists/pipermail/varnish-bugs/2011-April/003684.html
+  # Unresolved ticket : https://www.varnish-cache.org/trac/ticket/849
+  if (req.method == "POST" && req.http.Content-Type ~ "multipart/form-data") {
     return (pipe);
   }
 
@@ -261,8 +282,7 @@ sub vcl_pipe {
   # set bereq.http.connection = "close";
   # here.  It is not set by default as it might break some broken web
   # applications, like IIS with NTLM authentication.
-
-  # set bereq.http.Connection = "Close";
+  set bereq.http.Connection = "Close";
 
   # Implementing websocket support (https://www.varnish-cache.org/docs/4.0/users-guide/vcl-example-websockets.html)
   if (req.http.upgrade) {
@@ -562,4 +582,30 @@ sub vcl_fini {
   # Typically used to clean up VMODs.
 
   return (ok);
+}
+
+sub hotlink {
+  # Prevent hotlinking of files. Called optionally from vcl_recv if hotlinking is forbidden.
+
+  if ((
+    {% for director in varnish.directors %}
+    req.http.host == "{{ director.host }}" {% if not loop.last %} || {% endif %}
+    {% endfor %}) &&
+    req.url ~ "^/sites/default/files/" &&
+    req.url ~ "\.({{ varnish.hotlink_filetype_pattern }})(\?.*)?$"
+  ) {
+    # Only allow if referer is from one of our host.
+    if (
+      {% if varnish.hotlink_allow_no_referer %}
+      req.http.referer &&
+      {% endif %}
+      !(
+      {% for director in varnish.directors %}
+      req.http.referer ~ "^(http|https)://{{ director.host}}" {% if not loop.last %} || {% endif %}
+      {% endfor %}
+      )
+    ) {
+      return (synth(403, "Not allowed."));
+    }
+  }
 }

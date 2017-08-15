@@ -40,7 +40,12 @@
     - htop
     - iotop
     - sudo
-    - yum-security
+    # This is not available in the new machines anymore
+    # Use `yum --security upgrade` instead
+    #- yum-security
     - mailx
 
+- name: Update the system on first run
+  yum: name=* state=latest update_cache=yes
+  when: first_run is defined
 

@@ -6,16 +6,36 @@ nginx_papertrail_follow:
   - /var/log/drupal.log
   - /var/log/nginx/http-*error.log
 
+# Add this to ansible configuration to disable the default x-frame-option (SAME ORIGIN)
+# to allow applications to control the header.
+# nginx_disable_default_xframe_options: True
+
 apps:
   - server_name: www.test.com
     server_aliases: bob.com
     server_forwards: test.com
     http_port: 8080
     docroot: /var/www/test.com/current
+#    extra_headers:
+#      - { name: "Access-Control-Allow-Origin", value: "https://www.somesite1.com", location: "/some/location" }
+#      - { name: "Access-Control-Allow-Origin", value: "https://www.somesite2.com" }
   - server_name: test2.com
     server_aliases: www.example35.com www.example53.com
     http_port: 8080
     docroot: /var/www/test2.com/current
+#   custom_app: |
+#     By default we assume drupal app is running on this host
+#     However sometimes it's something else, here you can define custom handling for
+#     upstream locations instead of using our drupal defaults
+#     location / {
+#        proxy_pass: http://127.0.0.1:5601;
+#      }
+
+#extradomainforwards:
+#  - forward_domain: "http://blog.example.com"
+#    forward_to: http://example.com/blog
+#    type: permanent
+#    port: 8080
 
 papertrail_enabled: False
 
@@ -23,3 +43,13 @@ papertrail_enabled: False
 distro: "centos7"
 
 basicauth_no_ssl_enabled: False
+
+nginx_conf:
+  client_header_timeout: 10
+  client_body_timeout: 120
+  send_timeout: 120
+  keepalive_timeout: "15 10"
+  client_max_body_size: 100M
+  client_body_buffer_size: 128k
+  proxy_read_timeout: 60
+

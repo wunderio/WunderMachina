@@ -1,0 +1,4 @@
+nfsserver: 10.0.0.1
+nfspath: /nfs-files
+nfsmount: /nfs-files
+nfsopts: "vers=4,async,tcp,noacl,nolock,noatime,intr,rw"

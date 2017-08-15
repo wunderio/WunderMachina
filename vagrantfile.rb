@@ -1,4 +1,5 @@
 require 'yaml'
+require File.dirname(__FILE__)+"/dependency_manager/dependency_manager.rb"
 
 dir = File.dirname(__FILE__) + '/../'
 # local variables
@@ -12,11 +13,19 @@ INSTANCE_IP       = settings['ip']
 INSTANCE_BOX      = settings['box']
 INSTANCE_ALIASES  = settings['aliases']
 INSTANCE_VERSION  = settings['box_version']
-SSH_FORWARD_AGENT  = settings['config.ssh.forward_agent']
+SSH_FORWARD_AGENT  = settings['ssh_forward_agent']
 
-# Link the ansible playbook
-unless File.exist?(dir + "ansible/playbook/vagrant.yml")
-	FileUtils.ln_s "../../conf/vagrant.yml", dir + "ansible/playbook/vagrant.yml"
+# Check depedencies during initial setup.
+if Dir.glob("#{dir}.vagrant/machines/default/*").empty?
+
+  # Optional depedency check.
+  print "Allow vagrant to check for plugin depedencies? (y or n)"
+  check_dep = STDIN.gets.chomp
+
+  # Check depedency plugins and automatically install them if needed.
+  if check_dep == "y"
+    check_plugins ["vagrant-hostmanager", "vagrant-cachier", "vagrant-vbguest"]
+  end
 end
 
 # And never anything below this line
@@ -42,26 +51,40 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX
 
-  # Set default box version
-	if INSTANCE_VERSION.to_s != ''
-		config.vm.box_version = INSTANCE_VERSION
-	else
-		config.vm.box_version = '1.1.3'
+	#Virtualbox has issues with the latest Centos7 box (1.1.4) so we forcing previous version.
+
+	config.vm.provider :virtualbox do |vb|
+	  # Set default box version
+		if INSTANCE_VERSION.to_s != ''
+			config.vm.box_version = INSTANCE_VERSION
+		else
+			config.vm.box_version = '1.2.0'
+		end
 	end
 
 	config.vm.network :private_network, ip: INSTANCE_IP
 
 	# Sync folders
-	config.vm.synced_folder ".", "/vagrant", type: :nfs
+	if Gem.win_platform?
+		config.vm.synced_folder ".", "/vagrant"
+	else
+		config.vm.synced_folder ".", "/vagrant", type: :nfs
+	end
 
 	# Vagrant cachier
 	if Vagrant.has_plugin?("vagrant-cachier")
 		config.cache.scope = :box
 		config.cache.enable :yum
-		config.cache.synced_folder_opts = {
-			type: :nfs,
-			mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
-		}
+		if Gem.win_platform?
+			config.cache.synced_folder_opts = {
+				mount_options: ['rw']
+			}
+		else
+			config.cache.synced_folder_opts = {
+				type: :nfs,
+				mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
+			}
+		end
 	end
 
 	# SSH configuration - requires config.ssh.forward_agent: true in vagrant_local.yml
@@ -79,7 +102,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 	config.vm.provider :virtualbox do |vb|
 		vb.name = INSTANCE_NAME
-		version = `VBoxManage --version`
+		if Gem.win_platform?
+			version = `"C:/Program Files/Oracle/VirtualBox/VBoxManage.exe" --version`
+		else
+			version = `VBoxManage --version`
+		end
 		if version[0] == "5"
 			# Set up some VirtualBox 5 specific things
 			vb.customize [
@@ -125,7 +152,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	config.vm.provision "ansible" do |ansible|
 		#ansible.verbose        = "v"
     ansible.extra_vars     = dir + "conf/variables.yml"
-		ansible.playbook       = dir + "ansible/playbook/vagrant.yml"
+		ansible.playbook       = dir + "conf/vagrant.yml"
 		ansible.limit          = "all"
 	end
 

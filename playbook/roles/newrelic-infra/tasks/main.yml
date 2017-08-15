@@ -1,0 +1,26 @@
+---
+
+# Setup all of our New Relic - infra related repositories.
+- include: "repo.yml"
+
+- template:
+    src=newrelic-infra.yml.j2
+    dest=/etc/newrelic-infra.yml
+
+# Install Newrelic-infra
+
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - newrelic-infra
+  when:
+    newrelic_infra_enabled == True
+
+# Make sure all services are ON and configured to start on boot
+- service: name={{ item }} state=started enabled=yes
+  with_items:
+    - newrelic-infra
+  when:
+    newrelic_infra_enabled == True
+

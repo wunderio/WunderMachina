@@ -1,13 +1,31 @@
 #!/bin/bash
 
+
+
+{% if backup_db_name is defined %}
 {% for db in backup_db_name %}
 mkdir -p {{ backup_location }}/drupal/database/$(date +%y-%m-%d)
 BACKUPDB={{ backup_location }}/drupal/database/$(date +%y-%m-%d)/{{ db }}-database-$(date +%H%M).sql
+
 mysqldump -u root --skip-lock-tables --single-transaction --quick {{ db }} --ignore-table={{ db }}.cache_form --ignore-table={{ db }}.search_index > $BACKUPDB
 mysqldump -u root --skip-lock-tables --single-transaction --quick -f -d {{ db }} cache_form search_index >> $BACKUPDB
 gzip $BACKUPDB
 {% endfor %}
+{% endif %}
 
-# Remove more than 4 days old backups.
-find {{ backup_location }}/drupal/database -mtime +4 -exec rm {} \;
+{% if backup_files_path is defined %}
+TMP_DIR=`mktemp -d {{ backup_location }}/tmp-backup-$(date +%y-%m-%d)-XXXXXX`
+mkdir -p {{ backup_location }}/drupal/files
+cp -r {{ backup_files_path }} $TMP_DIR/
+tar -czf {{ backup_location }}/drupal/files/files-$(date +%y-%m-%d-%H%M).tgz -P $TMP_DIR
+rm -rf $TMP_DIR
+{% endif %}
+
+
+# Remove more than {{ backup_keep_max_days }} days old backups.
+find {{ backup_location }}/drupal/database -mtime +{{ backup_keep_max_days | default('4') }} -exec rm {} \;
 find {{ backup_location }}/drupal/database -type d -empty -exec rmdir {} \;
+
+# Remove more than {{ backup_keep_max_days }} days old file backups.
+find {{ backup_location }}/drupal/files -mtime +{{ backup_keep_max_days | default('4') }} -exec rm {} \;
+find {{ backup_location }}/drupal -type d -empty -exec rmdir {} \;

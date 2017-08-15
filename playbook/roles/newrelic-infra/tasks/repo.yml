@@ -1,0 +1,15 @@
+---
+
+# Setup all of our New Relic - Infra related repositories.
+
+
+- name: Add Newrelic Infra GPG key.
+  rpm_key:
+    key: http://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+    state: present
+
+- name: Install Newrelic Infra repository
+  copy:
+    src=newrelic-infra/repo/newrelic-infra-el7.repo
+    dest=/etc/yum.repos.d/newrelic-infra.repo
+

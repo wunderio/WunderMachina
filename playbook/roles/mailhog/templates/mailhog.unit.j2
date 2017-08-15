@@ -1,0 +1,16 @@
+[Unit]
+Description=MailHog Email Catcher
+After=syslog.target network.target
+
+[Service]
+Type=simple
+{% if mailhog_http_authuser is defined %}
+ExecStart={{ mailhog_install_dir }}/mailhog -auth-file=/etc/ssmtp/http_auth
+{% else %}
+ExecStart={{ mailhog_install_dir }}/mailhog
+{% endif %}
+StandardOutput=journal
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

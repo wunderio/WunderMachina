@@ -1,0 +1,10 @@
+- name: reboot machine
+  shell: sleep 2 && /sbin/shutdown -r now "Reboot after mounting partitions"
+  async: 0
+  poll: 0
+  ignore_errors: true
+  failed_when: False
+  notify: wait for back online
+
+- name: wait for back online
+  local_action: wait_for host={{ ansible_default_ipv4.address }} port={{ ansible_port|default(22) }} delay=5 timeout=320 state=started

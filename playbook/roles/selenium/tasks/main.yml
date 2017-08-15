@@ -1,0 +1,115 @@
+---
+- name: Install JRE
+  yum: pkg=jre state=installed
+
+- name: Include OS-Specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags: [configuration, selenium]
+
+- name: Install dependencies
+  package: name=unzip
+  tags: [configuration, selenium]
+
+- name: create directory
+  file: "path={{ selenium_install_dir }}/selenium state=directory recurse=yes"
+  tags: [configuration, selenium, selenium-create-directory]
+
+- name: Download Selenium
+  get_url:
+    url: "http://selenium-release.storage.googleapis.com/{{ selenium_version | regex_replace('\\.[0-9]+$', '') }}/selenium-server-standalone-{{ selenium_version }}.jar"
+    dest: "{{ selenium_install_dir }}/selenium/selenium-server-standalone-{{ selenium_version }}.jar"
+  tags: [configuration, selenium, selenium-download]
+
+- name: Install FireFox (if configured)
+  package: name=firefox state=present
+  when: selenium_install_firefox
+  tags: [configuration, selenium, selenium-firefox]
+
+- name: Get the latest release for geckodriver
+  shell: 'curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep "browser_download_url.*linux64.tar.gz" | cut -d : -f 2,3 | tr -d \"'
+  register: geckodriver_latest
+  when: selenium_install_firefox
+  tags: [configuration, selenium, selenium-firefox]
+
+- name: Install geckodriver
+  unarchive:
+    src: "{{ geckodriver_latest.stdout_lines | join('') | trim }}"
+    dest: /usr/bin
+    mode: 0755
+    copy: no
+  when: selenium_install_firefox
+  tags: [configuration, selenium, selenium-firefox]
+
+- name: Install Chrome (Centos)
+  yum:
+    name: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    state: present
+  when: selenium_install_chrome
+  tags: [configuration, selenium, selenium-chrome]
+
+- name: Install chromedriver
+  unarchive:
+    src: "http://chromedriver.storage.googleapis.com/{{ selenium_chromedriver }}/chromedriver_linux64.zip"
+    dest: /usr/bin
+    mode: 0755
+    copy: no
+  when: selenium_install_chrome
+  tags: [configuration, selenium, selenium-chrome]
+
+- name: Install xvfb
+  package: name={{ selenium_xvfb_package }}
+  tags: [configuration, selenium, selenium-xvfb]
+
+- name: Install xvfb systemd unit file (for systemd systems)
+  template:
+    src: "xvfb-unit.j2"
+    dest: /etc/systemd/system/xvfb.service
+    owner: root
+    group: root
+    mode: 0755
+  when: "ansible_service_mgr == 'systemd'"
+  tags: [configuration, selenium, selenium-xvfb]
+
+- name: Install selenium init script
+  template:
+    src: "selenium-init-{{ ansible_os_family }}.j2"
+    dest: /etc/init.d/selenium
+    owner: root
+    group: root
+    mode: 0755
+  when: "ansible_service_mgr != 'systemd'"
+  tags: [configuration, selenium, selenium-install]
+
+- name: Install selenium systemd unit file (for systemd systems)
+  template:
+    src: "selenium-unit.j2"
+    dest: /etc/systemd/system/selenium.service
+    owner: root
+    group: root
+    mode: 0755
+  when: "ansible_service_mgr == 'systemd'"
+  tags: [configuration, selenium, selenium-install]
+
+- name: Register xvfb systemd service status (for systemd systems)
+  shell: 'systemctl status xvfb | grep "active (running)"'
+  when: "ansible_service_mgr == 'systemd'"
+  register: xvfb_running
+  ignore_errors: yes
+  changed_when: false
+
+- name: Ensure xvfb is running
+  service: name=xvfb state=started enabled=yes
+  tags: [configuration, selenium, xvfb-run]
+  when: xvfb_running.failed is defined and xvfb_running.failed == true
+
+- name: Register selenium systemd service status (for systemd systems)
+  shell: 'systemctl status selenium | grep "active (running)"'
+  when: "ansible_service_mgr == 'systemd'"
+  register: selenium_running
+  ignore_errors: yes
+  changed_when: false
+
+- name: Ensure selenium is running
+  service: name=selenium state=started enabled=yes
+  tags: [configuration, selenium, selenium-run]
+  when: selenium_running.failed is defined and selenium_running.failed == true

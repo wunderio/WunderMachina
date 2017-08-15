@@ -15,21 +15,21 @@ script:
 - sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro
   centos:ansible /usr/lib/systemd/systemd > "${CONTAINER_ID}"
 - sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
-  /WunderMachina/tests/test-php56.yml --syntax-check || (echo 'Ansible playbook syntax check
-  failed' && exit 2 )
+  /WunderMachina/tests/test-php56.yml --syntax-check || (echo 'Ansible playbook syntax
+  check failed' && exit 2 )
 - sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
-  /WunderMachina/tests/test-php56.yml -vvv --connection=local --sudo || ( echo 'First run
-  failed' && exit 2 )
+  /WunderMachina/tests/test-php56.yml -vvv --connection=local --sudo || ( echo 'First
+  run failed' && exit 2 )
 - sudo docker stop "$(cat ${CONTAINER_ID})"
 - sudo docker rm "$(cat ${CONTAINER_ID})"
 - sudo docker run --detach --privileged --volume="${PWD}":/WunderMachina:rw --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro
   centos:ansible /usr/lib/systemd/systemd > "${CONTAINER_ID}"
 - sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
-  /WunderMachina/tests/test-php70.yml --syntax-check || (echo 'Ansible playbook syntax check
-  failed' && exit 2 )
+  /WunderMachina/tests/test-php70.yml --syntax-check || (echo 'Ansible playbook syntax
+  check failed' && exit 2 )
 - sudo docker exec "$(cat ${CONTAINER_ID})" ansible-playbook -i /WunderMachina/tests/test-inventory
-  /WunderMachina/tests/test-php70.yml -vvv --connection=local --sudo || ( echo 'First run
-  failed' && exit 2 )
+  /WunderMachina/tests/test-php70.yml -vvv --connection=local --sudo || ( echo 'First
+  run failed' && exit 2 )
 - sudo docker stop "$(cat ${CONTAINER_ID})"
 notifications:
   email: false
@@ -37,5 +37,8 @@ notifications:
     rooms:
       secure: Hya0PQBPo3culofddbT6bJYUgcFNQLqt2IM+ZdBMryk7Ox9d9YUrqDpoa6Rs4LXrqtkZOAPuioTlakjcSp3hZRIxsmTPBRY200En/dnUysajI0X/MS3eDrNwgOPZ39J+ktXI7f7XTOhgNx4shhvT50KSfuIuvkoPtt9YKKrD99dLFiYRSx62dS0/zWHgsORbq/jKVRQoOveZRMCiLrTbGl+0ZM3PV7XbrlNPiYYUlsZ3BP12p8NU600WG7VwKRmUzC7hawghMcutup1tmC24BiY14fNaYewu1vScapvvKnDzoDtTC2p0WQKV2Tr0bp/MGQxbGAvyybiUKyvicGqjaUMUtPvIKQT4vqgg2FGyPUkOTJCJ///4nYoVs6NdIYKeA1dFjrRP76zhlVrIqhckhOUyKdFCJEq6W4AfLC0YXe4aAE/zS6GGDBxErIlxwgeHdmfGzebP2ZaBzWqL24izfYLEUsg54zNEfEGwWBVT0Fi+ACKitjSPj0gzLp9pfUbcRGS6p9B5qtBlY3MhJK/WMApVhASvIAc/Cle78EqjmP1JTxlZzRzwRMFPaAs5qCvChjgcwXbnLITisk2uTNFr7BeMHRiZPHlvLGGwRqQzYo3fJMjTc2dQ5eHM13OK6oOIG85OFrwJCXT6znm1sXcuOo4jVV7Uy2KvMrV7DHXbKnM=
     template:
-    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message} (<a href="%{build_url}">Details</a> / <a href="%{compare_url}">Change view</a>)'
+    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}
+      (<a href="%{build_url}">Details</a> / <a href="%{compare_url}">Change view</a>)'
     format: html
+  slack:
+    secure: oItptZ/DZnX+gaZl1xXs5KaLBo4HUFsLsgrJ6CVm9Lq0Luv7809yK0zz6na/HHGKVUnNOJs8IqQWEy9woAcKhniGcmOC7uAm1aovJCPHp5RmRip4/xu2jhQMCo1mL5od1tuOWPR6SS1GzYw3mUl5SunmDAO1iYq/qXXX2EHiW9gCZHpFac9PUaQmOr0jJWvnGEOAjZ7LckiIv+nOuhWQfDe0qZtarIMlgxvhRdHM8bhAHq0eAm/MV4QRwQ6Vz0iVwvjTZeU2WykRtCq0eqvpwEUHK+ahsT3ZSXSFaoPSQ3OTaaqUKNHT6IbGLKrb0jeCJn8zsBS3SAzkt7FY1h/i96K8ifM4bE5918ZtgReQc9W4LDERHQolyhZu3l4Sv8JQaJPNqM6d1sQ5Xre8xa/h08LscKhIi5/jvaepU6yY0GfXIHz6FSoUo0AcRMplQGPcRLqNmiSeG1c+jl/ns4GSN94cwappYusKH7JHIjm2Tt5GpVmE9rT3Mqofy0ouRc9WoyN9jz7fMlxoBhyhTU2UU5bUXsZCAafp9fRao3t84ZFbSlvl4MtOlLnI0p1PYAGKYr6FxbhHC6zjx0ImlG7VvUwFqSTO+mEJYl+yVCKkVJfm1KxKxSr5e3kEdcouMUvk8U6zVGVjj9hOxMvM5+T8DakdXnFa4IAsp9cr4U+XvI8=

@@ -88,7 +88,7 @@
     dest=/etc/nginx/sites-enabled/nginx_test.conf
   notify:
     - restart nginx
-      #
+
 # Use Basic Auth
 - yum:
     name=python-passlib
@@ -98,4 +98,26 @@
 - htpasswd: path=/etc/nginx/.htpasswd name={{ basicauth_username }} password={{ basicauth_password }} owner=root group=root mode=0644
   when: basicauth_no_ssl_enabled == True
 
+- name: Allow extra PHP scripts
+  blockinfile:
+    dest: "/etc/nginx/conf.d/drupal.conf"
+    insertbefore: "## Allow running _ping.php"
+    content: |
+      location = /{{ item }} {
+        include conf.d/fastcgi_drupal.conf;
+        fastcgi_param  SCRIPT_FILENAME    $document_root/{{ item }};
+        fastcgi_pass phpcgi;
+      }
+    marker: "# {mark} ANSIBLE MANAGED BLOCK ({{item}})"
+  with_items: "{{ nginx_extra_php | default([]) }}"
+  when: nginx_extra_php is defined
 
+- name: Create webroot folders
+  file:
+    path={{ item.docroot }}
+    owner=www-admin
+    group=www-admin
+    mode=0755
+    state=directory
+  with_items: "{{ apps }}"
+  when: create_docroot is defined

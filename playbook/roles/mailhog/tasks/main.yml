@@ -18,10 +18,10 @@
 - name: MAILHOG | Install the daemonize package.
   yum: pkg=daemonize state=installed
 
-- name: MAILHOG | Copy mailhog init script into place.
-  copy:
-    src: mailhog
-    dest: /etc/init.d/mailhog
+- name: Copy mailhog systemd unit file into place
+  template:
+    src: mailhog.unit.j2
+    dest: /etc/systemd/system/mailhog.service
     owner: root
     group: root
     mode: 0755
@@ -39,4 +39,20 @@
     owner: root
     group: root
     mode: 0644
+
+- name: MAILHOG | Specify HTTP authentication password file
+  shell: echo "{{ mailhog_http_authuser }}:`{{ mailhog_install_dir }}/mailhog bcrypt {{ mailhog_http_authpass | default(mailhog_http_authuser) }}`" > /etc/ssmtp/http_auth
+  when: mailhog_http_authuser is defined
+
+# PHP configuration files
+- ini_file: dest="{{ php_ini_file }}"
+    section="{{ item.0.section }}"
+    option="{{ item.1.key }}"
+    value="{{ item.1.val }}"
+  with_subelements:
+    - "{{ mailhog_php_ini }}"
+    - options
+  notify:
+    - restart php-fpm
+
 

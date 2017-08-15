@@ -29,4 +29,10 @@ php_admin_flag[log_errors] = on
 php_value[session.save_handler] = files
 php_value[session.save_path]    = /var/lib/php/fpm/session
 php_value[soap.wsdl_cache_dir]  = /var/lib/php/fpm/wsdlcache
-env[WKV_SITE_ENV] = {{ wkv_site_env }}
+
+{% if php_env_vars is defined %}
+{% for variable in php_env_vars %}
+env[{{ variable.key }}] = "{{ variable.value }}"
+{% endfor %}
+{% endif %}
+

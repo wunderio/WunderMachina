@@ -1,6 +1,6 @@
 
 # mailhog configuration.
-mailhog_binary_url: https://github.com/mailhog/MailHog/releases/download/v0.2.0/MailHog_linux_amd64
+mailhog_binary_url: https://github.com/mailhog/MailHog/releases/download/v0.2.1/MailHog_linux_amd64
 mailhog_install_dir: /opt/mailhog
 
 # ssmtp configuration.
@@ -9,3 +9,10 @@ ssmtp_root: postmaster
 ssmtp_authuser: ""
 ssmtp_authpass: ""
 ssmtp_from_line_override: "YES"
+
+mailhog_php_ini:
+ - section: PHP
+   options:
+    - key: sendmail_path
+      val: "/usr/sbin/ssmtp -t"
+ 

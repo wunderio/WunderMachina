@@ -19,6 +19,19 @@
 - name: Install prestissimo
   shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require "hirak/prestissimo:^0.3"
 
+- name: Make sure /usr/share/drush/commands exists
+  action: file path=/usr/share/drush/commands state=directory
+
+- name: Install juampynr/syncdb for database sync
+  shell: wget -O /usr/share/drush/commands/syncdb.drush.inc https://raw.githubusercontent.com/juampynr/syncdb/master/syncdb.drush.inc
+
+- name: Install parallel for syncdb
+  yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - parallel
+
 - name: Ensure composer cache is writeable
   file:
     path: /usr/lib/composer/cache
@@ -26,4 +39,13 @@
     mode: 0777
     recurse: yes
 
+- name: Create /etc/drush
+  file:
+    path: /etc/drush
+    state: directory
+    mode: 0755
 
+- name: Write drushrc.php
+  template:
+    src=drushrc.php.j2
+    dest=/etc/drush/drushrc.php

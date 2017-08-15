@@ -9,9 +9,10 @@ server {
   return 444;
 }
 
-{% for site in httpforwards %}
+{% if httpforwards is defined and httpforwards|length > 0 %}
+  {% for site in httpforwards %}
+    {% if site.forwarded_domains is defined %}
 
-{% if site.forwarded_domains is defined %}
 # HTTP Forwarder
 server {
     listen 80;
@@ -19,7 +20,11 @@ server {
 
     location ~* /.well-known/acme-challenge {
       default_type "text/plain";
+    {% if certbot_renewal_docroot is defined %}
+      root        {{ certbot_renewal_docroot }};
+    {% else  %}
       root        /var/www/letsencrypt-auto;
+    {% endif %}
     }
 
     {% if site.extra_forwards is defined %}
@@ -33,9 +38,39 @@ server {
     }
 }
 
+    {% endif %}
+  {% endfor %}
 {% endif %}
 
-{% endfor %}
+{% if httpsforwards is defined and httpsforwards|length > 0 %}
+  {% for site in httpsforwards %}
+    {% if site.forwarded_domains is defined %}
+
+# HTTPS Forwarder
+server {
+    listen 443 http2 ssl;
+    server_name {{ site.forwarded_domains }};
+
+    {% if site.ssl_certificate is defined %}
+    ssl on;
+    ssl_certificate {{ site.ssl_certificate }};
+    ssl_certificate_key {{ site.ssl_certificate_key }};
+    {% endif %}
+
+    {% if site.extra_forwards is defined %}
+    {% for forward in site.extra_forwards %}
+    rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+    {% endfor %}
+    {% endif %}
+
+    location / {
+      return 301 https://{{ site.server_name }}$request_uri;
+    }
+}
+
+    {% endif %}
+  {% endfor %}
+{% endif %}
 
 {% if httpextraforwards is defined %}
 {% for site in httpextraforwards %}

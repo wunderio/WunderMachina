@@ -8,13 +8,13 @@
   register: varlog
   ignore_errors: True
 - name: Create partition to secondary drive
-  shell: echo -e "n\np\n1\n\n\nw\n" | fdisk /dev/vdb
+  shell: echo -e "n\np\n1\n\n\nw\n" | fdisk "{{ var_log_disk }}"
   when: varlog.rc != 0
 - name: Format the partition in the secondary drive
-  shell: mkfs.ext4 /dev/vdb1
+  shell: mkfs.ext4 "{{ var_log_disk }}"1
   when: varlog.rc != 0
 - name: Create temp mount point to copy files from current /var/log
-  shell: mkdir -p /mnt/varlog && mount /dev/vdb1 /mnt/varlog
+  shell: mkdir -p /mnt/varlog && mount "{{ var_log_disk }}"1 /mnt/varlog
   when: varlog.rc != 0
 - name: Copy files from old /var/log
   shell: cp -rpf /var/log/* /mnt/varlog/.
@@ -23,8 +23,11 @@
   shell: umount /mnt/varlog && rm -rf /mnt/varlog && rm -rf /var/log
   when: varlog.rc != 0
 - name: Create /var/log mount point and mount the partition
-  shell: mkdir -p /var/log && mount /dev/vdb1 /var/log
+  shell: mkdir -p /var/log && mount "{{ var_log_disk }}"1 /var/log
   when: varlog.rc != 0
-- name: Add automount for secondary drive as /export/vdb1 (type=ext4)
-  lineinfile: dest=/etc/fstab line="/dev/vdb1 /var/log ext4 defaults 0 0"
-  when: varlog.rc != 0
+- name: Get UUID of disk
+  shell: blkid "{{ var_log_disk }}"1 -o value
+  register: var_log_uuid
+- name: Add automount for the drive
+  lineinfile: dest=/etc/fstab line="UUID={{ var_log_uuid.stdout_lines[0] }} /var/log ext4 defaults 0 0"
+  #  when: varlog.rc != 0

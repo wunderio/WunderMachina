@@ -1,0 +1,13 @@
+[Unit]
+Description=selenium test framework
+After=syslog.target network.target
+
+[Service]
+Environment=DISPLAY=:{{ selenium_display_id }}
+ExecStart=/usr/bin/xvfb-run "{{ selenium_xvfb_args }} --server-num={{ selenium_display_id }}" /usr/bin/java -jar {{ selenium_install_dir }}/selenium/selenium-server-standalone-{{ selenium_version }}.jar -port {{ selenium_port }}
+Restart=on-failure
+RestartSec=20s
+User={{ selenium_user }}
+
+[Install]
+WantedBy=multi-user.target

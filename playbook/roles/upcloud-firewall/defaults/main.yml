@@ -1,0 +1,137 @@
+---
+# These contain the IP addresses from the admin VPN
+firewall_ssh_allowed:
+#  - comment: Admin machine
+#    ip: 10.0.0.1
+#  - comment: Test Machine
+#    ip: 127.0.0.1
+
+# These servers will do the automatic deployments into the machines
+project_additional_ssh_firewall_rules:
+#  - comment: Admin machine
+#    ip: 10.0.0.1
+#  - comment: Test Machine
+#    ip: 127.0.0.1
+
+# Ensure that these older IP addresses are removed
+remove_ssh_firewall_rules:
+#  - comment: Admin machine
+#    ip: 10.0.0.1
+#  - comment: Test Machine
+#    ip: 127.0.0.1
+
+# These are added after ssh rules
+project_additional_firewall_rules:
+#  - direction: in
+#    family: IPv4
+#    protocol: tcp
+#    source_address_start: 127.0.0.1
+#    source_address_end: 127.0.0.255
+#    destination_port_start: 22
+#    destination_port_end: 22
+#    action: accept
+
+upcloud_default_firewall_rules:
+  - comment: Allow DNS Responses (UDP) - Google DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 8.8.8.8
+    source_address_end: 8.8.8.8
+    destination_port_start: 1024
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (UDP) - Google DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 8.8.4.4
+    source_address_end: 8.8.4.4
+    destination_port_start: 1024
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (TCP) - Google DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: tcp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 8.8.8.8
+    source_address_end: 8.8.8.8
+    destination_port_start: 15000
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (TCP) - Google DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: tcp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 8.8.4.4
+    source_address_end: 8.8.4.4
+    destination_port_start: 15000
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (UDP) - UpCloud DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 94.237.127.9
+    source_address_end: 94.237.127.9
+    destination_port_start: 1024
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (UDP) - UpCloud DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 94.237.40.9
+    source_address_end: 94.237.40.9
+    destination_port_start: 1024
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (TCP) - UpCloud DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: tcp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 94.237.127.9
+    source_address_end: 94.237.127.9
+    destination_port_start: 15000
+    destination_port_end: 65000
+  - comment: Allow DNS Responses (TCP) - UpCloud DNS
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: tcp
+    source_port_start: 53
+    source_port_end: 53
+    source_address_start: 94.237.40.9
+    source_address_end: 94.237.40.9
+    destination_port_start: 15000
+    destination_port_end: 65000
+  - comment: Allow Ping Responses
+    direction: in
+    family: IPv4
+    protocol: icmp
+    action: accept
+    icmp_type: 0
+  - comment: Allow Sync with NTP servers
+    direction: in
+    action: accept
+    family: IPv4
+    protocol: udp
+    source_port_start: 123
+    source_port_end: 123
+    destination_port_start: 123
+    destination_port_end: 123

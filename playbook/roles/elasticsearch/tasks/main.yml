@@ -19,15 +19,15 @@
 - name: Removing Plugins if they exist
   action: >
     shell bin/plugin remove {{ item.shortname }}
-    chdir={{ elasticsearch_home_dir }}
-  with_items: elasticsearch_plugins
+    chdir={{ elasticsearch_config.home_dir }}
+  with_items: "{{ elasticsearch_plugins }}"
   ignore_errors: yes
 
 - name: Installing Plugins
   action: >
     shell bin/plugin install {{ item.name }}
-    chdir={{ elasticsearch_home_dir }}
-  with_items: elasticsearch_plugins
+    chdir={{ elasticsearch_config.home_dir }}
+  with_items: "{{ elasticsearch_plugins }}"
   ignore_errors: yes
 
 - name: Configure Elasticsearch.
@@ -38,7 +38,20 @@
     state=present
   with_items:
     - { regexp: 'network\.host', line: 'network.host: 0.0.0.0' }
+    - { regexp: 'cluster\.name', line: 'cluster.name: {{ elasticsearch_config.cluster_name }}' }
+    - { regexp: 'node\.name', line: 'node.name: {{ elasticsearch_config.node_name }}' }
   notify: restart elasticsearch
+
+- name: Configure Elasticsearch.
+  lineinfile: >
+    dest=/etc/sysconfig/elasticsearch
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+    state=present
+  with_items:
+    - { regexp: 'ES_HEAP_SIZE', line: 'ES_HEAP_SIZE: {{ elasticsearch_heap_size }}' }
+  notify: restart elasticsearch
+
 
 - name: Start Elasticsearch.
   service: name=elasticsearch state=started enabled=yes

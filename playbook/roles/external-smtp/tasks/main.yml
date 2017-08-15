@@ -6,13 +6,15 @@
     name={{ item }}
     state=present
   with_items:
+    - postfix
     - cyrus-sasl-lib
     - cyrus-sasl-plain
 
 # Add settings to /etc/postfix/main.cf
 - name: Add settings to /etc/postfix/main.cf
   blockinfile:
-    dest: dest=/etc/postfix/main.cf
+    dest: /etc/postfix/main.cf
+    create: yes
     insertafter: EOF
     block: |
       smtp_sasl_auth_enable = yes
@@ -22,8 +24,34 @@
       smtp_tls_loglevel = 1
       header_size_limit = 4096000
       relayhost = {{ external_smtp_relayhost }}
-    notify:
-      - restart postfix
+  notify: restart postfix
+
+- name: Create /etc/postfix/sasl_passwd
+  lineinfile: >
+    backup=yes
+    create=yes
+    dest=/etc/postfix/sasl_passwd
+    line="{{ external_smtp_relayhost }} {{ external_smtp_user }}:{{ external_smtp_password }}"
+    state=present
+  when: external_smtp_user is defined
+
+- name: postmap hash:/etc/postfix/sasl_passwd
+  command: postmap hash:/etc/postfix/sasl_passwd
+  when: external_smtp_user is defined
+
+- name: Remove /etc/postfix/sasl_passwd
+  command: rm /etc/postfix/sasl_passwd
+  when: external_smtp_user is defined
+
+- name: Change permissions on /etc/postfix/sasl_passwd.db
+  command: chmod 0600 /etc/postfix/sasl_passwd.db
+  when: external_smtp_user is defined
+
+- name: postfix CA cert
+  command: postconf -e 'smtp_tls_CAfile = {{ external_smtp_cert }}'
+  when: external_smtp_cert is defined
+
+
 
 # Make sure all services are ON and configured to start on boot
 - service: name={{ item }} state=started enabled=yes

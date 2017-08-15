@@ -1,0 +1,7 @@
+<?php
+{% if php_env_vars is defined %}
+{% for variable in php_env_vars %}
+putenv('{{ variable.key }}={{ variable.value }}');
+{% endfor %}
+{% endif %}
+

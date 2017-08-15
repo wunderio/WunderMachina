@@ -33,15 +33,20 @@ sql_mode = NO_ENGINE_SUBSTITUTION,TRADITIONAL
 # Network.
 bind-address = 0.0.0.0
 
+# Ignore data fragments found by fsck
+# These will be there if /var/lib/mysql is mounted to it's own block device
+# When machine is rebooted it runs fsck on the block device and collects non referenced data fragments to that folder
+ignore-db-dir=lost+found
+
 # There's no reason to waste time resolving domain names.
 # Faster & Safer. Do not use host names in GRANTs.
 skip-name-resolve
 
 # Query cache
 query_cache_type = 1
-query_cache_limit = 256K
-query_cache_min_res_unit = 2k
-query_cache_size = 80M
+query_cache_limit = {{ mysql_query_cache_limit | default('256K') }}
+query_cache_min_res_unit = {{ query_cache_min_res_unit | default('2k') }}
+query_cache_size = {{ mysql_query_cache_size | default('80M') }}
 
 # Basic Tuning.
 max_connections = {{ max_connections }}
@@ -80,12 +85,13 @@ innodb_buffer_pool_size = {{ innodb_buffer_pool_size }}M
 innodb_buffer_pool_instances    = {{ innodb_buffer_pool_instances }}
 
 innodb_data_file_path = ibdata1:200M:autoextend
-innodb_log_buffer_size = 8M
+innodb_log_buffer_size = {{ innodb_log_buffer_size }}
+innodb_log_file_size = {{ innodb_log_file_size }}
 innodb_file_per_table = 1
 innodb_open_files = 32768
 innodb_io_capacity = 400
 innodb_thread_concurrency = {{ innodb_concurrency }}
-innodb_additional_mem_pool_size = 10M
+innodb_additional_mem_pool_size = {{ innodb_additional_mem_pool_size }}
 innodb_read_io_threads = {{ innodb_concurrency }}
 innodb_write_io_threads = {{ innodb_concurrency }}
 innodb_flush_log_at_trx_commit = 0
@@ -109,4 +115,4 @@ slow_query_log = 0
 [mysqldump]
 quick
 quote-names
-max_allowed_packet  = 128M
+max_allowed_packet  = {{ max_allowed_packet }}

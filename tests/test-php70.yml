@@ -4,21 +4,8 @@
   remote_user: root
   roles:
    - { role: base, tags: [ 'base' ] }
-   - { role: papertrail, tags: [ 'papertrail' ] }
    - { role: nginx, tags: [ 'nginx' ] }
    - { role: php-fpm, tags: [ 'php-fpm' ] }
-   - { role: varnish, tags: [ 'varnish' ] }
-   - { role: dbserver, tags: [ 'dbserver' ] }
-   - { role: sslterminator, tags: [ 'sslterminator' ] }
-   - { role: drush, tags: [ 'drush' ] }
-   - { role: drupal-console, tags: [ 'drupal-console' ] }
-   - { role: drupal-db, tags: [ 'drupal-db' ] }
-   - { role: memcached, tags: [ 'memcached' ] }
-   - { role: datadog, tags: [ 'datadog' ] }
-   - { role: monit, tags: [ 'monit' ] }
-   - { role: elasticsearch, tags: [ 'elasticsearch' ] }
-   - { role: mongodb, tags: [ 'mongodb' ] }
-   - { role: external-smtp, tags: [ 'external-smtp' ] }
 
   vars:
 
@@ -28,37 +15,18 @@
 
     partition_var_log: False
 
-    datadog_enabled: True
-    datadog_api_key: 1234567890
-
-    newrelic_enabled: True
-    newrelic_license_key: "this-is-a-fake-key-replace-with-a-real-1"
-
     base_pubkeys_enable: False
     base_pubkeys_auth: username:password
     base_pubkeys_url: https://example.com/auth
     base_addhost_url: https://example.com/auth/add_server
 
     papertrail_enabled: False
-    papertrail_remote_syslog2_version: "0.16"
-    papertrail_conf: "/etc/log_files.yml"
-    papertrail_logs:
-      - /var/log/secure
-
-    memcached_port: 11211
-    memcached_maxconn: 1024
-    memcached_cachesize: 64
-    memcached_options: "-I 4M"
 
     php_package: "php70u"
 
     memory_db: 512 # In MB
     memory_app: 512 # In MB
     php_memory_limit: 64
-
-    innodb_buffer_pool_size: "{{ memory_db }}"
-    dbserver_logentries_follow:
-      - /var/log/secure
 
     php_fpm_user: 'nginx'
     php_fpm_group: 'nginx'
@@ -69,10 +37,6 @@
 
     composer: {
       path: "/usr/lib/composer",
-    }
-
-    drush: {
-      version: "8.*",
     }
 
     php_fpm_logentries_follow:
@@ -127,83 +91,3 @@
             val: 1
           - key: opcache.blacklist_filename
             val: /etc/php.d/opcache*.blacklist
-
-    nginx_real_ip: 127.0.0.1
-
-    nginx_logentries_follow:
-      - /var/log/drupal.log
-      - /var/log/nginx/http-*.log
-
-    apps:
-    - server_name: www.example.com
-      server_forwards: example.com
-      http_port: 8080
-      docroot: /var/www/www.example.com
-
-    sslterminator_logentries_follow:
-      - /var/log/nginx/ssl-*.log
-
-    sslterminators:
-      - server_name: www.example.com
-        server_forwards: example.com
-        ssl_certificate: /etc/nginx/ssl/wk.dev.pem
-        ssl_certificate_key: /etc/nginx/ssl/wk.dev.key
-        use_dhparam: True
-        backends:
-          - 127.0.0.1:8081
-
-    basicauth_enabled: True
-    basicauth_username: username
-    basicauth_password: password
-    basicauth_ip:
-      - address: 192.168.0.2
-      - address: 192.168.0.3
-
-    httpforwards:
-      - server_name: www.example.com
-        forwarded_domains: 'www.example.com example.com'
-
-    # Varnish configuration
-    varnish:
-      port: 8081
-      memory: 1G
-      probe_resource_url: "_ping.php"
-      acl_internal:
-        - ip: 127.0.0.1
-      acl_purge:
-        - ip: 127.0.0.1
-      acl_upstream_proxy:
-        - ip: 127.0.0.1
-      directors:
-        # One app
-        - name: test_com_director
-          host: test.com
-          backends:
-            - name: test1_web
-              address: 127.0.0.1
-              port: 8080
-            - name: test_extra_http
-              address: 127.0.0.1
-              port: 8080
-              ignore: True
-
-    varnish_extra_definition:
-      - name: add extra director
-        dest: /etc/varnish/default.vcl
-        insertafter: "# Extra directors"
-        content: |
-          new test_extra = directors.round_robin();
-          test_extra.add_backend(test_extra_http);
-
-    monit_enabled: True
-    monit_alert_email_service_name: "test.com"
-    monit_alert_email_from: "alert@example.com"
-    monit_alert_email_to: "alert-rec@example.com"
-    monit_check_cron: True
-    monit_check_sshd: True
-    monit_check_mysql: True
-    monit_check_memcached: True
-    monit_check_nginx: True
-    monit_check_php_fpm: True
-    monit_check_varnish: True
-    monit_check_solr: True

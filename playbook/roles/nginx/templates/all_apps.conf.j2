@@ -2,6 +2,19 @@
 # This file is provisioned automatically - you have been warned :)
 ################################################################################
 
+{% if extradomainforwards is defined %}
+{% for forward in extradomainforwards %}
+# HTTP Forwarder
+server {
+    listen {{ forward.port }};
+    server_name {{ forward.forward_domain }};
+
+    rewrite ^(.*) {{ forward.forward_to }} {{ forward.type }};
+}
+{% endfor %}
+{% endif %}
+
+
 {% for site in apps %}
 
 {% if site.server_forwards is defined %}
@@ -50,6 +63,11 @@ server {
 
   {% endif %}
 
+  {% if site.extra_forwards is defined %}
+  {% for forward in site.extra_forwards %}
+  rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+  {% endfor %}
+  {% endif %}
 
   ## See the blacklist.conf file at the parent dir: /etc/nginx.
   ## Deny access based on the User-Agent header.
@@ -61,8 +79,27 @@ server {
     return 444;
   }
 
+  {% if site.custom_app is defined %}
+  {{ site.custom_app }}
+  {% else %}
   include conf.d/drupal.conf;
   include conf.d/php_fpm_status.conf;
+  {% endif %}
+
+  {% if site.extra_headers is defined %}
+  # Extra headers.
+  {% for header in site.extra_headers %}
+  {% if header.location is defined %}
+  location {{ header.location }} {
+    include conf.d/fastcgi_drupal.conf;
+    fastcgi_pass phpcgi;
+    add_header {{ header.name }} {{header.value}};
+  }
+  {% else %}
+  add_header {{ header.name }} {{header.value}};
+  {% endif %}
+  {% endfor %}
+  {% endif %}
 }
 
 {% endif %}

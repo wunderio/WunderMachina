@@ -9,6 +9,7 @@
 
 - name: Install php packages
   yum: pkg={{ item }} state=present
+  ignore_errors: yes
   with_items:
     - "{{ php_package }}-cli"
     - "{{ php_package }}-common"
@@ -28,3 +29,6 @@
     #- "{{ php_package }}-pecl-uploadprogress"
     - "{{ php_package }}-xml"
     - "{{ php_package }}-xmlrpc"
+    - "{{ php_package }}-pecl-apcu"
+    - "{{ php_package }}-bcmath"
+

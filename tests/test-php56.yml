@@ -19,6 +19,7 @@
    - { role: elasticsearch, tags: [ 'elasticsearch' ] }
    - { role: mongodb, tags: [ 'mongodb' ] }
    - { role: external-smtp, tags: [ 'external-smtp' ] }
+   - { role: mailhog, tags: [ 'mailhog' ] }
 
   vars:
 
@@ -32,6 +33,7 @@
     datadog_api_key: 1234567890
 
     newrelic_enabled: True
+    newrelic_infra_enabled: True
     newrelic_license_key: "this-is-a-fake-key-replace-with-a-real-1"
 
     base_pubkeys_enable: False
@@ -174,6 +176,9 @@
         - ip: 127.0.0.1
       acl_upstream_proxy:
         - ip: 127.0.0.1
+      hotlink_forbidden: true
+      hotlink_filetype_pattern: "pdf|doc"
+      hotlink_allow_no_referer: true
       directors:
         # One app
         - name: test_com_director
