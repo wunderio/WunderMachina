@@ -45,6 +45,11 @@
     #- yum-security
     - mailx
 
+- name: Install additional packages
+  yum: pkg={{item}} state=present
+  with_items: {{yum_extra_packages}}
+  when: yum_extra_packages is defined
+
 - name: Update the system on first run
   yum: name=* state=latest update_cache=yes
   when: first_run is defined
