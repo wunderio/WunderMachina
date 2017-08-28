@@ -79,5 +79,5 @@ php_env_vars:
 
 php_env_vars_include_db: False
 
-php_request_terminate_timeout: 120
-php_request_slowlog_timeout: "10s"
+php_fpm_request_terminate_timeout: 120
+php_fpm_request_slowlog_timeout: "10s"
