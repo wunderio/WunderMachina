@@ -78,3 +78,6 @@ php_env_vars:
     value: "{{ wkv_site_env }}"
 
 php_env_vars_include_db: False
+
+php_fpm_request_terminate_timeout: 120
+php_fpm_request_slowlog_timeout: "10s"
