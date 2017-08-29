@@ -45,7 +45,7 @@
 
 - name: Install additional packages
   yum: pkg={{item}} state=present
-  with_items: "{{yum_extra_packages}}"
+  with_items: "{{yum_extra_packages | default([]) }}"
   when: yum_extra_packages is defined
 
 - name: Update the system on first run
