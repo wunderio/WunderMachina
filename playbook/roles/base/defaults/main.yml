@@ -17,3 +17,7 @@ distro: "centos7"
 wkv_site_env: default
 
 sysctl_tcp_fin_timeout: 20
+
+# Install extra packages
+#yum_extra_packages:
+#  - packagename
