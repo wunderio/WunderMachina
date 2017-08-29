@@ -68,7 +68,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	if Gem.win_platform?
 		config.vm.synced_folder ".", "/vagrant"
 	else
-		config.vm.synced_folder ".", "/vagrant", type: :nfs
+		config.vm.synced_folder ".", "/vagrant", type: :nfs, nfs_udp: false
 	end
 
 	# Vagrant cachier
