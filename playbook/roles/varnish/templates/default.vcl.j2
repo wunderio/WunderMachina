@@ -529,6 +529,14 @@ sub vcl_synth {
     set resp.http.Location = resp.reason;
     set resp.status = 302;
     return (deliver);
+  } elseif (resp.status == 722) {
+    # Use special error status when hotlinking to resource is forbidden.
+    # This is used in hotlink sub
+
+    # Do no cache
+    set resp.http.Cache-control = "max-age=0, must-revalidate";
+    set resp.status = 403;
+    return (deliver);
   } elseif(resp.status >= 500) {
       {% if varnish.custom_error_template is defined %}
       {{ varnish.custom_error_template }}
@@ -605,7 +613,7 @@ sub hotlink {
       {% endfor %}
       )
     ) {
-      return (synth(403, "Not allowed."));
+      return (synth(722, "Not allowed."));
     }
   }
 }
