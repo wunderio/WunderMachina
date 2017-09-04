@@ -1,24 +1,18 @@
 ---
-
-# Setup Varnish repository
-
-# Prepare yum repositories
-- name: Install repositories
-  yum:
-    pkg={{item}}
-    state=present
-    disable_gpg_check=yes
+- name: Ensure Varnish dependencies are installed.
+  yum: name={{ item }} state=present
   with_items:
-    - "https://repo.varnish-cache.org/redhat/varnish-4.1.el7.rpm"
-  when:
-    distro == "rhel7"
+    - yum-utils
+    - pygpgme
 
-- name: Install repositories
-  yum:
-    pkg={{item}}
-    state=present
-    disable_gpg_check=yes
-  with_items:
-    - "https://repo.varnish-cache.org/redhat/varnish-4.1.el7.rpm"
-  when:
-    distro == "centos7"
+- name: Install packagecloud varnish repository
+  copy:
+    src=varnish.repo
+    dest=/etc/yum.repos.d/varnish.repo
+  register: varnish_packagecloud_repo_addition
+
+- name: Refresh yum metadata cache if repo changed.
+  command: >
+    yum clean metadata
+    warn=no
+  when: varnish_packagecloud_repo_addition.changed
