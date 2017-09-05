@@ -1,5 +1,9 @@
 ---
 
+- name: Set varnish package with version.
+  set_fact:
+    varnish_package: "varnish{{ varnish_version|replace('.', '') }}"
+
 - include: "yum.yml"
 
 - yum:

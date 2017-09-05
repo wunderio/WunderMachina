@@ -6,8 +6,8 @@
     - pygpgme
 
 - name: Install packagecloud varnish repository
-  copy:
-    src=varnish.repo
+  template:
+    src=varnish.repo.j2
     dest=/etc/yum.repos.d/varnish.repo
   register: varnish_packagecloud_repo_addition
 
