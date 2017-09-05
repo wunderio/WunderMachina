@@ -5,8 +5,9 @@ var_log_disk: /dev/vdb
 
 base_pubkeys_enable: True
 base_pubkeys_auth: username:password
-base_pubkeys_url: https://www.example.com
-base_addhost_url: https://www.example.com
+base_pubkeys_host: key.example.tld
+base_pubkeys_url: "https://{{ base_pubkeys_host }}"
+base_addhost_url: "https://{{ base_pubkeys_host }}"
 
 # On default we disable iptables but we want option to keep it on for customer-servers without external firewall
 disable_iptables: True
