@@ -1,4 +1,6 @@
 
+varnish_version: "4.1"
+
 varnish:
   port: 8081
   memory: 1G
