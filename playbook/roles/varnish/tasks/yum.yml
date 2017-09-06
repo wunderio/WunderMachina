@@ -13,6 +13,6 @@
 
 - name: Refresh yum metadata cache if repo changed.
   command: >
-    yum clean metadata
+    yum clean metadata -y
     warn=no
   when: varnish_packagecloud_repo_addition.changed
