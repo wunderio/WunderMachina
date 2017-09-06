@@ -12,14 +12,13 @@
   with_items:
     - varnish
 
+- name: ensure varnish is running now and on boot
+  service: name=varnish state=started enabled=yes
 
-  - name: ensure varnish is running now and on boot
-    service: name=varnish state=started enabled=yes
+- name: Varnish default.vcl
+  template: src=default.vcl.j2 dest=/etc/varnish/default.vcl
 
-  - name: Varnish default.vcl
-    template: src=default.vcl.j2 dest=/etc/varnish/default.vcl
-    
-  - name: Varnish sysconfig
-    template: src=varnish.j2 dest=/etc/sysconfig/varnish
-    notify:
-      - restart varnish
+- name: Varnish sysconfig
+  template: src=varnish.j2 dest=/etc/sysconfig/varnish
+  notify:
+    - restart varnish
