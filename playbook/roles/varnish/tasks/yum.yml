@@ -1,0 +1,18 @@
+---
+- name: Ensure Varnish dependencies are installed.
+  yum: name={{ item }} state=present
+  with_items:
+    - yum-utils
+    - pygpgme
+
+- name: Install packagecloud varnish repository
+  template:
+    src=varnish.repo.j2
+    dest=/etc/yum.repos.d/varnish.repo
+  register: varnish_packagecloud_repo_addition
+
+- name: Refresh yum metadata cache if repo changed.
+  command: >
+    yum clean metadata
+    warn=no
+  when: varnish_packagecloud_repo_addition.changed

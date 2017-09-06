@@ -13,3 +13,5 @@ varnish_backends:
     host: 192.168.0.1
     port: 8080
 ssl_ip_fix: false
+
+varnish_version: "3.0"
