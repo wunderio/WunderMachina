@@ -50,6 +50,19 @@ server {
   {% endfor %}
   {% endif %}
 
+  {% if basicauth_no_ssl_enabled == True %}
+
+  satisfy  any;
+  {% for ip in basicauth_ip %}
+  allow {{ ip.address }};
+  {% endfor %}
+  deny   all;
+
+  auth_basic "Restricted";
+  auth_basic_user_file /etc/nginx/.htpasswd;
+
+  {% endif %}
+
   {% if site.extra_forwards is defined %}
   {% for forward in site.extra_forwards %}
   rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};

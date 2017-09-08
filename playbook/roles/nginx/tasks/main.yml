@@ -89,6 +89,14 @@
   notify:
     - restart nginx
 
+# Use Basic Auth
+- yum:
+    name=python-passlib
+    state=present
+  when: basicauth_no_ssl_enabled == True
+
+- htpasswd: path=/etc/nginx/.htpasswd name={{ basicauth_username }} password={{ basicauth_password }} owner=root group=root mode=0644
+  when: basicauth_no_ssl_enabled == True
 
 - name: Allow extra PHP scripts
   blockinfile:
