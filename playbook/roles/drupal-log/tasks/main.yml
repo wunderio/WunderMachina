@@ -12,3 +12,14 @@
     backup=yes
   notify:
     - restart rsyslog
+
+# Make papertrail follow drupal.log logs.
+- lineinfile:
+    dest=/etc/log_files.yml
+    insertafter='files:'
+    line='  - {{ drupal_log_path }}'
+    mode=644
+  when:
+    papertrail_enabled == True
+  notify:
+    - restart remote_syslog

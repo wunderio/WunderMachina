@@ -1,0 +1,10 @@
+[varnishcache_{{ varnish_package }}]
+name=varnishcache_{{ varnish_package }}
+baseurl=https://packagecloud.io/varnishcache/{{ varnish_package }}/el/7/$basearch
+repo_gpgcheck=1
+gpgcheck=0
+enabled=1
+gpgkey=https://packagecloud.io/varnishcache/{{ varnish_package }}/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
