@@ -79,7 +79,7 @@ php_env_vars:
 
 php_env_vars_include_db: False
 
-php_disable_functions: phpinfo,exec,passthru,shell_exec,show_source,system,pcntl_exec,popen,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_nice
+#php_disable_functions: phpinfo,exec,passthru,shell_exec,show_source,system,pcntl_exec,popen,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_nice
 
 php_fpm_request_terminate_timeout: 120
 php_fpm_request_slowlog_timeout: "10s"

@@ -10,7 +10,9 @@ max_file_uploads = 40
 allow_url_fopen = True
 display_errors = True
 html_errors = True
-disable_functions = {{ php_disable_functions }}
+{% if php_disable_functions is defined %}
+disable_functions = {{ php_disable_functions }}
+{%endif %}
 
 [DATE]
 date.timezone = Europe/Helsinki
