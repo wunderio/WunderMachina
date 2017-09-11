@@ -7,7 +7,6 @@ mariadb_root_password: root
 max_connections: 500
 connection_timeout: 5
 wait_timeout: 60
-max_allowed_packet: 256M
 innodb_buffer_pool_size: 1024
 innodb_buffer_pool_instances: 6
 innodb_log_buffer_size: 8M
