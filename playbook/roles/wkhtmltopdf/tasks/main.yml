@@ -23,7 +23,7 @@
     dest: /tmp/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
 
 - name: Unpack wktohtmlpdf
-  shell: cd /tmp && tar xf "/tmp/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz" wkhtmltox/bin/wkhtmltopdf
+  shell: cd /tmp && tar xf "/tmp/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz" wkhtmltox/bin/wkhtmltopdf
 
 - shell: mv /tmp/wkhtmltox/bin/wkhtmltopdf /usr/bin/wkhtmltopdf && chmod 755 /usr/bin/wkhtmltopdf
 
