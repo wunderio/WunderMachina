@@ -59,7 +59,19 @@
   with_items:
     - { regexp: 'ES_HEAP_SIZE', line: 'ES_HEAP_SIZE: {{ elasticsearch_heap_size }}' }
   notify: restart elasticsearch
+  when: elasticsearch_version == 2
 
+- name: Configure Elasticsearch heap.
+  lineinfile: >
+    dest=/etc/elasticsearch/jvm.options
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+    state=present
+  with_items:
+    - { regexp: '-Xms2g', line: '-Xms{{ elasticsearch_heap_size }}' }
+    - { regexp: '-Xmx2g', line: '-Xmx{{ elasticsearch_heap_size }}' }
+  notify: restart elasticsearch
+  when: elasticsearch_version == 5
 
 - name: Start Elasticsearch.
   service: name=elasticsearch state=started enabled=yes
