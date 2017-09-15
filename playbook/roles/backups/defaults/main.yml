@@ -4,3 +4,6 @@ backup_db_name:
   - drupaldb
 backup_location: /var/backups
 backup_keep_max_days: 7
+backup_ignore_tables:
+  - search_index
+  - cache_form

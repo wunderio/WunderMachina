@@ -7,8 +7,8 @@
 mkdir -p {{ backup_location }}/drupal/database/$(date +%y-%m-%d)
 BACKUPDB={{ backup_location }}/drupal/database/$(date +%y-%m-%d)/{{ db }}-database-$(date +%H%M).sql
 
-mysqldump -u root --skip-lock-tables --single-transaction --quick {{ db }} --ignore-table={{ db }}.cache_form --ignore-table={{ db }}.search_index > $BACKUPDB
-mysqldump -u root --skip-lock-tables --single-transaction --quick -f -d {{ db }} cache_form search_index >> $BACKUPDB
+mysqldump -u root --skip-lock-tables --single-transaction --quick {{ db }} {% for table in backup_ignore_tables %} --ignore-table={{ db }}.{{ table }} {% endfor %} > $BACKUPDB
+mysqldump -u root --skip-lock-tables --single-transaction --quick -f -d {{ db }} {% for table in backup_ignore_tables %} {{ table }} {% endfor %} >> $BACKUPDB
 gzip $BACKUPDB
 {% endfor %}
 {% endif %}
