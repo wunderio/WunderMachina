@@ -112,6 +112,19 @@
   with_items: "{{ nginx_extra_php | default([]) }}"
   when: nginx_extra_php is defined
 
+- name: Allow extra files
+  blockinfile:
+    dest: "/etc/nginx/conf.d/drupal.conf"
+    insertbefore: "## Allow running _ping.php"
+    content: |
+      location = /{{ item }} {
+        try_files $uri @drupal;
+      }
+    marker: "# {mark} ANSIBLE MANAGED BLOCK ({{item}})"
+  with_items: "{{ nginx_extra_files | default([]) }}"
+  when: nginx_extra_files is defined
+
+
 - name: Create webroot folders
   file:
     path={{ item.docroot }}
