@@ -28,6 +28,7 @@
     option={{ item.1.key }}
     value={{ item.1.val }}
     state=present
+    create=yes
   with_subelements:
     - "{{ xdebug }}"
     - options
