@@ -59,7 +59,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 #	config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
 
 	# Sync folders
-	config.vm.synced_folder ".", "/vagrant", type: :nfs
+	config.vm.synced_folder ".", "/vagrant", type: :nfs, nfs_udp: false
 
 	# Vagrant cachier
 	if Vagrant.has_plugin?("vagrant-cachier")
