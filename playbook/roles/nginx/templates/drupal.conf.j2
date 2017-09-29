@@ -28,6 +28,10 @@ location / {
     try_files $uri @drupal;
   }
 
+  location ^~ /sites/default/files/private/ {
+    internal;
+  }
+  
   ## Regular private file serving (i.e. handled by Drupal).
   location ~ /system/files/ {
     try_files $uri @drupal;
