@@ -9,3 +9,5 @@ drush: {
 # See a list of versions at http://pear.drush.org/
   version: "8.*",
 }
+
+drush_use_launcher: False
