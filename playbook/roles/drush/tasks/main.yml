@@ -15,6 +15,12 @@
 - name: Install drush
   shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require drush/drush-launcher
     creates=/usr/bin/drush
+  when: drush_use_launcher == True
+
+- name: Install drush
+  shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require drush/drush:{{ drush.version }} && drush
+    creates=/usr/bin/drush
+  when: drush_use_launcher == False
 
 - name: Install prestissimo
   shell: source /etc/profile.d/composer.sh && cd /usr/lib/composer && composer global require "hirak/prestissimo:^0.3"
