@@ -161,8 +161,8 @@ server {
   {% endfor %}
   {% endif %}
 
-  {% if extra_proxy_locations is defined %}
-  {% for location in extra_proxy_locations %}
+  {% if site.extra_proxy_locations is defined %}
+  {% for location in site.extra_proxy_locations %}
   location {{ location.location }} {
     {{ location.definition }}
   }
