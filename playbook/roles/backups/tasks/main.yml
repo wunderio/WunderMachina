@@ -9,4 +9,4 @@
     mode=0750
 
 # Setup backup cron job
-- cron: name="Backup cron job" minute="0" hour="1" job="/root/backup.sh > /dev/null 2>&1" state="present"
+- cron: name="Backup cron job" minute="{{ backup_cron.minute }}" hour="{{ backup_cron.hour }}" job="/root/backup.sh > /dev/null 2>&1" state="present"

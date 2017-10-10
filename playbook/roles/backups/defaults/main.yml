@@ -7,3 +7,8 @@ backup_keep_max_days: 7
 backup_ignore_tables:
   - search_index
   - cache_form
+
+backup_cron:
+  minute: 0
+  hour: 1
+
