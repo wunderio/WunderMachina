@@ -45,10 +45,12 @@
   when: mailhog_http_authuser is defined
 
 # PHP configuration files
-- ini_file: dest="{{ php_ini_file }}"
+- ini_file: dest="/etc/php.d/zz_mailhog.ini"
     section="{{ item.0.section }}"
     option="{{ item.1.key }}"
     value="{{ item.1.val }}"
+    create=True
+    mode=644
   with_subelements:
     - "{{ mailhog_php_ini }}"
     - options
