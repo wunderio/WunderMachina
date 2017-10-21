@@ -197,6 +197,14 @@ server {
     # understand that the current session is actually HTTPS.
     proxy_set_header        X-Forwarded-Proto $scheme;
     add_header              Front-End-Https   on;
+
+    {% if site.extra_headers is defined %}
+    {% for header in site.extra_headers %}
+    add_header {{ header.name }} {{ header.value }};
+    {% endfor %}
+    {% endif %}
+
+
   }
 
 }
