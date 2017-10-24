@@ -37,9 +37,7 @@ env[{{ variable.key }}] = "{{ variable.value }}"
 env[WKV_SITE_ENV] = "{{ wkv_site_env }}"
 {% endif %}
 
-{% if varnish is defined %}
-{% if varnish.control_key is defined %}
-env[VARNISH_CONTROL_KEY] = "{{ varnish.control_key }}"
-{% endif %}
+{% if varnish_control_key is defined %}
+env[VARNISH_CONTROL_KEY] = "{{ varnish_control_key }}"
 {% endif %}
 
