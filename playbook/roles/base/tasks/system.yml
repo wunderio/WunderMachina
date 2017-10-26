@@ -79,9 +79,9 @@
 - name: Add varnish_control_key environment variable
   lineinfile:
     dest=/etc/environment
-    line="VARNISH_CONTROL_KEY={{ varnish.control_key }}"
+    line="VARNISH_CONTROL_KEY={{ varnish_control_key }}"
     backup=yes
-  when: varnish is defined and varnish.control_key is defined
+  when: varnish_control_key is defined
 
 - name: Set locales
   lineinfile:
