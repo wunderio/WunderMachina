@@ -1,5 +1,7 @@
 ---
 
+nginx_real_ip: 127.0.0.1
+
 sslterminator_papertrail_follow:
   - /var/log/nginx/ssl-*error.log
 
