@@ -25,7 +25,7 @@
     - "{{ php_package }}-soap"
     - "{{ php_package }}-tidy"
     - "{{ php_package }}-pecl-imagick"
-    #- "{{ php_package }}-pecl-memcache"
+    - "{{ php_package }}-pecl-memcached"
     #- "{{ php_package }}-pecl-uploadprogress"
     - "{{ php_package }}-xml"
     - "{{ php_package }}-xmlrpc"
