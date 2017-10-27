@@ -96,7 +96,13 @@
   when: basicauth_enabled == True
 
 - htpasswd: path=/etc/nginx/.htpasswd name={{ basicauth_username }} password={{ basicauth_password }} owner=root group=root mode=0644
-  when: basicauth_enabled == True
+  when: basicauth_enabled == True and basicauth_credentials is not defined
+
+- name: Add basicauth credentials
+  htpasswd: path=/etc/nginx/.htpasswd name={{ item.username }} password={{ item.password }} owner=root group=root mode=0644
+  with_items:
+    - "{{ basicauth_credentials }}"
+  when: basicauth_enabled == True and basicauth_credentials is defined
 
 # Create monit test site
 - action: file path=/var/www/test state=directory
