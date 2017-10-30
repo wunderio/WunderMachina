@@ -95,15 +95,17 @@ sub vcl_recv {
     }
     {% endif %}
 
-    # Logic for the ban, using the X-Drupal-Cache-Tags header. For more info
+    # Logic for the ban, using the cache tags headers. For more info
     # see https://github.com/geerlingguy/drupal-vm/issues/397.
     if (req.http.X-Drupal-Cache-Tags) {
         ban("obj.http.X-Drupal-Cache-Tags ~ " + req.http.X-Drupal-Cache-Tags);
     }
-    else {
-        return (synth(403, "X-Drupal-Cache-Tags header missing."));
+    elseif (req.http.Cache-Tags) {
+        ban("obj.http.Cache-Tags ~ " + req.http.Cache-Tags);
     }
-
+    else {
+        return (synth(403, "Cache tags headers not present."));
+    }
     # Throw a synthetic page so the request won't go to the backend.
     return (synth(200, "Ban added."));
   }
