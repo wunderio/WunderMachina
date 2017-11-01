@@ -18,6 +18,9 @@ varnish:
     - ip: 127.0.0.1
   acl_upstream_proxy:
     - ip: 127.0.0.1
+#  custom_http_response_headers:
+#    - name: Access-Control-Allow-Origin
+#      value: "*"
   directors:
     # One app
     - name: test_com_director
