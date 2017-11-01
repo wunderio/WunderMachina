@@ -26,7 +26,13 @@ varnish:
         - name: test1_web
           address: 127.0.0.1
           port: 8080
-
+#  This variable can be used to handle some paths in special ways
+#  inside the vcl_recv block.
+#  recv_conditions:
+#    - property: url # property of the request to check for
+#      operator: "~"
+#      value: "^.*/somepath/.*$"
+#      return_value: pass
 # # Multiple apps
 #   - name: test_com_director
 #     host: test.com
