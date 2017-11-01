@@ -506,6 +506,13 @@ sub vcl_deliver {
   unset resp.http.X-Drupal-Cache-Tags;
   unset resp.http.X-Drupal-Cache-Contexts;
 
+  {% if varnish.custom_http_response_headers is defined %}
+  # Set custom response headers as set in the variables:
+    {% for header in varnish.custom_http_response_headers %}
+        set resp.http.{{ header.name }} = "{{ header.value }}";
+    {% endfor %}
+  {% endif %}
+
   return (deliver);
 }
 
