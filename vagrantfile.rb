@@ -1,6 +1,8 @@
 require 'yaml'
 require File.dirname(__FILE__)+"/dependency_manager/dependency_manager.rb"
 
+Encoding.default_external = 'UTF-8'
+
 dir = File.dirname(__FILE__) + '/../'
 # local variables
 settings = YAML.load_file dir + 'conf/vagrant_local.yml'
@@ -62,7 +64,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		end
 	end
   
-  if INSTANCE_IP != ''
+  if INSTANCE_IP.to_s != ''
 	  config.vm.network :private_network, ip: INSTANCE_IP
   else  
 	  config.vm.network :private_network, type: "dhcp"
