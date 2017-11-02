@@ -273,8 +273,8 @@ sub vcl_recv {
 
   # Conditions specified by variables:
   {% for condition in varnish.recv_conditions %}
-  if (req.{{ condition.property }} {{ condition.operator }} "{{ condition.value }}") {
-    return ({{ condition.return_value }});
+  if ({{ condition.property }} {{ condition.operator }} "{{ condition.value }}") {
+     {{ condition.action }}
   }
 
   {% endfor %}

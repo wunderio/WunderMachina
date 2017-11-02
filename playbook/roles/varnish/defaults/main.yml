@@ -29,10 +29,10 @@ varnish:
 #  This variable can be used to handle some paths in special ways
 #  inside the vcl_recv block.
 #  recv_conditions:
-#    - property: url # property of the request to check for
+#    - property: "req.url" # property to check for
 #      operator: "~"
 #      value: "^.*/somepath/.*$"
-#      return_value: pass
+#      action: "return(pass);" #note that you need a ";"
 # # Multiple apps
 #   - name: test_com_director
 #     host: test.com
