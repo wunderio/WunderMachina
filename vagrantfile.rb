@@ -63,9 +63,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	end
   
   if INSTANCE_IP != ''
-	  config.vm.network :private_network, type: "dhcp"
-  else  
 	  config.vm.network :private_network, ip: INSTANCE_IP
+  else  
+	  config.vm.network :private_network, type: "dhcp"
   end
 
 	# Sync folders
