@@ -606,6 +606,7 @@ sub vcl_fini {
   return (ok);
 }
 
+{% if varnish.hotlink_forbidden %}
 sub hotlink {
   # Prevent hotlinking of files. Called optionally from vcl_recv if hotlinking is forbidden.
 
@@ -631,3 +632,4 @@ sub hotlink {
     }
   }
 }
+{% endif %}
