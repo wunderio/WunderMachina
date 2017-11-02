@@ -61,8 +61,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			config.vm.box_version = '1.2.0'
 		end
 	end
-
-	config.vm.network :private_network, type: "dhcp"
+  
+  if INSTANCE_IP != ''
+	  config.vm.network :private_network, type: "dhcp"
+  else  
+	  config.vm.network :private_network, ip: INSTANCE_IP
+  end
 
 	# Sync folders
 	if Gem.win_platform?
