@@ -81,13 +81,23 @@
   notify:
     - restart nginx
 
-- copy:
-    src=nginx/{{ item }}
-    dest=/etc/nginx/{{ item }}
-  with_items:
-    - conf.d/server_ssl.conf
+- name: Apply intermediate browser support for SSL (IE 7+)
+  copy:
+    src=nginx/conf.d/server_ssl.conf
+    dest=/etc/nginx/server_ssl.conf
   notify:
     - restart nginx
+  when:
+    ssl_browser_support == 'intermediate'
+
+- name: Apply modern browser support for SSL (IE 11+)
+  copy:
+    src=nginx/conf.d/server_modern_ssl.conf
+    dest=/etc/nginx/server_ssl.conf
+  notify:
+    - restart nginx
+  when:
+    ssl_browser_support == 'modern'
 
 # Use Basic Auth
 - yum:
