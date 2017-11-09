@@ -11,8 +11,7 @@
     dest=/etc/yum.repos.d/varnish.repo
   register: varnish_packagecloud_repo_addition
 
-- name: Refresh yum metadata cache if repo changed.
-  command: >
-    yum clean metadata
-    warn=no
+- name: Make cache
+  command: "yum -q makecache -y --disablerepo='*' --enablerepo='varnishcache_{{ varnish_package }}'"
   when: varnish_packagecloud_repo_addition.changed
+

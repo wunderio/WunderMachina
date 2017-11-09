@@ -12,4 +12,8 @@
   copy:
     src=newrelic-infra/repo/newrelic-infra-el7.repo
     dest=/etc/yum.repos.d/newrelic-infra.repo
+  register: newrelic_infra_repo
 
+- name: Make cache
+  command: "yum -q makecache -y --disablerepo='*' --enablerepo='newrelic-infra'"
+  when: newrelic_infra_repo.changed
