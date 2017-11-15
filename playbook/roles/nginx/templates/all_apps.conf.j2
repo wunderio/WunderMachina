@@ -46,6 +46,9 @@ server {
   {% for alias in app_dir_aliases %}
   location {{ alias.path }} {
     alias {{ alias.target }};
+    {% if alias.index %}
+    index {{ alias.index }};
+    {% endif %}
   }
   {% endfor %}
   {% endif %}
