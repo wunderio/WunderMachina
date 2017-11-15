@@ -53,6 +53,14 @@ server {
   {% endfor %}
   {% endif %}
 
+  {% if site.extra_locations is defined %}
+  {% for location in site.extra_locations %}
+  location {{ location.location }} {
+    {{ location.definition }}
+  }
+  {% endfor %}
+  {% endif %}
+
   {% if basicauth_no_ssl_enabled == True %}
 
   satisfy  any;
