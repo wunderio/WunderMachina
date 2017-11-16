@@ -1,7 +1,7 @@
 - set_fact:
     upcloud_project_slug: "{{ upcloud_project_name | regex_replace('\\s+','-') | lower }}"
 
-- name: Create or Update UpCloud Servers
+- name: Create or Update UpCloud Servers (Preconfigured)
   upcloud_server:
     state: "{{ item.1.state | default('present') }}"
     hostname: "{{ item.0.group }}-{{ item.1.name }}.{{ upcloud_project_slug }}.{{item.0.settings.zone | default(upcloud_default_zone)}}.{{ upcloud_server_hostname_base_domain }}"
@@ -17,8 +17,33 @@
   with_subelements:
     - "{{ upcloud_server_spec_list }}"
     - members
-  register: upcloud_created_instances
+  register: upcloud_created_instances_preconfigured
+  when: item.0.settings.plan is defined
   tags: ['create']
+
+- name: Create or Update UpCloud Servers (Custom)
+  upcloud_server:
+    state: "{{ item.1.state | default('present') }}"
+    hostname: "{{ item.0.group }}-{{ item.1.name }}.{{ upcloud_project_slug }}.{{item.0.settings.zone | default(upcloud_default_zone)}}.{{ upcloud_server_hostname_base_domain }}"
+    title: "{{ upcloud_project_name }} - {{ item.0.group }} {{ item.1.name }}"
+    zone: "{{ item.0.settings.zone | default(upcloud_default_zone) }}"
+    timezone: "{{ item.0.settings.timezone | default('Europe/Helsinki') }}"
+    firewall: "{{ item.0.settings.firewall | default('on') }}"
+    core_number: "{{ item.0.settings.core_number }}"
+    memory_amount: "{{ item.0.settings.memory_amount }}"
+    storage_devices: "{{ item.0.settings.storage_devices }}"
+    allow_reboot_on_resize: "{{ item.0.settings.allow_reboot_on_resize }}"
+    user: "{{ upcloud_deploy_user | default('root') }}"
+    ssh_keys: "{{ upcloud_server_admin_ssh_keys }}"
+  with_subelements:
+    - "{{ upcloud_server_spec_list }}"
+    - members
+  register: upcloud_created_instances_custom
+  when: item.0.settings.core_number is defined and item.0.settings.memory_amount is defined
+  tags: ['create']
+
+- set_fact:
+    upcloud_created_instances: "{{ upcloud_created_instances_custom|combine(upcloud_created_instances_preconfigured, recursive=True) }}"
 
 - name: Add all created machines to ansible
   add_host:
@@ -36,7 +61,7 @@
     upcloud_resized_disks: "{{ item['modifications']['storage_devices'] }}"
   with_items:
     - "{{ upcloud_created_instances.results }}"
-  when: item.server is defined and item.server.state == 'started'
+  when: item.server is defined and item.server.state == 'started' and item.invocation is defined
   tags: ['create']
 
 - name: Wait for SSH to come up
