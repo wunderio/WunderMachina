@@ -84,7 +84,7 @@
 - name: Apply intermediate browser support for SSL (IE 7+)
   copy:
     src=nginx/conf.d/server_ssl.conf
-    dest=/etc/nginx/server_ssl.conf
+    dest=/etc/nginx/conf.d/server_ssl.conf
   notify:
     - restart nginx
   when:
@@ -93,7 +93,7 @@
 - name: Apply modern browser support for SSL (IE 11+)
   copy:
     src=nginx/conf.d/server_modern_ssl.conf
-    dest=/etc/nginx/server_ssl.conf
+    dest=/etc/nginx/conf.d/server_ssl.conf
   notify:
     - restart nginx
   when:
