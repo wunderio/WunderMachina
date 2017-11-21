@@ -51,4 +51,6 @@
 - name: Update the system on first run
   yum: name=* state=latest update_cache=yes
   when: first_run is defined
+  notify:
+    - reboot host
 
