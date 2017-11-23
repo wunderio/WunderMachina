@@ -6,7 +6,10 @@
   action: yum pkg=nfs-utils state=present
 
 - name: ensure nfs service is running
-  action: service name={{item}} state=started
+  systemd:
+    name: "{{item}}"
+    state: started
+    enabled: yes
   with_items:
     - rpcbind
     - nfslock
