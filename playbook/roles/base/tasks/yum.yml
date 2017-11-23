@@ -23,6 +23,7 @@
     - screen
     - git
     - wget
+    - curl
     - unzip
     - iftop
     - make
