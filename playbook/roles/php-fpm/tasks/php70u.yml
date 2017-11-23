@@ -21,7 +21,7 @@
     - "{{ php_package }}-mysqlnd"
     - "{{ php_package }}-opcache"
     - "{{ php_package }}-pdo"
-    - "{{ php_package }}-pear"
+      #- "{{ php_package }}-pear"
     - "{{ php_package }}-soap"
     - "{{ php_package }}-tidy"
     - "{{ php_package }}-pecl-imagick"
