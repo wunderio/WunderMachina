@@ -42,6 +42,7 @@
   with_items:
     - "*    soft    nofile    65535"
     - "*    hard    nofile    65535"
+    - "*    hard    core      0"
 
 # Check if sysctl.conf exists
 - stat: path="/etc/sysctl.conf"
