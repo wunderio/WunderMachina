@@ -34,6 +34,13 @@
   notify:
     - restart nginx
 
+- template:
+    src=drupal.conf.j2
+    dest=/etc/nginx/iconf.d/drupal.conf
+  notify:
+    - restart nginx
+
+
 - copy:
     src=nginx/{{ item }}
     dest=/etc/nginx/{{ item }}
@@ -41,7 +48,6 @@
     - mime.types
     - conf.d/nginx_blacklist.conf
     - conf.d/nginx_upstream_phpcgi.conf
-    - conf.d/drupal.conf
     - conf.d/fastcgi_drupal.conf
     - conf.d/php_fpm_status.conf
     - conf.d/nginx_map_https.conf

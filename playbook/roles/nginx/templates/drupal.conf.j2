@@ -88,8 +88,9 @@ location / {
   # Configure webfont access
   location ~* \.(?:ttf|ttc|otf|eot|woff|woff2|font.css)$ {
     # Uncomment to allow cross domain webfont access
-    #add_header "Access-Control-Allow-Origin" "*";
-
+    {% if allow_origin_fonts %}
+    add_header "Access-Control-Allow-Origin" "*";
+    {% endif %}
     # Set cache rules for webfonts.
     expires 365d;
     add_header Cache-Control "public";
