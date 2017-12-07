@@ -6,6 +6,7 @@ settings = YAML.load_file dir + 'conf/vagrant_local.yml'
 
 INSTANCE_NAME     = settings['name']
 INSTANCE_HOSTNAME = settings['hostname']
+INSTANCE_ALIASES  = settings['aliases']
 INSTANCE_MEM      = settings['mem']
 INSTANCE_CPUS     = settings['cpus']
 INSTANCE_IP       = settings['ip']
@@ -40,6 +41,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	########################################
 	# Default configuration
 	########################################
+
+  # vagrant-hostmanager
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline = true
+    if INSTANCE_ALIASES.to_s != ''
+      config.hostmanager.aliases = INSTANCE_ALIASES
+    end
+  end
 
 	config.vm.hostname = INSTANCE_HOSTNAME
 	config.vm.box      = INSTANCE_BOX
