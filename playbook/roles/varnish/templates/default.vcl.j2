@@ -129,7 +129,12 @@ sub vcl_recv {
   }
   {% for director in varnish.directors %}
   elsif (req.http.host ~ "{{ director.host }}"){
+    {% if varnish.client_ip_sticky_session %}
+    #Use client ip has seed for backend.
+    set req.backend_hint = {{ director.name }}.backend(client.ip);
+    {% else %}
     set req.backend_hint = {{ director.name }}.backend(req.http.sticky);
+    {% endif %}
   }
   {% endfor %}
   else {
