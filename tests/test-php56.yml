@@ -179,6 +179,7 @@
       hotlink_forbidden: true
       hotlink_filetype_pattern: "pdf|doc"
       hotlink_allow_no_referer: true
+      client_ip_sticky_session: false
       directors:
         # One app
         - name: test_com_director
