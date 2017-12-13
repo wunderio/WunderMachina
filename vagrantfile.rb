@@ -51,6 +51,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     if INSTANCE_ALIASES.to_s != ''
       config.hostmanager.aliases = INSTANCE_ALIASES
     end
+    config.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+      if hostname = (vm.ssh_info && vm.ssh_info[:host])
+        `vagrant ssh -c "hostname -I"`.split()[1]
+      end
+    end
   end
 
 	config.vm.hostname = INSTANCE_HOSTNAME
