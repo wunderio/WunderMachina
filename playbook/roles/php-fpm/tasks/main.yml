@@ -7,7 +7,7 @@
   when: php_package == "php56u"
 
 - include: "php70u.yml"
-  when: php_package == "php70u" or php_package == "php71u"
+  when: php_package == "php70u" or php_package == "php71u" or php_package == "php72u"
 
 # Add db credentials as ENV for the php-fpm
 - name: add db credentials to php_env_vars
@@ -86,7 +86,7 @@
 - template:
     src=www.conf.php7.j2
     dest=/etc/php-fpm.d/www.conf
-  when: php_package == "php70u" or php_package == "php71u"
+  when: php_package == "php70u" or php_package == "php71u" or php_package == "php72u"
 
 - copy:
     src=php-fpm/{{ item }}
