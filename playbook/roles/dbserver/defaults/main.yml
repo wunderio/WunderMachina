@@ -11,7 +11,6 @@ innodb_buffer_pool_size: 1024
 innodb_buffer_pool_instances: 6
 innodb_log_buffer_size: 8M
 innodb_log_file_size: 24M
-innodb_additional_mem_pool_size: 10M
 innodb_concurrency: 16
 innodb_lock_wait_timeout: 120
 
