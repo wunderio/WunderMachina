@@ -36,7 +36,7 @@
 
 - template:
     src=drupal.conf.j2
-    dest=/etc/nginx/iconf.d/drupal.conf
+    dest=/etc/nginx/conf.d/drupal.conf
   notify:
     - restart nginx
 
