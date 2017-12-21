@@ -56,3 +56,5 @@ nginx_conf:
 # Allow connection limit bypass from certain ip addresses
 #nginx_conn_limit_whitelist:
 #  - 127.0.0.1/32
+
+allow_origin_fonts: false
