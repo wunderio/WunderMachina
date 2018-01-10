@@ -38,7 +38,7 @@
     copy: src=solr_init dest=/etc/init.d/solr mode=0755
 
   - name: Copy drupal solr confs
-    copy: src={{ item }} dest="{{ solr_path }}/drupal/solr/collection1/conf/{{ item }}" mode=0644
+    copy: src={{ item }} dest="{{ solr_path }}/drupal/solr/collection1/conf/{{ item | basename }}" mode=0644
     with_items: "{{ solr_drupal_files }}"
 
   - name: Solr sysconfig file
