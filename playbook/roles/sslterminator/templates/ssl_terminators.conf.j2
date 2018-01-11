@@ -42,6 +42,10 @@ server {
   {% endfor %}
 {% endif %}
 
+{% if custom_server_block is defined %}
+{{ custom_server_block }}
+{% endif %}
+
 {% if httpsforwards is defined and httpsforwards|length > 0 %}
   {% for site in httpsforwards %}
     {% if site.forwarded_domains is defined %}
