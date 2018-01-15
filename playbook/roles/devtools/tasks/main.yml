@@ -74,3 +74,29 @@
 - name: PHP | Make sure the xdebug remote log file exists and it writeable
   file: path=/var/log/xdebug.log state=touch mode="660"
   when: xdebug_remote_debug_log == true
+
+- name: Install node.js and npm
+  yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - nodejs
+    - npm
+
+- name: Install nvm
+  become: true
+  become_user: "{{ nodejs_user }}"
+  shell: >
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | sh
+    creates=/home/{{ nodejs_user }}/.nvm/nvm.sh
+  when: enable_nodejs== true
+
+- name: Install node and set version
+  become: true
+  become_user: "{{ nodejs_user }}"
+  shell: >
+    /bin/bash -c "source ~/.nvm/nvm.sh && nvm install {{ nodejs_version }} && nvm alias default {{ nodejs_version }}"
+    creates=/home/{{ nodejs_user }}/.nvm/alias
+  when: enable_nodejs== true
+
+
