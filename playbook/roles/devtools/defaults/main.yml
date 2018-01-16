@@ -22,6 +22,6 @@ xdebug:
 xdebug_remote_debug_log: false
 
 enable_nodejs: true
-nodejs_version: v9.4.0
+nodejs_version: lts/*
 nodejs_user: vagrant
 
