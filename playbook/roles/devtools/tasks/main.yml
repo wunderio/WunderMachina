@@ -87,7 +87,7 @@
   become: true
   become_user: "{{ nodejs_user }}"
   shell: >
-    curl https://raw.githubusercontent.com/creationix/nvm/v0.13.1/install.sh | sh
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | sh
     creates=/home/{{ nodejs_user }}/.nvm/nvm.sh
   when: enable_nodejs== true
 
