@@ -20,3 +20,8 @@ xdebug:
 
 # this can be set to true to add the remote log file.
 xdebug_remote_debug_log: false
+
+enable_nodejs: true
+nodejs_version: lts/*
+nodejs_user: vagrant
+
