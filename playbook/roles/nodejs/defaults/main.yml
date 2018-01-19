@@ -1,0 +1,29 @@
+---
+
+shell_profiles:
+  - .bash_profile
+nodejs_clean_install: false
+nvm_symlink_exec: /usr/local/bin/nvm
+
+nvm_repo: "https://github.com/xtuple/nvm.git"
+ivm_repo: "https://github.com/demohi/ivm.git"
+
+install_nvm: true
+install_nodejs: false
+install_ivm: false
+install_iojs: false
+install_npm: false
+
+#node_version: 7.10.0
+#node_versions:
+#  - 6.11.0
+#  - 8.1.3
+
+#node_packages:
+#  - gulp
+#  - yarn
+
+nodejs_folder_paths:
+  - path: "/usr/local/lib/node_modules"
+  - path: "/Users/{{ fubarhouse_user }}/.npm"
+  - path: "/Users/{{ fubarhouse_user }}/.nvm"
