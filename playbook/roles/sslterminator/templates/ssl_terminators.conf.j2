@@ -200,6 +200,7 @@ server {
     # Most web apps can be configured to read this header and
     # understand that the current session is actually HTTPS.
     proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_set_header        X-Forwarded-Port  $server_port;
     add_header              Front-End-Https   on;
 
     {% if site.extra_headers is defined %}
