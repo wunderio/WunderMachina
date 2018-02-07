@@ -23,7 +23,7 @@ php_ini:
     - key: max_input_time
       val: 60
     - key: post_max_size
-      val: 24M
+      val: 50M
     - key: upload_max_filesize
       val: 50M
     - key: max_file_uploads
