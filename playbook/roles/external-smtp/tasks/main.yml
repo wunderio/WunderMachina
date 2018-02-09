@@ -51,10 +51,10 @@
     backup=yes
     create=yes
     dest=/etc/postfix/sasl_passwd
-    line="{{ external_smtp_usermap.username }} {{ external_smtp_usermap.username }}:{{ external_smtp_usermap.password }}"
+    line="{{ item.username }} {{ item.username }}:{{ item.password }}"
     state=present
   with_items:
-    "{{ external_smtp_uermap }}"
+    "{{ external_smtp_usermap }}"
   when: external_smtp_usermap is defined
 
 - name: postmap hash:/etc/postfix/sasl_passwd
