@@ -10,6 +10,17 @@
     - cyrus-sasl-lib
     - cyrus-sasl-plain
 
+- name: Enable user dependent authentication
+  blockinfile:
+    dest: /etc/postfix/main.cf
+    create: yes
+    insertafter: EOF
+    block: |
+      smtp_sender_dependent_authentication = yes
+  notify: restart postfix
+  when: external_smtp_sender_dependent_auth == true
+
+
 # Add settings to /etc/postfix/main.cf
 - name: Add settings to /etc/postfix/main.cf
   blockinfile:
@@ -33,7 +44,18 @@
     dest=/etc/postfix/sasl_passwd
     line="{{ external_smtp_relayhost }} {{ external_smtp_user }}:{{ external_smtp_password }}"
     state=present
-  when: external_smtp_user is defined
+  when: external_smtp_user is defined and external_smtp_usermap is not defined
+
+- name: Create /etc/postfix/sasl_passwd for multiple users
+  lineinfile: >
+    backup=yes
+    create=yes
+    dest=/etc/postfix/sasl_passwd
+    line="{{ item.username }} {{ item.username }}:{{ item.password }}"
+    state=present
+  with_items:
+    "{{ external_smtp_usermap }}"
+  when: external_smtp_usermap is defined
 
 - name: postmap hash:/etc/postfix/sasl_passwd
   command: postmap hash:/etc/postfix/sasl_passwd
@@ -50,8 +72,6 @@
 - name: postfix CA cert
   command: postconf -e 'smtp_tls_CAfile = {{ external_smtp_cert }}'
   when: external_smtp_cert is defined
-
-
 
 # Make sure all services are ON and configured to start on boot
 - service: name={{ item }} state=started enabled=yes
