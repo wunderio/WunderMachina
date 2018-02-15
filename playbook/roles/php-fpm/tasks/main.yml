@@ -41,6 +41,19 @@
     - "{{ databases }}"
   when: php_env_vars_include_db == True
 
+- name: Add db credentials to environment variables
+  blockinfile:
+    path: /etc/environment
+    block: |
+      DB_NAME_{{ item.name|upper }}={{ item.name }}
+      DB_USER_{{ item.name|upper }}={{ item.user }}
+      DB_PASS_{{ item.name|upper }}={{ item.pass }}
+      DB_HOST_{{ item.name|upper }}={{ item.host|default('127.0.0.1') }}
+      DB_PORT_{{ item.name|upper }}={{ item.port|default('3306') }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name|upper }}-DB"
+  with_items:
+    - "{{ databases }}"
+  backup: yes
 
 - name: Add php_extra_env_vars
   set_fact:
