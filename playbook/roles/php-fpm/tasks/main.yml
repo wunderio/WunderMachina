@@ -54,6 +54,7 @@
   with_items:
     - "{{ databases }}"
   backup: yes
+  when: database_vars_expose_globally == True
 
 - name: Add php_extra_env_vars
   set_fact:

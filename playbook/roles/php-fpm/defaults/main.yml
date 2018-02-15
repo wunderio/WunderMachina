@@ -78,6 +78,7 @@ php_env_vars:
     value: "{{ wkv_site_env }}"
 
 php_env_vars_include_db: False
+database_vars_expose_globally: False
 
 #php_disable_functions: phpinfo,exec,passthru,shell_exec,show_source,system,pcntl_exec,popen,posix_getpwuid,posix_kill,posix_mkfifo,posix_setpgid,posix_setsid,posix_setuid,posix_setuid,posix_uname,proc_nice
 
