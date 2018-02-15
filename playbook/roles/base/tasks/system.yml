@@ -117,6 +117,18 @@
   notify:
     - restart rsyslog
 
+- name: Add custom logrotate configs
+  template:
+    src: logrotate.j2
+    dest: "/etc/logrotate.d/{{ item.name }}"
+  vars:
+    log: "{{ item }}"
+  with_items:
+      - "{{ logrotate_additional_logs }}"
+  when: logrotate_additional_logs is defined
+  notify:
+    - restart rsyslog
+
 - stat: path=/etc/sysconfig/network-scripts/ifcfg-eth2
   register: file_eth2
 

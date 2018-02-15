@@ -1,0 +1,13 @@
+{{ log.filename }}
+{
+  rotate {{ log.rotate | default(4) }}
+  {{ log.interval | default('weekly') }}
+  create 640 {{ log.user }} adm
+  missingok
+  compress
+  delaycompress
+  sharedscripts
+  postrotate
+    {{ log.postrotate_command }}
+  endscript
+}
