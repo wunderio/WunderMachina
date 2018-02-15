@@ -60,7 +60,49 @@
       }}
   with_items:
     - "{{ groups['all'] }}"
-  when: item in groups['firewall_web']
+  when: item in groups['firewall_web'] and firewall_web_whitelist_enabled == false
+
+- name: Allow web traffic to web servers from whitelisted ips
+  set_fact:
+    all_upcloud_firewall_rules: >
+      {{ all_upcloud_firewall_rules +
+        [
+          {
+            'machine': item[0],
+            'rule':
+              {
+                'direction': 'in',
+                'action': 'accept',
+                'source_address_start': item[1].ip | ipaddr(1) | ipv4('address'),
+                'source_address_end': item[1].ip | ipaddr(-1) | ipv4('address'),
+                'destination_port_start': 443,
+                'destination_port_end': 443,
+                'protocol': 'tcp',
+                'family': 'IPv4',
+                'comment': item[1].comment|default('')
+              }
+          },
+          {
+            'machine': item[0],
+            'rule':
+              {
+                'direction': 'in',
+                'action': 'accept',
+                'source_address_start': item[1].ip | ipaddr(1) | ipv4('address'),
+                'source_address_end': item[1].ip | ipaddr(-1) | ipv4('address'),
+                'destination_port_start': 80,
+                'destination_port_end': 80,
+                'protocol': 'tcp',
+                'family': 'IPv4',
+                'comment': item[1].comment|default('')
+              }
+          }
+        ]
+      }}
+  with_nested:
+    - "{{ groups['all'] }}"
+    - "{{ firewall_web_whitelist }}"
+  when: item[0] in groups['firewall_web'] and firewall_web_whitelist_enabled == true
 
 
 - name: Allow all machines to connect to eachother (eth0)

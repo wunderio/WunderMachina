@@ -1,4 +1,13 @@
 ---
+# Enable firewall web whitelist: only allows web traffic from ips defined in `firewall_web_whitelist`
+firewall_web_whitelist_enabled: false
+firewall_web_whitelist:
+#  - comment: Admin machine
+#    ip: 10.0.0.1
+#  - comment: Test Machine
+#    ip: 127.0.0.1/22 # CIDR ranges are also supported
+
+
 # These contain the IP addresses from the admin VPN
 firewall_ssh_allowed:
 #  - comment: Admin machine
