@@ -41,7 +41,6 @@
     - "{{ databases }}"
   when: php_env_vars_include_db == True
 
-
 - name: Add php_extra_env_vars
   set_fact:
     php_env_vars: >
@@ -60,6 +59,16 @@
         ]
       }}
     when: varnish_control_key is defined
+
+- name: Add php_env_vars to environment variables
+  blockinfile:
+    path: /etc/environment
+    block: |
+      {{ item.key }}={{ item.value }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK PHP ENV VARS {{ item.key }}"
+  with_items: "{{ php_env_vars }}"
+  backup: yes
+  when: expose_php_vars_globally == True
 
 - yum:
     name={{ item }}
