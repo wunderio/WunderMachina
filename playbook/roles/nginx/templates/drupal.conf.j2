@@ -90,6 +90,9 @@ location / {
     ## No need to bleed constant updates. Send the all shebang in one
     ## fell swoop.
     tcp_nodelay off;
+{% if drupal_handle_pdf_pptx %}
+    try_files $uri @drupal;
+{% endif %}
   }
 
   # Configure webfont access
