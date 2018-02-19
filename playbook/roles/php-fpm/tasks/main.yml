@@ -63,11 +63,11 @@
 - name: Add php_env_vars to environment variables
   blockinfile:
     path: /etc/environment
+    backup: yes
     block: |
       {{ item.key }}={{ item.value }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK PHP ENV VARS {{ item.key }}"
   with_items: "{{ php_env_vars }}"
-  backup: yes
   when: expose_php_vars_globally == True
 
 - yum:
