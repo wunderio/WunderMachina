@@ -122,8 +122,14 @@ location / {
   }
 
   location = /robots.txt {
+
+    {% if deny_robots %}
+    add_header  Content-Type  text/plain;
+    return 200 "User-agent: *\nDisallow: /\n";
+    {% else %}
     access_log off;
     try_files $uri @drupal;
+    {% endif %}
   }
 
   location = /radioactivity_node.php {

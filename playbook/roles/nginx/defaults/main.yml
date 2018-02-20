@@ -58,3 +58,4 @@ nginx_conf:
 #  - 127.0.0.1/32
 
 allow_origin_fonts: false
+deny_robots: false
