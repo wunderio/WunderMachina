@@ -15,6 +15,7 @@
     dest: /etc/postfix/main.cf
     create: yes
     insertafter: EOF
+    marker: "# sender dependent auth"
     block: |
       smtp_sender_dependent_authentication = yes
   notify: restart postfix
