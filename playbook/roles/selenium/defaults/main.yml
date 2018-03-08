@@ -1,10 +1,10 @@
 ---
 # defaults file for selenium
 selenium_install_dir: /opt
-selenium_version: "3.4.0"
+selenium_version: "3.10.0"
 selenium_install_firefox: yes
 selenium_install_chrome: yes
-selenium_chromedriver: "2.30"
+selenium_chromedriver: "2.36"
 selenium_display_id: "1"
 selenium_port: 4444
 selenium_xvfb_args: "--server-args='-screen 0, 1920x1080x24'"
