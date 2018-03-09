@@ -1,7 +1,7 @@
 ---
 
 backup_db_name:
-  - drupaldb
+  - drupal
 backup_location: /var/backups
 backup_keep_max_days: 7
 backup_ignore_tables:
