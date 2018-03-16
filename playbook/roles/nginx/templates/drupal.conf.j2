@@ -34,6 +34,10 @@ location / {
     log_not_found off;
   }
 
+  location ~ /autocomplete/ {
+    try_files $uri @drupal;
+  }
+
   ## Allow download of .txt files from files directory
   location ~* ^/sites/.*/files/(?:.+\.(?:txt)) {
     tcp_nodelay     off;
