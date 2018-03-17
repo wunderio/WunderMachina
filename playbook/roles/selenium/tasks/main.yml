@@ -56,6 +56,15 @@
   when: selenium_install_chrome
   tags: [configuration, selenium, selenium-chrome]
 
+- yum:
+    name={{ item }}
+    state=present
+  with_items:
+    - liberation-mono-fonts
+    - liberation-narrow-fonts
+    - liberation-sans-fonts
+    - liberation-serif-fonts
+
 - name: Install xvfb
   package: name={{ selenium_xvfb_package }}
   tags: [configuration, selenium, selenium-xvfb]
