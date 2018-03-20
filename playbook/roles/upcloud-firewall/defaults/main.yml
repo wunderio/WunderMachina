@@ -142,5 +142,3 @@ upcloud_default_firewall_rules:
     protocol: udp
     source_port_start: 123
     source_port_end: 123
-    destination_port_start: 123
-    destination_port_end: 123
