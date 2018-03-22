@@ -1,4 +1,4 @@
-ansible==2.3.0.0
+ansible==2.4.3.0
 pyOpenSSL==16.2.0
 # Required for 'json_query' filter in ansible playbooks
 jmespath==0.9.2
