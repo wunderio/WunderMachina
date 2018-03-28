@@ -158,11 +158,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	# Provisioning
 	########################################
 
-	config.vm.provision "ansible" do |ansible|
-		#ansible.verbose        = "v"
-    ansible.extra_vars     = dir + "conf/variables.yml"
-		ansible.playbook       = dir + "conf/vagrant.yml"
-		ansible.limit          = "all"
-	end
+  config.vm.provision "ansible_local" do |ansible|
+    #ansible.verbose        = "v"
+    ansible.install_mode   = "pip"
+    ansible.version        = "2.5.0"
+    ansible.extra_vars     = "/vagrant/conf/variables.yml"
+    ansible.playbook       = "/vagrant/conf/vagrant.yml"
+    ansible.limit          = "all"
+  end
 
 end
