@@ -12,7 +12,7 @@ rm -f /lib/systemd/system/basic.target.wants/*; \
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 # Install Ansible
 RUN yum -y install epel-release
-RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc libffi-devel openssl-devel pip
+RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc libffi-devel openssl-devel python-pip
 RUN yum clean all
 RUN pip install ansible==2.5.0
 RUN echo "[defaults]\nroles_path = /WunderMachina/playbook/roles\nhash_behaviour=merge" > /etc/ansible/ansible.cfg
