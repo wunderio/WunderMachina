@@ -1,0 +1,211 @@
+---
+
+- hosts: localhost
+  remote_user: root
+  roles:
+   - { role: base, tags: [ 'base' ] }
+   - { role: papertrail, tags: [ 'papertrail' ] }
+   - { role: nginx, tags: [ 'nginx' ] }
+   - { role: php-fpm, tags: [ 'php-fpm' ] }
+   - { role: varnish, tags: [ 'varnish' ] }
+   - { role: dbserver, tags: [ 'dbserver' ] }
+   - { role: sslterminator, tags: [ 'sslterminator' ] }
+   - { role: drush, tags: [ 'drush' ] }
+   - { role: drupal-console, tags: [ 'drupal-console' ] }
+   - { role: drupal-db, tags: [ 'drupal-db' ] }
+   - { role: drupal-log, tags: [ 'drupal-log' ] }
+   - { role: memcached, tags: [ 'memcached' ] }
+   - { role: datadog, tags: [ 'datadog' ] }
+   - { role: monit, tags: [ 'monit' ] }
+   - { role: elasticsearch, tags: [ 'elasticsearch' ] }
+   - { role: mongodb, tags: [ 'mongodb' ] }
+   - { role: external-smtp, tags: [ 'external-smtp' ] }
+   - { role: mailhog, tags: [ 'mailhog' ] }
+
+  tasks:
+    # Disable email from cron
+    - name: "Disable emails from failed cronjobs for nginx user"
+      cron:
+        name: "MAILTO"
+        env: yes
+        value: ""
+        state: "present"
+        user: nginx
+      tags: ['cron']
+    # Run Drupal cron job
+    - name: "Add drupal cronjob to nginx user"
+      cron:
+        name: "Run Drupal cronjobs with drush"
+        minute: "*/2"
+        job: "/usr/lib/composer/vendor/bin/drush --root={{ drupal_web_root }} cron"
+        state: "present"
+        user: nginx
+      tags: ['cron']
+      when: drupal_web_root is defined
+
+
+  vars:
+
+    distro: "centos7"
+    wkv_site_env: travis
+
+    domain_name: travis.example.com
+    drupal_web_root: "/var/www/{{ domain_name }}/current/web"
+    
+    base_pubkeys_enable: False
+    base_pubkeys_auth: username:password
+    base_pubkeys_url: https://example.com/auth
+    base_addhost_url: https://example.com/auth/add_server
+
+    project_name: Wundertools
+
+    support_email: support@wundertools.com
+
+    varnish_control_key: "varnish-insecure-key"
+    drupal_db_password: "password"
+
+    memory_db: 512 # In MB
+    memory_app: 512 # In MB
+    php_memory_limit: 64
+
+    # Estimated average memory usage per process
+    # Use `ps --no-headers -o "rss,cmd" -C php-fpm | awk '{ sum+=$1 } END { printf ("%d%s\n", sum/NR/1024,"Mb") }'` to get the average
+    php_app_memory_usage_average: 64
+
+    # Following values are highly dependand on server resources so we just calculate suitable values for them here.
+    php_fpm_pm_max_children: "{{ memory_app // php_app_memory_usage_average }}"
+    php_fpm_pm_start_servers: "{{ php_fpm_pm_max_children|int // 2 }}"
+    php_fpm_pm_min_spare_servers: "{{ php_fpm_pm_max_children|int // 2 }}"
+    php_fpm_pm_max_spare_servers: "{{ php_fpm_pm_max_children|int // 2 }}"
+
+    innodb_buffer_pool_size: "{{ memory_db }}"
+
+    partition_var_log: False
+    partition_var_lib_mysql: False
+
+    # PHP version to be used. Available options: php56u, php70u, php71u, php72u
+    php_package: "php71u"
+
+    drush: {
+      version: "9.*",
+    }
+
+    drush_use_launcher: True
+    php_env_vars_include_db: True
+    expose_php_vars_globally: True
+
+
+    papertrail_enabled: False
+    papertrail_remote_syslog2_version: "0.16"
+    papertrail_conf: "/etc/log_files.yml"
+    papertrail_logs:
+      - /var/log/secure
+      - /var/log/maillog
+
+
+    varnish_extra_definition:
+      - name: add extra director
+        dest: /etc/varnish/default.vcl
+        insertafter: "# Extra directors"
+        content: |
+          new test_extra = directors.round_robin();
+          test_extra.add_backend(test_extra_http);
+
+    # Let's encrypt. Always use SSL if possible!
+    certbot_email: "{{ support_email }}"
+    certbot_domains:
+      - "{{ domain_name }}"
+    certbot_renewal_docroot: /var/www/letsencrypt-auto
+
+    # On dev and stage it's good idea to protect the site with htauth
+    basicauth_enabled: True
+    basicauth_username: wunder
+    basicauth_password: tools
+    # Basic auth can also be disabled for certain ip's
+    basicauth_ip:
+      - address: 84.20.132.177
+      - address: 87.94.15.10
+      - address: 94.237.27.124
+      - address: 94.237.33.88
+      - address: 83.136.248.231
+
+    # Apps I want to run on this server
+    apps:
+      - server_name: "{{ domain_name }}"
+        http_port: 8080
+        docroot: "{{ drupal_web_root }}"
+
+    create_docroot: True
+
+    deny_robots: true
+
+    # This server also acts as a load balancer
+    varnish:
+      port: 8081
+      memory: 512M
+      control_key: "{{ varnish_control_key }}"
+      acl_internal:
+        - ip: 127.0.0.1
+      acl_purge:
+        - ip: 127.0.0.1
+      acl_upstream_proxy:
+        - ip: 127.0.0.1
+      directors:
+        - name: example
+          host: "{{ domain_name }}"
+          backends:
+            - name: example_http
+              address: 127.0.0.1
+              port: 8080
+
+    # Use https for this host
+    sslterminators:
+      - server_name: "{{ domain_name }}"
+        ssl_certificate: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+        ssl_certificate_key: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"
+        use_dhparam: True
+        backends:
+          - 127.0.0.1:8081 # Pass it to local varnish
+
+    # Make sure all traffic is redirected to https
+    httpforwards:
+      - server_name: "{{ domain_name }}"
+        forwarded_domains: "{{ domain_name }}"
+        http_port: 80
+
+    databases:
+      - name: drupal
+        host: localhost
+        user: drupal
+        pass: "{{ drupal_db_password }}"
+        hosts:
+          - "127.0.0.1"
+          - "::1"
+          - "localhost"
+
+    ## Monit ##
+    monit_enabled: True
+    monit_alert_email_service_name: "{{ project_name }} travis {{ ansible_nodename }}"
+    monit_alert_email_from: "{{ support_email }}"
+    monit_alert_email_to: "{{ support_email }}"
+
+    monit_check_sshd: True
+    monit_check_remote_syslog: True
+    monit_check_cron: True
+    monit_check_mysql: True
+    monit_check_nginx: True
+    monit_check_memcached: True
+    monit_check_php_fpm: True
+    monit_check_varnish: True
+
+    # Which ever you are using
+    monit_check_elasticsearch: True
+
+
+    # Define additional papertrail logs from nginx (from nginx role)
+    nginx_papertrail_follow:
+      - /var/log/nginx/http-*error.log
+
+    php_fpm_papertrail_follow:
+      - /var/log/php-fpm/www-error.log
+
