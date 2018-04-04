@@ -14,4 +14,8 @@
 - name: Make cache
   command: "yum -q makecache -y --disablerepo='*' --enablerepo='varnishcache_{{ varnish_package }}'"
   when: varnish_packagecloud_repo_addition.changed
+  register: task_result
+  until: task_result|success
+  retries: 5
+  delay: 5
 
