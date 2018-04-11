@@ -28,4 +28,4 @@
   service: "name={{ mongo_daemon }} state=started enabled=yes"
 
 - name: Install MongoDB support for PHP
-  package: name={{ php_package }}-pecl-mongo state=latest
+  package: name={{ php_package }}-pecl-mongodb state=latest
