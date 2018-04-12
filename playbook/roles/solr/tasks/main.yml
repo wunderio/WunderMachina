@@ -40,6 +40,8 @@
   - name: Copy drupal solr confs
     copy: src={{ item }} dest="{{ solr_path }}/drupal/solr/collection1/conf/{{ item | basename }}" mode=0644
     with_items: "{{ solr_drupal_files }}"
+    notify:
+      - restart solr
 
   - name: Solr sysconfig file
     template: src=solr_sysconfig.j2 dest=/etc/sysconfig/solr
