@@ -141,3 +141,8 @@
   when: file_eth2.stat.exists
   notify:
       - restart network
+
+
+- name: set timezone
+  timezone:
+    name: "{{ timezone }}"
