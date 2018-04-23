@@ -21,6 +21,8 @@ sysctl_tcp_fin_timeout: 20
 
 varnish_control_key: this-is-not-a-secure-key
 
+timezone: Europe/Helsinki
+
 # Install extra packages
 #yum_extra_packages:
 #  - packagename
