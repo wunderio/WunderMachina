@@ -36,6 +36,8 @@ php_ini:
       val: Off
     - key: always_populate_raw_post_data
       val: -1
+    - key: max_input_vars
+      val: 4096
  - section: DATE
    options:
     - key: date.timezone
