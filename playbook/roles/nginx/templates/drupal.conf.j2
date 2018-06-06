@@ -4,7 +4,7 @@
 
 location / {
 
-  {% if nginx_drupal_override_locations %}
+  {% if nginx_drupal_override_locations is defined %}
   {% for location in nginx_drupal_override_locations %}
   location {{ location.operator }} {{ location.condition }} {
     {{ location.action }}
