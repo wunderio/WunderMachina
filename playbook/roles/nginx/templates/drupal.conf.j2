@@ -4,6 +4,13 @@
 
 location / {
 
+  {% if nginx_drupal_override_locations %}
+  {% for location in nginx_drupal_override_locations %}
+  location {{ location.operator }} {{ location.condition }} {
+    {{ location.action }}
+  }
+  {% endfor %} 
+  {% endif %} 
   ## Handle D7 image styles
   location ~* /files/styles/ {
     expires 365d;
