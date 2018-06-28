@@ -4,3 +4,4 @@
 - copy:
     src=blackfire.repo
     dest=/etc/yum.repos.d/blackfire.repo
+  when: enable_blackfire== true
