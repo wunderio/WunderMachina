@@ -44,7 +44,7 @@
 
 - name: PHP | XDebug
   yum: pkg={{ php_package }}-pecl-xdebug state=installed
-  tags: ntp
+  when: enable_xdebug== true
 
 - name: PHP | Set up xdebug.ini
   ini_file: dest=/etc/php.d/zzz-xdebug.ini
@@ -58,6 +58,7 @@
     - options
   notify:
     - restart php-fpm
+  when: enable_xdebug== true
 
 - name: PHP | Set the remote log option in the xdebug ini file.
   ini_file: dest=/etc/php.d/zzz-xdebug.ini
@@ -82,6 +83,7 @@
   with_items:
     - nodejs
     - npm
+  when: enable_nodejs== true
 
 - name: Install nvm
   become: true
