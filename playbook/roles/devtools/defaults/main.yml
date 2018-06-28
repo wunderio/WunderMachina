@@ -3,6 +3,7 @@ blackfire_server_token: "aa-bb-REPLACE THIS-cc-dd"
 blackfire_client_key: "aa-bb-REPLACE THIS-cc-dd"
 blackfire_client_token: "aa-bb-REPLACE THIS-cc-dd"
 enable_blackfire: false
+enable_xdebug: true
 
 xdebug:
  - section: XDebug
