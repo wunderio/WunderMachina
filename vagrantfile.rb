@@ -91,6 +91,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		else
 			config.cache.synced_folder_opts = {
 				type: :nfs,
+				nfs_udp: false,
 				mount_options: ['rw', 'vers=3', 'tcp', 'nolock', 'actimeo=1']
 			}
 		end
