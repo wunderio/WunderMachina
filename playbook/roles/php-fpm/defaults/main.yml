@@ -2,6 +2,9 @@
 
 php_memory_limit: 256
 
+php_post_max_size: 50
+php_upload_max_filesize: 50
+
 php_fpm_papertrail_follow:
   - /var/log/php-fpm/www-error.log
 
@@ -23,9 +26,9 @@ php_ini:
     - key: max_input_time
       val: 60
     - key: post_max_size
-      val: 50M
+      val: "{{ php_post_max_size }}M"
     - key: upload_max_filesize
-      val: 50M
+      val: "{{ php_upload_max_filesize }}M"
     - key: max_file_uploads
       val: 20
     - key: allow_url_fopen
