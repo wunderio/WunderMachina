@@ -106,7 +106,7 @@ http {
   merge_slashes off;
 
   types_hash_max_size 8192;
-  server_names_hash_bucket_size 64;
+  server_names_hash_bucket_size {{ nginx_conf.server_names_hash_bucket_size|default('64') }};
 
   ## Compression.
   gzip              on;
