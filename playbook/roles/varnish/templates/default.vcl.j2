@@ -17,7 +17,11 @@ backend {{ backend.name }} {
 
   .probe = {
     .request =
+      {% if director.probe_resource_url is defined %}
+      "GET /{{ director.probe_resource_url  }} HTTP/1.1"
+      {% else %}
       "GET /{{ varnish.probe_resource_url | default('_ping.php') }} HTTP/1.1"
+      {% endif %}
       "Host: {{ director.host }}"
       "Connection: close";
 
@@ -183,6 +187,14 @@ sub vcl_recv {
   if (req.url ~ "{{ varnish.probe_resource_url }}") {
     return (pass);
   }
+
+  {% for director in varnish.directors %}
+    {% if director.probe_resource_url is defined %}
+    if (req.url ~ "/{{ director.probe_resource_url }}") {
+      return (pass);
+    }
+    {% endif %}
+  {% endfor %}
 
   if (req.url ~ "^/(?:user|admin|cart|checkout|logout|abuse|flag|.*\?rate=)" && req.http.user-agent ~ "(?:crawl|goog|yahoo|spider|bot|Yandex|bing|tracker|click|parser|ltx71|urllib)") {
     return (synth( 403, "Forbidden"));
