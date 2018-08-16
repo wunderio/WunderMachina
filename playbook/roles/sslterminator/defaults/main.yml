@@ -5,6 +5,16 @@ nginx_real_ip: 127.0.0.1
 sslterminator_papertrail_follow:
   - /var/log/nginx/ssl-*error.log
 
+nginx_conf:
+  client_header_timeout: 10
+  client_body_timeout: 120
+  send_timeout: 120
+  keepalive_timeout: "15 10"
+  client_max_body_size: 100M
+  client_body_buffer_size: 128k
+  proxy_read_timeout: 60
+  server_names_hash_bucket_size: 64
+
 sslterminators:
   - server_name: www.test.com
     server_forwards: test.com
