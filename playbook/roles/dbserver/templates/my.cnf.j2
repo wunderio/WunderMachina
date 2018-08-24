@@ -103,6 +103,9 @@ innodb_lock_wait_timeout = {{ innodb_lock_wait_timeout }}
 # - https://drupal.org/node/1952972
 transaction-isolation          = READ-COMMITTED
 
+innodb_file_format = {{ innodb_file_format }}
+innodb_large_prefix = {{ innodb_large_prefix }}
+
 # Need adjustment if many connections/sec
 # Percona suggests 2048 is reasonable value. Original 100.
 back_log = 2048
