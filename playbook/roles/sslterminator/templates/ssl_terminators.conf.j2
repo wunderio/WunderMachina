@@ -173,8 +173,19 @@ server {
   {% endfor %}
   {% endif %}
 
+  {% if site.custom_errors is defined %}
+  {% for error in site.custom_errors %}
+  error_page {{ error.code }} /{{ error.page }};
+  location = /{{ error.page }} {
+    root {{ error.path }};
+    internal;
+  }
+  {% endfor %}
+  {% endif %}
   location / {
-
+    {% if site.extra_conditions is defined %}
+    {{ site.extra_conditions }}
+    {% endif %}
     # Pass the request on to Varnish.
     proxy_pass http://{{ site.server_name|replace(".", "") }};
 

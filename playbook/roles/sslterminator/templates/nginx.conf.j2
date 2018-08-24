@@ -54,7 +54,22 @@ http {
   ## ** version then use the limit_zone directive below
   ## ** instead. Comment out this
   ## ** one if not using nginx version >= 1.1.8.
-  limit_conn_zone $binary_remote_addr zone=arbeit:10m;
+  geo $whitelist {
+     default 0;
+     # CIDR in the list below are not limited
+     127.0.0.1/32 1;
+     {% if nginx_conn_limit_whitelist is defined %}
+     {% for whitelist_item in nginx_conn_limit_whitelist %}
+     {{ whitelist_item }} 1;
+     {% endfor %}
+     {% endif %}
+  }
+
+  map $whitelist $limit {
+      0     $binary_remote_addr;
+      1     "";
+  }
+  limit_conn_zone $limit zone=arbeit:10m;
   {% endif %}
 
   ## Use a SSL/TLS cache for SSL session resume. This needs to be
@@ -74,7 +89,7 @@ http {
 
   {% if nginx_disable_content_security_policy is not defined %}
   # Enable Content Security Policy
-  add_header Content-Security-Policy "default-src https: data: 'unsafe-inline' 'unsafe-eval'{{ nginx_content_security|default('') }}" always;
+  add_header Content-Security-Policy "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval' {{ nginx_content_security|default('') }}" always;
   {% endif %}
 
   ## Enable the builtin cross-site scripting (XSS) filter available
@@ -114,7 +129,7 @@ http {
   gzip_comp_level   3;
   gzip_http_version 1.1;
   gzip_min_length   10;
-  gzip_types        text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/x-icon application/vnd.ms-fontobject font/opentype application/x-font-ttf application/json;
+  gzip_types        text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/x-icon application/vnd.ms-fontobject font/opentype application/x-font-ttf application/json image/svg+xml;
   gzip_vary         on;
   gzip_proxied      any; # Compression for all requests.
   ## No need for regexps. See
