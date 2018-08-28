@@ -25,7 +25,7 @@
 - replace:
     dest=/etc/security/limits.d/20-nproc.conf
     regexp='(\*\s+soft\s+nproc\s+)1024$'
-    replace='\165536'
+    replace='\{{ open_files_limit }}'
     backup=yes
 
 - replace:
@@ -40,8 +40,8 @@
     line="{{ item }}"
     backup=yes
   with_items:
-    - "*    soft    nofile    65535"
-    - "*    hard    nofile    65535"
+    - "*    soft    nofile    {{ open_files_limit }}"
+    - "*    hard    nofile    {{ open_files_limit }}"
     - "*    hard    core      0"
 
 # Check if sysctl.conf exists
@@ -57,7 +57,7 @@
     line="{{ item }}"
     backup=yes
   with_items:
-    - "fs.file-max = 65536"
+    - "fs.file-max = {{ open_files_limit }}"
     - "fs.inotify.max_user_watches = 1048576"
     - "net.core.somaxconn = 20000"
     - "vm.swappiness = 1"
