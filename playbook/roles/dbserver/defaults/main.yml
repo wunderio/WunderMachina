@@ -19,3 +19,5 @@ max_allowed_packet: 128M
 
 innodb_file_format: barracuda
 innodb_large_prefix: 1
+
+table_open_cache: 2000
