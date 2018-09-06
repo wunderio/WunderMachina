@@ -97,11 +97,14 @@ innodb_flush_log_at_trx_commit = 0
 innodb_support_xa = 0
 innodb_max_dirty_pages_pct = 70
 innodb_lock_wait_timeout = {{ innodb_lock_wait_timeout }}
+
 # Reduce deadlocks
 # See:
 # - https://drupal.org/node/2164849
 # - https://drupal.org/node/1952972
 transaction-isolation          = READ-COMMITTED
+
+table_open_cache = {{ table_open_cache }}
 
 innodb_file_format = {{ innodb_file_format }}
 innodb_large_prefix = {{ innodb_large_prefix }}

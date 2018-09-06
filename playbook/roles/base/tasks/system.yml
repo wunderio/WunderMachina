@@ -24,8 +24,8 @@
 # Operating system tweaks:
 - replace:
     dest=/etc/security/limits.d/20-nproc.conf
-    regexp='(\*\s+soft\s+nproc\s+)1024$'
-    replace='\{{ open_files_limit }}'
+    regexp='(\*\s+soft\s+nproc\s+)\d+$'
+    replace='\1{{ open_files_limit }}'
     backup=yes
 
 - replace:
@@ -37,12 +37,13 @@
 - name: Set security/limits.conf limits
   lineinfile:
     dest=/etc/security/limits.conf
-    line="{{ item }}"
+    line="*    {{ item.limit }}    {{ item.value }}"
+    regexp="^\*\s+{{ item.limit }}"
     backup=yes
   with_items:
-    - "*    soft    nofile    {{ open_files_limit }}"
-    - "*    hard    nofile    {{ open_files_limit }}"
-    - "*    hard    core      0"
+    - { limit: 'soft    nofile', value: '{{ open_files_limit }}' }
+    - { limit: 'hard    nofile', value: '{{ open_files_limit }}' }
+    - { limit: 'hard    core', value: 0 }
 
 # Check if sysctl.conf exists
 - stat: path="/etc/sysctl.conf"
@@ -57,7 +58,6 @@
     line="{{ item }}"
     backup=yes
   with_items:
-    - "fs.file-max = {{ open_files_limit }}"
     - "fs.inotify.max_user_watches = 1048576"
     - "net.core.somaxconn = 20000"
     - "vm.swappiness = 1"
@@ -66,10 +66,23 @@
     - "net.ipv4.tcp_rmem = 4096 87380 16777216"
     - "net.core.wmem_max = 16777216"
     - "net.ipv4.tcp_wmem = 4096 16384 16777216"
-    - "net.ipv4.tcp_fin_timeout = {{ sysctl_tcp_fin_timeout }}"
     - "net.ipv4.tcp_tw_reuse = 1"
     - "net.core.netdev_max_backlog = 10000"
     - "net.ipv4.ip_local_port_range = 15000 65000"
+
+- name: set sysctl.conf fs.files-max
+  lineinfile:
+    dest=/etc/sysctl.conf
+    regexp='^fs\.file-max ='
+    line="fs.file-max = {{ open_files_limit }}"
+    backup=yes
+
+- name: set sysctl.conf tcp_fin_timeout
+  lineinfile:
+    dest=/etc/sysctl.conf
+    line="net.ipv4.tcp_fin_timeout = {{ sysctl_tcp_fin_timeout }}"
+    regexp="^net\.ipv4.tcp_fin_timeout ="
+    backup=yes
 
 - name: Add wkv_site_env environment variable
   lineinfile:
