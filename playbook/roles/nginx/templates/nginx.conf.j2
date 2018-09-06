@@ -128,8 +128,8 @@ http {
   gzip_buffers      16 8k;
   gzip_comp_level   {{ nginx_compression_level }};
   gzip_http_version 1.1;
-  gzip_min_length   10;
-  gzip_types        text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/x-icon application/vnd.ms-fontobject font/opentype application/x-font-ttf application/json image/svg+xml;
+  gzip_min_length   256;
+  gzip_types        text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript image/x-icon application/vnd.ms-fontobject font/opentype application/x-font-ttf application/json image/svg+xml application/json;
   gzip_vary         on;
   gzip_proxied      any; # Compression for all requests.
   ## No need for regexps. See
