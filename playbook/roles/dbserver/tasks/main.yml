@@ -12,7 +12,8 @@
     dest=/etc/yum.repos.d/mariadb.repo
 
 # Provision our mysql configs
-- template:
+- name: Set my.cnf
+  template:
     src=my.cnf.j2
     dest=/etc/my.cnf
     owner=root
@@ -88,9 +89,12 @@
     - FLUSH PRIVILEGES
   changed_when: False
 
-- copy:
-    src=override.conf
+- name: Set open_files_limit override
+  template:
+    src=override.conf.j2
     dest=/etc/systemd/system/mariadb.service.d/override.conf
+    owner=root
+    mode=0644
   notify:
     - restart mariadb
 
