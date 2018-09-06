@@ -98,5 +98,16 @@
   notify:
     - restart mariadb
 
+- name: Set security/limits.conf limits
+  lineinfile:
+    dest=/etc/security/limits.conf
+    line="mysql    {{ item }}    nofile    {{ innodb_open_files }}"
+    regexp="^\*\s+{{ item.limit }}"
+    backup=yes
+  with_items:
+    - soft
+    - hard
+
+
 - shell:
     systemctl daemon-reload
