@@ -5,7 +5,7 @@ if true | openssl s_client -servername {{certbot_domains.0}} -connect {{certbot_
 else
   mkdir -p {{ certbot_renewal_docroot }}
   cd /root/certbot
-  ./certbot-auto renew --webroot -w {{ certbot_renewal_docroot }}
+  ./certbot-auto renew --rsa-key-size 4096 --webroot -w {{ certbot_renewal_docroot }}
 
   if [ $? -ne 0 ]
   then

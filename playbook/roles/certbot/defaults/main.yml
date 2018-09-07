@@ -5,4 +5,4 @@ certbot_email: test@example.com
 certbot_domains:
   - "{{ ansible_fqdn }}"
 certbot_renewal_docroot: /var/www/letsencrypt-auto
-certbot_command: "{{ certbot_src }}/certbot/certbot-auto certonly --non-interactive --renew-by-default --standalone --preferred-challenges http-01,tls-sni-01 --agree-tos --text {% for domain in certbot_domains %}-d {{ domain }} {% endfor %}--email {{ certbot_email }}"
+certbot_command: "{{ certbot_src }}/certbot/certbot-auto certonly --rsa-key-size 4096 --non-interactive --renew-by-default --standalone --preferred-challenges http-01,tls-sni-01 --agree-tos --text {% for domain in certbot_domains %}-d {{ domain }} {% endfor %}--email {{ certbot_email }}"
