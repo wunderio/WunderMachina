@@ -23,6 +23,8 @@ varnish_control_key: this-is-not-a-secure-key
 
 timezone: Europe/Helsinki
 
+open_files_limit: 65536
+
 # Install extra packages
 #yum_extra_packages:
 #  - packagename
