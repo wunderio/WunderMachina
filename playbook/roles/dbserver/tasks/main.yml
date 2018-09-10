@@ -102,7 +102,7 @@
   lineinfile:
     dest=/etc/security/limits.conf
     line="mysql    {{ item }}    nofile    {{ innodb_open_files }}"
-    regexp="^\*\s+{{ item.limit }}"
+    regexp="^mysql    {{ item }}"
     backup=yes
   with_items:
     - soft
