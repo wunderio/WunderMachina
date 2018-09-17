@@ -1,0 +1,29 @@
+---
+
+solr_path: /usr/local/share/solr
+solr_log_path: /var/log/solr
+solr_user: solr
+solr_group: solr
+solr_memory: 1024m
+
+cache_path: /tmp/solr-cache
+
+# Container folder for solr downloads
+#solr_url: http://www.nic.funet.fi/pub/mirrors/apache.org/lucene/solr/
+solr_url: https://archive.apache.org/dist/lucene/solr/
+
+# Version
+solr_version: 4.10.4
+
+solr_drupal_files:
+  - elevate.xml
+  - mapping-ISOLatin1Accent.txt
+  - protwords.txt
+  - schema_extra_fields.xml
+  - schema_extra_types.xml
+  - schema.xml
+  - solrconfig_extra.xml
+  - solrconfig.xml
+  - solrcore.properties
+  - stopwords.txt
+  - synonyms.txt
