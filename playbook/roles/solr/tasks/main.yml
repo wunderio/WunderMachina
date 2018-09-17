@@ -1,9 +1,9 @@
-- name: Run new Solr installation
+- name: Run old Solr installation
   include_role:
     name: solrv1
   when: not new_solr_role
 
-- name: Run old Solr installation
+- name: Run new Solr installation
   include_role:
     name: solrv2
   when: new_solr_role
