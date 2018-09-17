@@ -1,4 +1,7 @@
 ---
+- name: Install JRE
+  yum: pkg=jre state=installed
+  
 - import_tasks: user.yml
   when: solr_create_user
 
