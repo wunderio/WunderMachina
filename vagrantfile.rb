@@ -63,7 +63,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		if INSTANCE_VERSION.to_s != ''
 			config.vm.box_version = INSTANCE_VERSION
 		else
-			config.vm.box_version = '1.2.0'
+			config.vm.box_version = '1.2.3'
 		end
 	end
   
