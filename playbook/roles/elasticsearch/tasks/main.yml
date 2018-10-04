@@ -49,6 +49,7 @@
     - { regexp: 'cluster\.name', line: 'cluster.name: {{ elasticsearch_config.cluster_name }}' }
     - { regexp: 'node\.name', line: 'node.name: {{ elasticsearch_config.node_name }}' }
   notify: restart elasticsearch
+  when: elasticsearch_cluster == False
 
 - name: Configure Elasticsearch.
   lineinfile: >
@@ -61,6 +62,26 @@
   notify: restart elasticsearch
   when: elasticsearch_version == 2
 
+- set_fact:
+    host_id: "{{ ansible_default_ipv4.address.split('.')[3] }}"
+
+- name: Configure Elasticsearch cluster.
+  lineinfile: >
+    dest=/etc/elasticsearch/elasticsearch.yml
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+    state=present
+  with_items:
+    - { regexp: 'network\.host', line: 'network.host: {{ ansible_default_ipv4.address }}' }
+    - { regexp: 'cluster\.name', line: 'cluster.name: {{ elasticsearch_config.cluster_name }}' }
+    - { regexp: 'node\.name', line: 'node.name: {{ elasticsearch_config.node_name }}-{{ host_id }}' }
+    - { regexp: 'node\.master', line: 'node.master: true' }
+    - { regexp: 'discovery\.zen\.minimum_master_nodes:', line: 'discovery.zen.minimum_master_nodes: 2' }
+    - { regexp: 'discovery\.zen\.ping\.unicast\.hosts:', line: 'discovery.zen.ping.unicast.hosts: {{ elasticsearch_config.hosts }}' }
+
+  notify: restart elasticsearch
+  when: elasticsearch_cluster == True
+
 - name: Configure Elasticsearch heap.
   lineinfile: >
     dest=/etc/elasticsearch/jvm.options
@@ -71,7 +92,7 @@
     - { regexp: '-Xms2g', line: '-Xms{{ elasticsearch_heap_size }}' }
     - { regexp: '-Xmx2g', line: '-Xmx{{ elasticsearch_heap_size }}' }
   notify: restart elasticsearch
-  when: elasticsearch_version == 5
+  when: elasticsearch_version >= 5
 
 - name: Start Elasticsearch.
   service: name=elasticsearch state=started enabled=yes

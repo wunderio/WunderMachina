@@ -9,4 +9,5 @@ elasticsearch_plugins:
   - { name: 'royrusso/elasticsearch-HQ', shortname: 'hq'}
 
 elasticsearch_heap_size: 2g
-elasticsearch_version: 5
+elasticsearch_version: 6
+elasticsearch_cluster: False
