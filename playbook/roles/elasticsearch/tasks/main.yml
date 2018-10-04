@@ -14,19 +14,12 @@
     mode: 0644
   when: elasticsearch_version == 2
 
-- name: Add Elasticsearch 5 repository.
-  copy:
-    src: elasticsearch5.repo
+- name: Add Elasticsearch repository (for version >= 5).
+  template:
+    src: elasticsearch.repo.j2
     dest: /etc/yum.repos.d/elasticsearch.repo
     mode: 0644
-  when: elasticsearch_version == 5
-
-- name: Add Elasticsearch 6 repository.
-  copy:
-    src: elasticsearch6.repo
-    dest: /etc/yum.repos.d/elasticsearch.repo
-    mode: 0644
-  when: elasticsearch_version == 6
+  when: elasticsearch_version >= 5
 
 - name: Install Elasticsearch.
   yum: pkg=elasticsearch state=installed
