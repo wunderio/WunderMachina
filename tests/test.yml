@@ -9,6 +9,7 @@
    - { role: php-fpm, tags: [ 'php-fpm' ] }
    - { role: varnish, tags: [ 'varnish' ] }
    - { role: dbserver, tags: [ 'dbserver' ] }
+   - { role: selfencrypt, tags: [ 'selfencrypt' ] }
    - { role: sslterminator, tags: [ 'sslterminator' ] }
    - { role: drush, tags: [ 'drush' ] }
    - { role: drupal-console, tags: [ 'drupal-console' ] }
@@ -103,10 +104,8 @@
       - /var/log/maillog
 
     # Let's encrypt. Always use SSL if possible!
-    certbot_email: "{{ support_email }}"
-    certbot_domains:
+    letsencrypt_domains:
       - "{{ domain_name }}"
-    certbot_renewal_docroot: /var/www/letsencrypt-auto
 
     # On dev and stage it's good idea to protect the site with htauth
     basicauth_enabled: True
@@ -152,8 +151,8 @@
     # Use https for this host
     sslterminators:
       - server_name: "{{ domain_name }}"
-        ssl_certificate: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
-        ssl_certificate_key: "/etc/letsencrypt/live/{{ domain_name }}/privkey.pem"
+        ssl_certificate: ssl/certificate.crt
+        ssl_certificate_key: ssl/certificate.key
         use_dhparam: True
         backends:
           - 127.0.0.1:8081 # Pass it to local varnish
