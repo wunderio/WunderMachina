@@ -64,6 +64,7 @@
 
 - set_fact:
     host_id: "{{ ansible_default_ipv4.address.split('.')[3] }}"
+  when: elasticsearch_cluster == True
 
 - name: Configure Elasticsearch cluster.
   lineinfile: >
