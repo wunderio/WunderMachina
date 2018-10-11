@@ -102,15 +102,6 @@
       - /var/log/secure
       - /var/log/maillog
 
-
-    varnish_extra_definition:
-      - name: add extra director
-        dest: /etc/varnish/default.vcl
-        insertafter: "# Extra directors"
-        content: |
-          new test_extra = directors.round_robin();
-          test_extra.add_backend(test_extra_http);
-
     # Let's encrypt. Always use SSL if possible!
     certbot_email: "{{ support_email }}"
     certbot_domains:
