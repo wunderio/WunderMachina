@@ -15,7 +15,7 @@ RUN yum -y install epel-release
 RUN yum -y install git sudo rsyslog NetworkManager python-setuptools python-devel gcc libffi-devel openssl-devel python-pip
 RUN yum clean all
 RUN pip install ansible==2.6.*
-COPY ansible.cfg /etc/ansible/ansible.cfg
+COPY tests/ansible.cfg /etc/ansible/ansible.cfg
 # Disable requiretty
 RUN sed -i -e 's/^\(Defaults\s*requiretty\)/#--- \1/'  /etc/sudoers
 VOLUME [ "/sys/fs/cgroup" ]
