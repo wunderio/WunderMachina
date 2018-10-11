@@ -80,7 +80,7 @@ http {
   ssl_session_timeout 10m;
 
   # Enable HSTS;
-  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload;" always;
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
 
   {% if nginx_disable_default_xframe_options is not defined %}
   # Enable X-Frame-Options
@@ -89,7 +89,7 @@ http {
 
   {% if nginx_disable_content_security_policy is not defined %}
   # Enable Content Security Policy
-  add_header Content-Security-Policy "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval' {{ nginx_content_security|default('') }}" always;
+  add_header Content-Security-Policy "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' {{ nginx_content_security|default('') }}" always;
   {% endif %}
 
   ## Enable the builtin cross-site scripting (XSS) filter available
@@ -98,6 +98,9 @@ http {
   ## particular server instance.
   ## https://www.owasp.org/index.php/List_of_useful_HTTP_headers.
   add_header X-XSS-Protection '1; mode=block';
+
+  # Protect users privacy
+  add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin" always;
 
   ## Block MIME type sniffing on IE.
   add_header X-Content-Options nosniff;
