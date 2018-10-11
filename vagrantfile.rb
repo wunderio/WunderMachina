@@ -162,7 +162,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible_local" do |ansible|
     #ansible.verbose        = "v"
     ansible.install_mode   = "pip"
-    ansible.version        = "2.5.0"
+    ansible.version        = "2.6.5"
     ansible.extra_vars     = "/vagrant/conf/variables.yml"
     ansible.playbook       = "/vagrant/conf/vagrant.yml"
     ansible.limit          = "all"
