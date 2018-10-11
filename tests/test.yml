@@ -24,24 +24,24 @@
 
   tasks:
     # Disable email from cron
-    - name: "Disable emails from failed cronjobs for nginx user"
-      cron:
-        name: "MAILTO"
-        env: yes
-        value: ""
-        state: "present"
-        user: nginx
-      tags: ['cron']
-    # Run Drupal cron job
-    - name: "Add drupal cronjob to nginx user"
-      cron:
-        name: "Run Drupal cronjobs with drush"
-        minute: "*/2"
-        job: "/usr/lib/composer/vendor/bin/drush --root={{ drupal_web_root }} cron"
-        state: "present"
-        user: nginx
-      tags: ['cron']
-      when: drupal_web_root is defined
+    #- name: "Disable emails from failed cronjobs for nginx user"
+      #cron:
+        #name: "MAILTO"
+        #env: yes
+        #value: ""
+        #state: "present"
+        #user: nginx
+      #tags: ['cron']
+    ## Run Drupal cron job
+    #- name: "Add drupal cronjob to nginx user"
+      #cron:
+        #name: "Run Drupal cronjobs with drush"
+        #minute: "*/2"
+        #job: "/usr/lib/composer/vendor/bin/drush --root={{ drupal_web_root }} cron"
+        #state: "present"
+        #user: nginx
+      #tags: ['cron']
+      #when: drupal_web_root is defined
 
 
   vars:
