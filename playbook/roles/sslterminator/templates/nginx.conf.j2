@@ -89,7 +89,7 @@ http {
 
   {% if nginx_disable_content_security_policy is not defined %}
   # Enable Content Security Policy
-  add_header Content-Security-Policy "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none' {{ nginx_content_security|default('') }}" always;
+  add_header Content-Security-Policy "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self' {{ nginx_content_security|default('') }}" always;
   {% endif %}
 
   ## Enable the builtin cross-site scripting (XSS) filter available
