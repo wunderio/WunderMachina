@@ -24,8 +24,8 @@
 # Operating system tweaks:
 - replace:
     dest=/etc/security/limits.d/20-nproc.conf
-    regexp='(\*\s+soft\s+nproc\s+)\d+$'
-    replace='\165536'
+    regexp='(?P<r>\*\s+soft\s+nproc\s+)\d+$'
+    replace='\g<r>65536'
     backup=yes
 
 - replace:
