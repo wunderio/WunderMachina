@@ -4,7 +4,7 @@
 external_smtp_sender_dependent_auth: false
 external_smtp_sasl_password_maps: 'static:random-string-1:random-string-2'
 external_smtp_tls_security_level: 'encrypt'
-external_smtp_relayhost: '[smtp.sparkpostmail.com]:587'
+external_smtp_relayhost: '[smtp.eu.sparkpostmail.com]:587'
 
 # external_smtp_user: "your username"
 # external_smtp_password: "secret password"
