@@ -61,3 +61,5 @@ nginx_compression_level: 6
 
 allow_origin_fonts: false
 deny_robots: false
+
+drupal_handle_pdf_pptx: false
