@@ -4,7 +4,7 @@
   mysql_db:
     name: "{{ item.name | default('drupal') }}"
     collation: "{{ item.collation | default('utf8mb4_swedish_ci') }}"
-    encoding: "{{ item.encoding | default('utf8') }}"
+    encoding: "{{ item.encoding | default('utf8mb4') }}"
     state: present
   with_items: "{{ databases }}"
 
