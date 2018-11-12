@@ -57,3 +57,4 @@ distro: "centos7"
 # modern: Oldest compatible clients: Firefox 27, Chrome 30, IE 11 on Windows 7, Edge, Opera 17, Safari 9, Android 5.0, and Java 8
 ssl_browser_support: intermediate
 
+nginx_content_security_policy: "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; object-src 'self'; connect-src wss: https:"
