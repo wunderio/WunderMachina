@@ -18,7 +18,9 @@
     dest=/etc/log_files.yml
     insertafter='files:'
     line='  - {{ drupal_log_path }}'
+    regexp='^  - {{ drupal_log_path }}'
     mode=644
+    state=present
   when:
     papertrail_enabled == True
   notify:

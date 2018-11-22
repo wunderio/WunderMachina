@@ -59,7 +59,9 @@
     dest=/etc/log_files.yml
     insertafter='files:'
     line='  - {{ item }}'
+    regexp='^  - {{ item }}'
     mode=644
+    state=present
   with_items:
     - "{{ nginx_papertrail_follow }}"
   when:
