@@ -45,7 +45,12 @@ location / {
   ## Replicate the Apache <FilesMatch> directive of Drupal standard
   ## .htaccess. Disable access to any code files. Return a 404 to curtail
   ## information disclosure. Hide also the text files.
-  location ~* ^(?:.+\.(?:htaccess|make|txt|engine|inc|info|module|profile|po|sh|.*sql|csv|yml|test|theme|tpl(?:\.php)?|xtmpl|config)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template)$ {
+  location ~* ^(?:.+\.(?:htaccess|install|lock|make|txt|engine|inc|info|module|profile|po|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template)$ {
+    return 404;
+  }
+
+  ## Block access to certain files that are only used in the build process and could also cause unwanted information disclosure.
+  location ~* /(Dockerfile|package.json|webpack.config.js{{ nginx_blocked_files }})$ {
     return 404;
   }
 

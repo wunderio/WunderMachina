@@ -61,3 +61,7 @@ nginx_compression_level: 6
 
 allow_origin_fonts: false
 deny_robots: false
+
+#Block specific files not in nginx 404 list. As you are adding to an existing list of files formatting is important even for one file.
+#example: |file1|file2|file3
+nginx_blocked_files:
