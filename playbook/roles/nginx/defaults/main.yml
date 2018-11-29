@@ -65,3 +65,6 @@ deny_robots: false
 #Block specific files not in nginx 404 list. As you are adding to an existing list of files formatting is important even for one file.
 #example: |file1|file2|file3
 nginx_blocked_files:
+
+#Default content security policy:
+nginx_content_security_policy: "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; object-src 'self'; connect-src wss: https:"
