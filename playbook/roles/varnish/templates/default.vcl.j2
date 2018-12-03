@@ -25,8 +25,8 @@ backend {{ backend.name }} {
       "Host: {{ director.host }}"
       "Connection: close";
 
-    .interval  = 5s; # check the health of each backend every 5 seconds
-    .timeout   = 1s; # timing out after 1 second.
+    .interval  = {{ varnish.probe_interval | default('5s') }}; # check the health of each backend every n seconds
+    .timeout   = {{ varnish.probe_timeout| default('1s') }}; # timing out after n seconds
     .window    = 5;  # If 3 out of the last 5 polls succeeded the backend is
     .threshold = 3;  # considered healthy, otherwise it will be marked as sick
   }
