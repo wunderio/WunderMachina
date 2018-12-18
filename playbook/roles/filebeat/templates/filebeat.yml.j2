@@ -3,14 +3,14 @@ filebeat.inputs:
   enabled: true 
   paths:
     - {{ messages_log }}
-  include_lines: ['err', 'warn', 'Err', 'Warn', 'ERR', 'WARN']
+  include_lines: {{ messages_log_include }}
 
 - type: log
   paths:
 {% for logfile in filebeat_logs %}
     - {{ logfile }}
 {% endfor %}
-    exclude_lines: ['Connection closed by 127.0.0.1']
+  exclude_lines: {{ filebeat_logs_exclude }}
 
 - type: log
   enabled: {{ filebeat_log_php_fpm | lower }} 
@@ -18,7 +18,7 @@ filebeat.inputs:
 {% for logfile in php_fpm_logs %}
     - {{ logfile }}
 {% endfor %}
-  exclude_lines: ['NOTICE']
+  exclude_lines: {{ php_fpm_logs_exclude }}
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
@@ -40,17 +40,18 @@ filebeat.modules:
   access:
     enabled: {{ filebeat_log_nginx_access | lower }}
     var.paths:
-    {% for logfile in nginx_access_logs %}
+{% for logfile in nginx_access_logs %}
      - {{ logfile }}
-    {% endfor %}
-
+{% endfor %}
+    var.exclude_lines: {{ nginx_access_logs_exclude }}
 
   error:
     enabled: true
     var.paths:
-    {% for logfile in nginx_error_logs %}
+{% for logfile in nginx_error_logs %}
      - {{ logfile }}
-    {% endfor %}
+{% endfor %}
+    var.exclude_lines: {{ nginx_error_logs_exclude }}
 
 {% endif %}
 
@@ -82,4 +83,4 @@ processors:
   - add_host_metadata: ~
   - add_cloud_metadata: ~
 
-logging.level: warn
+logging.level: warning
