@@ -1,0 +1,86 @@
+filebeat.inputs:
+- type: log
+  enabled: true 
+  paths:
+    - {{ messages_log }}
+  include_lines: {{ messages_log_include }}
+
+- type: log
+  paths:
+{% for logfile in filebeat_logs %}
+    - {{ logfile }}
+{% endfor %}
+  exclude_lines: {{ filebeat_logs_exclude }}
+
+- type: log
+  enabled: {{ filebeat_log_php_fpm | lower }} 
+  paths:
+{% for logfile in php_fpm_logs %}
+    - {{ logfile }}
+{% endfor %}
+  exclude_lines: {{ php_fpm_logs_exclude }}
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+
+#==========================  Modules configuration =============================
+filebeat.modules:
+{% if filebeat_log_mysql %}
+#--------------------------------- MySQL Module ---------------------------------
+- module: mysql
+  error:
+    enabled: true
+{% endif %}
+
+{% if filebeat_log_nginx %}
+#--------------------------------- Nginx Module ---------------------------------
+- module: nginx
+  # Access logs
+  access:
+    enabled: {{ filebeat_log_nginx_access | lower }}
+    var.paths:
+{% for logfile in nginx_access_logs %}
+     - {{ logfile }}
+{% endfor %}
+    var.exclude_lines: {{ nginx_access_logs_exclude }}
+
+  error:
+    enabled: true
+    var.paths:
+{% for logfile in nginx_error_logs %}
+     - {{ logfile }}
+{% endfor %}
+    var.exclude_lines: {{ nginx_error_logs_exclude }}
+
+{% endif %}
+
+#==================== End modules configuration ==========================
+
+setup.template.settings:
+  index.number_of_shards: 3
+
+
+setup.kibana:
+  # Kibana Host
+  # Scheme and port can be left out and will be set to the default (http and 5601)
+  # In case you specify and additional path, the scheme is required: http://localhost:5601/path
+  # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+  host: {{ filebeat_kibana_host }}
+
+ 
+cloud.id: {{ filebeat_cloud_id }}
+cloud.auth: {{ filebeat_cloud_auth }}
+
+
+output.elasticsearch:
+  index: "beat-{{ hostname.stdout }}-%{[beat.version]}-%{+yyyy.MM.dd}"
+setup.template.name: "filebeat-%{[beat.version]}"
+setup.template.pattern: "filebeat-%{[beat.version]}-*"
+
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+
+logging.level: warning

@@ -1,0 +1,40 @@
+---
+# defaults file for filebeat
+filebeat_version: 6.x
+
+# secrets should be managed to set these
+# do not set and do not submit secret variables to git unencrypted
+filebeat_kibana_host: "" 
+filebeat_cloud_id: ""
+filebeat_cloud_auth: ""
+
+filebeat_logs:
+  - /var/log/*.log
+  - /var/log/secure
+  - /var/log/maillog
+# submit all from filebeat_logs, except:
+filebeat_logs_exclude: "['Connection closed by 127.0.0.1']"
+
+messages_log: /var/log/messages
+# submit logs from messages, only when it contains:
+messages_log_include: "['err', 'warn', 'Err', 'Warn', 'ERR', 'WARN']"
+
+filebeat_log_mysql: false
+filebeat_log_php_fpm: false
+filebeat_log_nginx: false # this enables only error log, set also filebeat_log_nginx_access if access logs also needed
+filebeat_log_nginx_access: false
+
+nginx_error_logs:
+  - /var/log/nginx/http-*error.log
+  - /var/log/nginx/ssl-*error.log
+nginx_error_logs_exclude: "[]"
+
+nginx_access_logs:
+  - /var/log/nginx/http-*access.log
+  - /var/log/nginx/ssl-*access.log
+nginx_access_logs_exclude: "[]"
+
+php_fpm_logs: 
+  - /var/log/php-fpm/error.log
+  - /var/log/php-fpm/www-slow.log
+php_fpm_logs_exclude: "['NOTICE']"
