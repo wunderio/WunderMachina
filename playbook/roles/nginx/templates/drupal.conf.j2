@@ -234,3 +234,7 @@ location ~ /\. { return 404; access_log off; log_not_found off; }
 location ~* ^.+\.php$ {
     return 404;
 }
+
+## Avoid logs to be filled with unnecessary autodiscover.xml entries
+location ~ /autodiscover/autodiscover.xml { return 404; access_log off; log_not_found off; }
+
