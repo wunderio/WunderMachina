@@ -62,3 +62,5 @@ nginx_content_security_policy: "upgrade-insecure-requests; default-src https: da
 
 nginx_compression_level: 6
 
+# Set empty to disable
+hsts_include_subdomains: " includeSubDomains;"
