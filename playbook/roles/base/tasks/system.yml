@@ -84,11 +84,13 @@
     regexp="^net\.ipv4.tcp_fin_timeout ="
     backup=yes
 
-- name: Add wkv_site_env environment variable
+- name: populate /etc/environment
   lineinfile:
-    dest=/etc/environment
-    line="WKV_SITE_ENV={{ wkv_site_env }}"
-    backup=yes
+    dest: "/etc/environment"
+    state: present
+    regexp: "^{{ item.key }}"
+    line: "{{ item.key }}={{ item.value}}"
+  with_items: "{{ environment_variables }}"
 
 - name: Add varnish_control_key environment variable
   lineinfile:
