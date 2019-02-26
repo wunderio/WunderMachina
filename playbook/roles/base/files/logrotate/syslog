@@ -4,6 +4,7 @@
 /var/log/secure
 /var/log/spooler
 {
+    missingok
     sharedscripts
     rotate 7
     compress
