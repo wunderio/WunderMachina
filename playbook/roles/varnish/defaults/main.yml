@@ -24,6 +24,7 @@ varnish:
   directors:
     # One app
     - name: test_com_director
+      type: hash
       host: test.com
       backends:
         - name: test1_web
