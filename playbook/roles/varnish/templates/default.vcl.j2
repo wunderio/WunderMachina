@@ -68,12 +68,17 @@ sub vcl_init {
   # Called when VCL is loaded, before any requests pass through it.
   # Typically used to initialize VMODs.
   {% for director in varnish.directors %}
-  new {{ director.name }} = directors.hash();
-  {% for backend in director.backends %}
-  {% if backend.ignore is not defined %}
-  {{ director.name }}.add_backend({{ backend.name }}, 1);
-  {% endif %}
-  {% endfor %}
+    new {{ director.name }} = directors.{{ director.type | default('hash') }}();
+    {% for backend in director.backends %} 
+      # Note that the order in which adding is done matters for fallback director
+      {% if backend.ignore is not defined %}
+        {% if director.type is defined and director.type == 'fallback' %}
+          {{ director.name }}.add_backend({{ backend.name }});
+        {% else %}
+          {{ director.name }}.add_backend({{ backend.name }}, 1);
+        {% endif %}
+      {% endif %}
+    {% endfor %}
   {% endfor %}
   # Extra directors
 }
@@ -138,7 +143,11 @@ sub vcl_recv {
   }
   {% for director in varnish.directors %}
   elsif (req.http.host ~ "{{ director.host }}"){
-    set req.backend_hint = {{ director.name }}.backend(req.http.sticky);
+    {% if director.type is defined and director.type == 'fallback' %}
+      set req.backend_hint = {{ director.name }}.backend();
+    {% else %}
+      set req.backend_hint = {{ director.name }}.backend(req.http.sticky);
+    {% endif %}
   }
   {% endfor %}
   else {
