@@ -1,0 +1,21 @@
+---
+
+# Setup all of our php-fpm related repositories.
+- include: "repo_php5.yml"
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://dl.iuscommunity.org/pub/ius/archive/CentOS/7/x86_64/ius-release-1.0-14.ius.centos7.noarch.rpm"
+  when: distro == "rhel7"
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://dl.iuscommunity.org/pub/ius/archive/CentOS/7/x86_64/ius-release-1.0-14.ius.centos7.noarch.rpm"
+  when: distro == "centos7"
+
+# Mariadb repository for client
+- copy:
+    src=mariadb/mariadb.repo
+    dest=/etc/yum.repos.d/mariadb.repo

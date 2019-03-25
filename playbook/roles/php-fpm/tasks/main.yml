@@ -1,8 +1,5 @@
 ---
 
-# Setup all of our php-fpm related repositories.
-- include: "repo.yml"
-
 - include: "php56u.yml"
   when: php_package == "php56u"
 
