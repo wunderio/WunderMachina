@@ -1,5 +1,5 @@
 ---
-
+- include: "repo_php5.yml"
 # Install all php packages
 - name: Install php-fpm
   yum: pkg={{ php_package }}-fpm state=present

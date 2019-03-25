@@ -1,7 +1,6 @@
 ---
 
 # Setup all of our php-fpm related repositories.
-- include: "repo_php5.yml"
 
 - name: Install repositories
   yum: pkg={{item}} state=present
