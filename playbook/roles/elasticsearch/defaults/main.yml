@@ -8,6 +8,7 @@ elasticsearch_config:
 elasticsearch_plugins:
   - { name: 'royrusso/elasticsearch-HQ', shortname: 'hq'}
 
+# Heap size should be 50% of the total memory allocated for elasticsearch to leave some room for kernel disk caches to be used by Lucene
 elasticsearch_heap_size: 2g
 elasticsearch_version: 6
 elasticsearch_cluster: False
