@@ -2,13 +2,13 @@
 - include: "repo_php5.yml"
 # Install all php packages
 - name: Install php-fpm
-  yum: pkg={{ php_package }}-fpm state=present
+  yum: pkg={{ php_package }}-fpm state=present enablerepo=ius-archive
 
 - name: Ensure php-fpm is running now and on boot
   service: name=php-fpm state=started enabled=yes
 
 - name: Install php packages
-  yum: pkg={{ item }} state=present
+  yum: pkg={{ item }} state=present enablerepo=ius-archive
   with_items:
     - "{{ php_package }}"
     - "{{ php_package }}-cli"
