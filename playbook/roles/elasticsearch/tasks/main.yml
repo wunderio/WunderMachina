@@ -26,16 +26,18 @@
 
 - name: Removing Plugins if they exist
   action: >
-    shell bin/plugin remove {{ item.shortname }}
+    shell bin/elasticsearch-plugin remove {{ item.shortname }}
     chdir={{ elasticsearch_config.home_dir }}
   with_items: "{{ elasticsearch_plugins }}"
+  when: elasticsearch_plugins != None
   ignore_errors: yes
 
 - name: Installing Plugins
   action: >
-    shell bin/plugin install {{ item.name }}
+    shell bin/elasticsearch-plugin install {{ item.name }}
     chdir={{ elasticsearch_config.home_dir }}
   with_items: "{{ elasticsearch_plugins }}"
+  when: elasticsearch_plugins != None
   ignore_errors: yes
 
 - name: Configure Elasticsearch.
