@@ -4,7 +4,10 @@
   when: php_package == "php56u"
 
 - include: "php70u.yml"
-  when: php_package == "php70u" or php_package == "php71u" or php_package == "php72u"
+  when: php_package == "php70u" or php_package == "php71u"
+
+- include: "php72u.yml"
+  when: php_package == "php72u"
 
 # Add db credentials as ENV for the php-fpm
 - name: add db credentials to php_env_vars

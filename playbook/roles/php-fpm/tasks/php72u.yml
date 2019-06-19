@@ -1,0 +1,32 @@
+---
+
+- include: "repo_php7.yml"
+# Install all php packages
+- name: Install php-fpm
+  yum: pkg={{ php_package }}-fpm state=present
+
+- name: Ensure php-fpm is running now and on boot
+  service: name=php-fpm state=started enabled=yes
+
+- name: Install php packages
+  yum: pkg={{ item }} state=present
+  ignore_errors: yes
+  with_items:
+    - "{{ php_package }}-cli"
+    - "{{ php_package }}-common"
+    - "{{ php_package }}-devel"
+    - "{{ php_package }}-gd"
+    - "{{ php_package }}-json"
+    - "{{ php_package }}-mbstring"
+    - "{{ php_package }}-mysqlnd"
+    - "{{ php_package }}-opcache"
+    - "{{ php_package }}-pdo"
+    - "{{ php_package }}-soap"
+    - "{{ php_package }}-tidy"
+    - "{{ php_package }}-pecl-imagick"
+    - "{{ php_package }}-pecl-memcached"
+    - "{{ php_package }}-xml"
+    - "{{ php_package }}-xmlrpc"
+    - "{{ php_package }}-pecl-apcu"
+    - "{{ php_package }}-bcmath"
+
