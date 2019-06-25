@@ -1,0 +1,46 @@
+filebeat.inputs:
+{% for logfiles in filebeat.log_files %}
+{% if ((logfiles.reqservice is not defined) or 
+      ((logfiles.reqservice is defined) and (reqservice_checks.results[loop.index0].stdout == "1"))) %}
+
+- type: log
+  paths:
+{% for p in logfiles.paths %}
+    - {{ p }}
+{% endfor -%} 
+{% if logfiles.include is defined %}
+  include_lines: [{% for line in logfiles.include %}'{{ line }}',{% endfor %} ]
+{% endif %}
+{% if logfiles.exclude is defined %}
+  exclude_lines: [{% for line in logfiles.exclude %}'{{ line }}',{% endfor %} ]
+{% endif %}
+  fields:
+    log_type: syslog
+  fields_under_root: true
+{% endif %}
+{% endfor %}
+
+{% if filebeat.custom_inputs_block is defined %}
+{{ filebeat.custom_inputs_block }}
+{% endif %}
+
+filebeat.registry_file: /var/lib/filebeat/registry
+
+# Start shipping only newly added lines
+tail_files: true
+
+output.logstash:
+  hosts: ["{{ filebeat.logstash.endpoint }}"]
+  ssl.certificate_authorities: ["/etc/filebeat/CA.pem"]
+  ssl.certificate: "/etc/filebeat/client.crt"
+  ssl.key: "/etc/filebeat/client.key"
+  ssl.verification_mode: full
+
+# Available log levels are: critical, error, warning, info, debug
+logging.level: warning
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat.log
+  rotateeverybytes: 10485760 # = 10MB
+  keepfiles: 7
