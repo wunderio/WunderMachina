@@ -14,14 +14,19 @@ filebeat:
     ca_cert: ""
   # default groups of files to watch and rules for their (not)shipping
   log_files:
-    - group: "basic"
+    - group: "secure"
+      paths:
+        - /var/log/secure
+    - group: "messages"
       paths:
         - /var/log/messages
-        - /var/log/secure
+      include: # if include is defined, filebeat will ship only lines that match rules
+        - '(?i)err' 
+        - '(?i)warn'
     - group: "maillog"
       paths:   
         - /var/log/maillog
-      include: # if include is defined, filebeat will ship only lines that match rules
+      include:
         - '(?i)err' 
         - '(?i)warn'
         - '(?i)bounce'

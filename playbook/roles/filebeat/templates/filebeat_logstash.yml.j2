@@ -17,6 +17,8 @@ filebeat.inputs:
   fields:
     log_type: syslog
   fields_under_root: true
+  # Start shipping only newly added lines
+  tail_files: true
 {% endif %}
 {% endfor %}
 
@@ -25,9 +27,6 @@ filebeat.inputs:
 {% endif %}
 
 filebeat.registry_file: /var/lib/filebeat/registry
-
-# Start shipping only newly added lines
-tail_files: true
 
 output.logstash:
   hosts: ["{{ filebeat.logstash.endpoint }}"]
