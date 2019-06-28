@@ -31,6 +31,8 @@ filebeat.inputs:
 {{ filebeat.custom_inputs_block }}
 {% endif %}
 
+filebeat.registry_file: /var/lib/filebeat/registry
+
 output.logstash:
   hosts: ["{{ filebeat.logstash.endpoint }}"]
   ssl.certificate_authorities: ["/etc/filebeat/CA.pem"]
