@@ -17,6 +17,12 @@
   action: command hostname
   register: hostname
 
+- name: Merge filebeat.log_files with filebeat.log_files_extra
+  set_fact:
+    filebeat:
+      log_files: "{{ filebeat.log_files + filebeat.log_files_extra }}"
+  when: filebeat.log_files_extra is defined
+
 - name: Check if required service(s) present
   shell: "systemctl status {{ item.reqservice }} | grep running | wc -l"
   register: reqservice_checks
