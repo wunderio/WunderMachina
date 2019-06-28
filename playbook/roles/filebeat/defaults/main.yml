@@ -21,28 +21,37 @@ filebeat:
       paths:
         - /var/log/messages
       include: # if include is defined, filebeat will ship only lines that match rules
-        - '(?i)err' 
-        - '(?i)warn'
+        - '.*(?i)err.*' 
+        - '.*(?i)warn.*'
     - group: "maillog"
       paths:   
         - /var/log/maillog
       include:
-        - '(?i)err' 
-        - '(?i)warn'
-        - '(?i)bounce'
+        - '.*(?i)err.*' 
+        - '.*(?i)warn.*'
+        - '.*(?i)bounce.*'
     - group: "monit"
       reqservice: "monit" 
       paths:   
         - /var/log/monit.log
       include: 
-        - '(?i)error' 
-    - group: "drupal-php"
+        - '.*(?i)error.*' 
+    - group: "drupal"
       reqservice: "php-fpm" # if reqservice is defined, filebeat will ship logs only if this service running
       paths: 
       - /var/log/drupal.log
-      - /var/log/php-fpm/*.log
       exclude: 
-        - "(?i)notice"
+        - '.*(?i)notice.*'
+    - group: "php-fpm"
+      reqservice: "php-fpm" # if reqservice is defined, filebeat will ship logs only if this service running
+      paths: 
+      - /var/log/php-fpm/*.log
+      multiline:
+        pattern: '^\[[0-9]{1,2}-[A-Z]{1}'
+        negate: "true"
+        match: "after"
+      exclude: 
+        - '.*(?i)notice.*'
 
 
 # to add extra inputs, define additional filebeat.log_files entries in playbooks
