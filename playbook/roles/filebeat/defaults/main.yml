@@ -36,11 +36,20 @@ filebeat:
         - /var/log/monit.log
       include: 
         - '.*(?i)error.*' 
-    - group: "drupal-php"
+    - group: "drupal"
       reqservice: "php-fpm" # if reqservice is defined, filebeat will ship logs only if this service running
       paths: 
       - /var/log/drupal.log
+      exclude: 
+        - '.*(?i)notice.*'
+    - group: "php-fpm"
+      reqservice: "php-fpm" # if reqservice is defined, filebeat will ship logs only if this service running
+      paths: 
       - /var/log/php-fpm/*.log
+      multiline:
+        pattern: '^\[[0-9]{1,2}-[A-Z]{1}'
+        negate: "true"
+        match: "after"
       exclude: 
         - '.*(?i)notice.*'
 
