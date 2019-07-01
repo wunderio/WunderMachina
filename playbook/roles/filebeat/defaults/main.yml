@@ -53,7 +53,10 @@ filebeat:
         match: "after"
       exclude: 
         - '.*(?i)notice.*'
-
+    - group: "nginx-err"
+      reqservice: "nginx"
+      paths: 
+      - /var/log/nginx/*-error.log
 
 # to add extra inputs, define filebeat.log_files_extra with same structure as filebeat.log_files
 # or add
