@@ -29,10 +29,6 @@
   loop: "{{ filebeat.log_files }}"
   when: item.reqservice is defined
 
-- name: Debug reqservice_checks
-  debug:
-    var: reqservice_checks
-
 # copy cert and key values from vault to server
 - name: Copy client.crt to server
   copy: content="{{ filebeat_uc_logstash_client_crt }}" dest=/etc/filebeat/client.crt
