@@ -1,7 +1,9 @@
 filebeat.inputs:
 {% for logfiles in filebeat.log_files %}
 {% if ((logfiles.reqservice is not defined) or 
-      ((logfiles.reqservice is defined) and (reqservice_checks.results[loop.index0].stdout == "1"))) %}
+      (logfiles.reqservice is defined) and (logfiles.reqservice+'.service' in ansible_facts.services) and (ansible_facts.services[logfiles.reqservice+'.service'].state == "running") or
+      (logfiles.reqservice is defined) and (logfiles.reqservice in ansible_facts.services) and (ansible_facts.services[logfiles.reqservice].state == "running")
+      ) %}
 
 - type: log
   paths:

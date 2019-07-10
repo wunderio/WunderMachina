@@ -23,11 +23,9 @@
       log_files: "{{ filebeat.log_files + filebeat.log_files_extra }}"
   when: filebeat.log_files_extra is defined
 
-- name: Check if required service(s) present
-  shell: "systemctl status {{ item.reqservice }} | grep running | wc -l"
-  register: reqservice_checks
-  loop: "{{ filebeat.log_files }}"
-  when: item.reqservice is defined
+# Need this to check if required service(s) present when using template
+- name: Populate service facts
+  service_facts:
 
 # copy cert and key values from vault to server
 - name: Copy client.crt to server
