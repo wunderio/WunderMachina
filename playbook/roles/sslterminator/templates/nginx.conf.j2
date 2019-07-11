@@ -101,7 +101,7 @@ http {
 
   {% if nginx_disable_referrer_policy is not defined %}
   # Protect users privacy
-  add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin" always;
+  add_header Referrer-Policy "{{ nginx_referrer_policy }}" always;
   {% endif %}
   
   ## Block MIME type sniffing on IE.
