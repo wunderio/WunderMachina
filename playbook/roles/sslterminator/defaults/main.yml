@@ -60,6 +60,9 @@ ssl_browser_support: modern
 #Default content security policy:
 nginx_content_security_policy: "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; object-src 'self'; connect-src wss: https:"
 
+#Default referrer policy:
+nginx_referrer_policy: "no-referrer, strict-origin-when-cross-origin"
+
 nginx_compression_level: 6
 
 # Set empty to disable
