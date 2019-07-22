@@ -1,0 +1,41 @@
+---
+
+# Setup all of our php-fpm related repositories.
+
+
+- name: Make sure epel-release & yum-utils are installed.
+  yum: pkg={{item}} state=present
+  with_items:
+    - epel-release
+    - yum-utils
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+  when: distro == "rhel7"
+
+- name: Install repositories
+  yum: pkg={{item}} state=present
+  with_items:
+    - "https://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+  when: distro == "centos7"
+
+
+- name: Update Remi repo. Disable PHP 5.4 and enable 7.3 then run yum clean all.
+  become: yes
+  become_user: root
+  shell: |
+    yum-config-manager --disable remi-php54
+    yum-config-manager --enable remi-php73
+    yum clean all
+
+
+
+
+
+
+# Mariadb repository for client
+- copy:
+    src=mariadb/mariadb.repo
+    dest=/etc/yum.repos.d/mariadb.repo
