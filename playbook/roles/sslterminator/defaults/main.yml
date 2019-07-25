@@ -28,6 +28,10 @@ sslterminators:
     #  - code: 451
     #    page: 451.html
     #    path: /var/www/html
+    default_root_proxy_config_overridden: False # If this is set to True, defaults as 
+    # proxy_pass, proxy_redirect and other proxy_... defaults 
+    # will NOT be included in / location config
+    #
     # extra conditions for location / can be defined:
     #extra_conditions: |
     #if ($illegal = yes) {
