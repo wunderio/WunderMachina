@@ -3,11 +3,11 @@
 ################################################################################
 
 {% for site in sslterminators %}
-
+{% if (site.default_root_proxy_config_overridden is not defined) or (site.default_root_proxy_config_overridden == False) %}
 upstream {{ site.server_name|replace(".", "") }} {
 {% for server in site.backends %}
   server {{ server }};
 {% endfor %}
 }
-
+{% endif %}
 {% endfor %}
