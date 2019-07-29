@@ -28,6 +28,10 @@ sslterminators:
     #  - code: 451
     #    page: 451.html
     #    path: /var/www/html
+    default_root_proxy_config_overridden: False # If this is set to True, defaults as 
+    # proxy_pass, proxy_redirect and other proxy_... defaults 
+    # will NOT be included in / location config
+    #
     # extra conditions for location / can be defined:
     #extra_conditions: |
     #if ($illegal = yes) {
@@ -59,6 +63,9 @@ ssl_browser_support: modern
 
 #Default content security policy:
 nginx_content_security_policy: "upgrade-insecure-requests; default-src https: data: 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'self'; base-uri 'self'; object-src 'self'; connect-src wss: https:"
+
+#Default referrer policy:
+nginx_referrer_policy: "no-referrer, strict-origin-when-cross-origin"
 
 nginx_compression_level: 6
 

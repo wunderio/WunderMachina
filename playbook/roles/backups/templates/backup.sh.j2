@@ -21,6 +21,13 @@ tar -czf {{ backup_location }}/drupal/files/files-$(date +%y-%m-%d-%H%M).tgz -P 
 rm -rf $TMP_DIR
 {% endif %}
 
+{% if backup_private_files_path is defined %}
+TMP_DIR=`mktemp -d {{ backup_location }}/tmp-backup-$(date +%y-%m-%d)-XXXXXX`
+mkdir -p {{ backup_location }}/drupal/files
+cp -r {{ backup_private_files_path }} $TMP_DIR/
+tar -czf {{ backup_location }}/drupal/files/private-$(date +%y-%m-%d-%H%M).tgz -P $TMP_DIR
+rm -rf $TMP_DIR
+{% endif %}
 
 # Remove more than {{ backup_keep_max_days }} days old backups.
 find {{ backup_location }}/drupal/database -mtime +{{ backup_keep_max_days | default('4') }} -exec rm {} \;

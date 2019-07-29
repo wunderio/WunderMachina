@@ -205,6 +205,7 @@ server {
     {% if site.extra_conditions is defined %}
     {{ site.extra_conditions }}
     {% endif %}
+    {% if (site.default_root_proxy_config_overridden is not defined) or (site.default_root_proxy_config_overridden == False) %}
     # Pass the request on to Varnish.
     proxy_pass http://{{ site.server_name|replace(".", "") }};
 
@@ -232,7 +233,7 @@ server {
     proxy_set_header        X-Forwarded-Proto $scheme;
     proxy_set_header        X-Forwarded-Port  $server_port;
     add_header              Front-End-Https   on;
-
+    {% endif %}
     {% if site.extra_headers is defined %}
     {% for header in site.extra_headers %}
     add_header {{ header.name }} {{ header.value }};

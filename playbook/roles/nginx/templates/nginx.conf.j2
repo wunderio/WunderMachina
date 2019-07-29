@@ -99,8 +99,10 @@ http {
   ## https://www.owasp.org/index.php/List_of_useful_HTTP_headers.
   add_header X-XSS-Protection '1; mode=block';
 
+  {% if nginx_disable_referrer_policy is not defined %}
   # Protect users privacy
-  add_header Referrer-Policy "no-referrer, strict-origin-when-cross-origin" always;
+  add_header Referrer-Policy "{{ nginx_referrer_policy }}" always;
+  {% endif %}
 
   ## Block MIME type sniffing on IE.
   add_header X-Content-Options nosniff;

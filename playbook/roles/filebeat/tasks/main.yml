@@ -17,12 +17,32 @@
   action: command hostname
   register: hostname
 
-- set_fact: host
-  string_to_echo: "{{ hostname.stdout }}"
-  
+- name: Merge filebeat.log_files with filebeat.log_files_extra
+  set_fact:
+    filebeat:
+      log_files: "{{ filebeat.log_files + filebeat.log_files_extra }}"
+  when: filebeat.log_files_extra is defined
+
+# Need this to check if required service(s) present when using template
+- name: Populate service facts
+  service_facts:
+
+# copy cert and key values from vault to server
+- name: Copy client.crt to server
+  copy: content="{{ filebeat_uc_logstash_client_crt }}" dest=/etc/filebeat/client.crt
+  when: filebeat.endpoint == "logstash"
+
+- name: Copy client.key to server
+  copy: content="{{ filebeat_uc_logstash_client_key }}" dest=/etc/filebeat/client.key
+  when: filebeat.endpoint == "logstash"
+
+- name: Copy SSL CA to server
+  copy: content="{{ filebeat_uc_logstash_ca_pem }}" dest=/etc/filebeat/CA.pem
+  when: filebeat.endpoint == "logstash"
+
 - name: Copy Filebeat configuration.
   template:
-    src: filebeat.yml.j2
+    src: filebeat_{{ filebeat.endpoint }}.yml.j2
     dest: "/etc/filebeat/filebeat.yml"
     owner: root
     group: root
