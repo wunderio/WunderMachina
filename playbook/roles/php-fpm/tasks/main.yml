@@ -98,7 +98,7 @@
 - template:
     src=www.conf.php7.j2
     dest=/etc/php-fpm.d/www.conf
-  when: php_package == "php70u" or php_package == "php71u" or php_package == "php72u"
+  when: php_package == "php70u" or php_package == "php71u" or php_package == "php72u" or php_package == "php73remi"
 
 - copy:
     src=php-fpm/{{ item }}
