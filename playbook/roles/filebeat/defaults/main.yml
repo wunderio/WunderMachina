@@ -1,40 +1,76 @@
 ---
 # defaults file for filebeat
-filebeat_version: 6.x
+filebeat:
+  version: 6.x
+  endpoint: logstash # lostash or escloud
+  escloud:
+    host: ""
+    cloud_id: ""
+    cloud_auth: ""
+  logstash:
+    endpoint: ""     # Hostname and IP e.g. my.logstash.server:12345, usually defined in secrets
+    client_cert: ""
+    client_key: ""
+    ca_cert: ""
+  # default groups of files to watch and rules for their (not)shipping
+  log_files:
+    - group: "secure"
+      paths:
+        - /var/log/secure
+    - group: "messages"
+      paths:
+        - /var/log/messages
+      # if include is defined, filebeat will ship only lines that match rules
+      include:
+        - '.*(?i)err.*' 
+        - '.*(?i)warn.*'
+    - group: "maillog"
+      paths:   
+        - /var/log/maillog
+      include:
+        - '.*(?i)err.*' 
+        - '.*(?i)warn.*'
+        - '.*(?i)bounce.*'
+    - group: "monit"
+      reqservice: "monit" 
+      paths:   
+        - /var/log/monit.log
+      include: 
+        - '.*(?i)error.*' 
+    - group: "drupal"
+      reqservice: "php-fpm"
+      paths: 
+      - /var/log/drupal.log
+      exclude: 
+        - '.*(?i)notice.*'
+    - group: "php-fpm"
+      reqservice: "php-fpm"
+      paths: 
+      - /var/log/php-fpm/*.log
+      multiline:
+        pattern: '^\[[0-9]{1,2}-[A-Z]{1}'
+        negate: "true"
+        match: "after"
+      exclude: 
+        - '.*(?i)notice.*'
+    - group: "nginx-err"
+      reqservice: "nginx"
+      paths: 
+      - /var/log/nginx/*-error.log
 
-# secrets should be managed to set these
-# do not set and do not submit secret variables to git unencrypted
-filebeat_kibana_host: "" 
-filebeat_cloud_id: ""
-filebeat_cloud_auth: ""
-
-filebeat_logs:
-  - /var/log/*.log
-  - /var/log/secure
-  - /var/log/maillog
-# submit all from filebeat_logs, except:
-filebeat_logs_exclude: "['Connection closed by 127.0.0.1']"
-
-messages_log: /var/log/messages
-# submit logs from messages, only when it contains:
-messages_log_include: "['err', 'warn', 'Err', 'Warn', 'ERR', 'WARN']"
-
-filebeat_log_mysql: false
-filebeat_log_php_fpm: false
-filebeat_log_nginx: false # this enables only error log, set also filebeat_log_nginx_access if access logs also needed
-filebeat_log_nginx_access: false
-
-nginx_error_logs:
-  - /var/log/nginx/http-*error.log
-  - /var/log/nginx/ssl-*error.log
-nginx_error_logs_exclude: "[]"
-
-nginx_access_logs:
-  - /var/log/nginx/http-*access.log
-  - /var/log/nginx/ssl-*access.log
-nginx_access_logs_exclude: "[]"
-
-php_fpm_logs: 
-  - /var/log/php-fpm/error.log
-  - /var/log/php-fpm/www-slow.log
-php_fpm_logs_exclude: "['NOTICE']"
+# to add extra inputs, define filebeat.log_files_extra with same structure as filebeat.log_files
+# or add
+# filebeat.custom_inputs_block with syntax described in url 
+# https://www.elastic.co/guide/en/beats/filebeat/master/filebeat-input-log.html
+# example -
+# filebeat:
+#   custom_inputs_block: | 
+#         - type: log
+#           paths:
+#             - /my/custom/path/1
+#             - /my/custom/path/2
+#           include_lines: ['string1','string2']
+#           exclude_lines: ['string1','string2']
+#           fields:
+#             log_type: syslog
+#           fields_under_root: true
