@@ -1,0 +1,21 @@
+---
+- name: Install pm2 global package
+  npm:
+    name: pm2
+    global: true
+
+- name: Startup pm2
+  command: pm2 startup {{ pm2_startup }} -u {{ pm2_user }} --hp {{ pm2_home }}
+
+- name: Configuring service
+  service:
+    name: "pm2-{{ pm2_user }}"
+    state: started
+    enabled: yes
+
+- name: Create a directory for logs in /var/log/pm2 if it does not exist
+  file:
+    path: /var/log/pm2
+    state: directory
+    mode: '0755'
+    owner: "{{ pm2_user }}"
