@@ -37,6 +37,14 @@ varnish:
 #      operator: "~"
 #      value: "^.*/somepath/.*$"
 #      action: "return(pass);" #note that you need a ";"
+#
+# We can set different ttl depending on custom conditions 
+# by adding directives in vcl_backend_response_append_block
+#  vcl_backend_response_append_block: |2
+#      if (beresp.status == 200 && beresp.ttl > 0s) {
+#        set beresp.ttl = 1m;
+#        set beresp.http.x-ttl = "1m"; 
+#      }
 # # Multiple apps
 #   - name: test_com_director
 #     host: test.com
