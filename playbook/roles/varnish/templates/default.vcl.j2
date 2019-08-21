@@ -497,9 +497,9 @@ sub vcl_backend_response {
   }
 
   # Allow items to be stale if needed.
-  set beresp.grace = 2h
+  set beresp.grace = 2h;
 
-{% if varnish.vcl_backend_response_block is defined %}
+{% if varnish.vcl_backend_response_append_block is defined %}
 {{ varnish.vcl_backend_response_append_block }}
 {% endif %}
 
