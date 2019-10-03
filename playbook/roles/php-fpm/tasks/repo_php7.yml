@@ -5,14 +5,14 @@
 - name: Install repositories
   yum: pkg={{item}} state=present
   with_items:
-    - "https://dl.iuscommunity.org/pub/ius/stable/Redhat/7/x86_64/ius-release-1.0-15.ius.el7.noarch.rpm"
+    - "https://rhel7.iuscommunity.org/ius-release.rpm"
   when: distro == "rhel7"
 
 - name: Install repositories
   yum: pkg={{item}} state=present
   ignore_errors: yes
   with_items:
-    - "https://dl.iuscommunity.org/pub/ius/stable/CentOS/7/x86_64/ius-release-1.0-15.ius.centos7.noarch.rpm"
+    - "https://centos7.iuscommunity.org/ius-release.rpm"
   when: distro == "centos7"
 
 # Mariadb repository for client
