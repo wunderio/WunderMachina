@@ -37,6 +37,12 @@ sslterminators:
     #if ($illegal = yes) {
     #  return 451;
     #}
+    # Extra forwards with custom conditions can be defined like below
+    # extra_forwards: 
+    # - forward_from_path: '^/somepath/(.*)$'
+    #   forward_to: https://somehost/somepath/$1
+    #   forward_condition: '$remote_addr !~* xxx.xxx.xxx.xxx'
+    #   type: permanent
 
 httpforwards:
   - server_name: www.test.com
