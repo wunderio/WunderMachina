@@ -170,7 +170,13 @@ server {
 
   {% if site.extra_forwards is defined %}
   {% for forward in site.extra_forwards %}
-  rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+  {% if forward.forward_condition is defined %}
+  if ( {{ forward.forward_condition }} ) {
+      rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+    }    
+  {% else  %}
+      rewrite {{ forward.forward_from_path }} {{ forward.forward_to }} {{ forward.type }};
+  {% endif %}
   {% endfor %}
   {% endif %}
 
