@@ -223,8 +223,9 @@ sub vcl_recv {
     return (hash);
   }
 
-  # Do not allow public access to cron.php , update.php or install.php.
-  if (req.url ~ "^/(cron|install|update)\.php$" && !client.ip ~ internal) {
+  # Do not allow public access to cron.php , update.php 
+  # or install.php or core/install.php.
+  if (req.url ~ "^/(cron|install|update|core/install)\.php$" && !client.ip ~ internal) {
     # Have Varnish throw the error directly.
     return (synth( 404, "Page not found."));
   }
