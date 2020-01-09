@@ -29,4 +29,5 @@
     - "php-xmlrpc"
     - "php-pecl-apcu"
     - "php-bcmath"
+    - "php-pecl-zip"
 
