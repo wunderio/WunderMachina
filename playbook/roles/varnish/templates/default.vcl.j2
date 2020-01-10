@@ -607,7 +607,12 @@ sub vcl_synth {
         <html xmlns="http://www.w3.org/1999/xhtml">
         <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link href="https://wunder.io/sites/default/files/error_page/style.css" rel="stylesheet" type="text/css">
+        <style type="text/css"> 
+        body{background-color:#fff;font-family:"Helvetica Neue",Arial,Helvetica,Geneva,sans-serif;text-align:right;color:#d2d3d7}
+        #error-box{background:url("data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==") 
+        no-repeat right bottom;height:600px;width:950px;margin:auto;display:block;float:none;position:relative}
+        #error-message{display:block;float:left;width:55%;margin-top:150px;font-size:.9em;line-height:1.2em}
+        </style>
         <title>"} + resp.http.x-sitetitle + {" - Error loading the page</title>
 
         </head>
