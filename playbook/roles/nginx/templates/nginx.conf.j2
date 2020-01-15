@@ -80,7 +80,7 @@ http {
   ssl_session_timeout 10m;
 
   # Enable HSTS;
-  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+  add_header Strict-Transport-Security "max-age=31536000;{{ hsts_include_subdomains }} preload" always;
 
   {% if nginx_disable_default_xframe_options is not defined %}
   # Enable X-Frame-Options
