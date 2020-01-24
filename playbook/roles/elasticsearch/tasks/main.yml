@@ -24,20 +24,22 @@
 - name: Install Elasticsearch.
   yum: pkg=elasticsearch state=installed
 
+- name: Set Elasticsearch plugin binary name depending on ES version
+  set_fact:
+    plugin_bin_name: "{{ 'bin/plugin' if elasticsearch_version < 6 else 'bin/elasticsearch-plugin' }}"
+
 - name: Removing Plugins if they exist
   action: >
-    shell bin/elasticsearch-plugin remove {{ item.shortname }}
+    shell bin/{{ es_plugin_bin_name }} remove {{ item.shortname }}
     chdir={{ elasticsearch_config.home_dir }}
   with_items: "{{ elasticsearch_plugins }}"
-  when: elasticsearch_plugins != None
   ignore_errors: yes
 
 - name: Installing Plugins
   action: >
-    shell bin/elasticsearch-plugin install {{ item.name }}
+    shell bin/{{ es_plugin_bin_name }} install {{ item.name }}
     chdir={{ elasticsearch_config.home_dir }}
   with_items: "{{ elasticsearch_plugins }}"
-  when: elasticsearch_plugins != None
   ignore_errors: yes
 
 - name: Configure Elasticsearch.
