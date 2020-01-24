@@ -26,7 +26,7 @@
 
 - name: Set Elasticsearch plugin binary name depending on ES version
   set_fact:
-    plugin_bin_name: "{{ 'plugin' if elasticsearch_version < 6 else 'elasticsearch-plugin' }}"
+    es_plugin_bin_name: "{{ 'plugin' if elasticsearch_version < 6 else 'elasticsearch-plugin' }}"
 
 - name: Removing Plugins if they exist
   action: >
