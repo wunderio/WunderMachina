@@ -69,7 +69,7 @@ check process nginx with pidfile /var/run/nginx.pid
    group apache
    start program = "/usr/bin/systemctl start nginx"
    stop program = "/usr/bin/systemctl stop nginx"
-   if failed host 127.0.0.1 port 8082 protocol http
+   if failed host 127.0.0.1 port 8008 protocol http
      and request '/index.html'
      with timeout 5 seconds
      then restart
