@@ -30,4 +30,4 @@
     - "php-pecl-apcu"
     - "php-bcmath"
     - "php-pecl-zip"
-
+    - "php-gmp"
