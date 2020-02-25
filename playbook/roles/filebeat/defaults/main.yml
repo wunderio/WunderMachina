@@ -1,5 +1,56 @@
 ---
 # defaults file for filebeat
+# you can override defaults by defining variables like log_secure, log_drupal etc in your playbooks
+log_secure:
+  - group: "secure"
+    paths:
+      - /var/log/secure
+log_messages:
+  - group: "messages"
+    paths:
+      - /var/log/messages
+    include:          # if include is defined, filebeat will ship only lines that match rules
+      - '.*(?i)err.*' 
+      - '.*(?i)warn.*'
+log_maillog:
+  - group: "maillog"
+    paths:   
+      - /var/log/maillog
+    include:
+      - '.*(?i)err.*' 
+      - '.*(?i)warn.*'
+      - '.*(?i)bounce.*'
+log_monit:
+  - group: "monit"
+    reqservice: "monit" # append to logging config conditionally - only when service monit is present
+    paths:   
+      - /var/log/monit.log
+    include: 
+      - '.*(?i)error.*' 
+log_drupal:
+  - group: "drupal"
+    reqservice: "php-fpm"
+    paths: 
+    - /var/log/drupal.log
+    exclude:          # if exclude is defined, all except lines matching regex will be shipped
+      - '.*(?i)notice.*'
+log_php:
+  - group: "php-fpm"
+    reqservice: "php-fpm"
+    paths: 
+    - /var/log/php-fpm/*.log
+    multiline:        # you can merge multiple lines together in one log entry
+      pattern: '^\[[0-9]{1,2}-[A-Z]{1}'
+      negate: "true"
+      match: "after"
+    exclude: 
+      - '.*(?i)notice.*'
+log_nginx:
+  - group: "nginx-err"
+    reqservice: "nginx"
+    paths: 
+    - /var/log/nginx/*-error.log
+
 filebeat:
   version: 6.x
   endpoint: logstash # lostash or escloud
@@ -13,52 +64,30 @@ filebeat:
     client_key: ""
     ca_cert: ""
   # default groups of files to watch and rules for their (not)shipping
-  log_files:
-    - group: "secure"
-      paths:
-        - /var/log/secure
-    - group: "messages"
-      paths:
-        - /var/log/messages
-      # if include is defined, filebeat will ship only lines that match rules
-      include:
-        - '.*(?i)err.*' 
-        - '.*(?i)warn.*'
-    - group: "maillog"
-      paths:   
-        - /var/log/maillog
-      include:
-        - '.*(?i)err.*' 
-        - '.*(?i)warn.*'
-        - '.*(?i)bounce.*'
-    - group: "monit"
-      reqservice: "monit" 
-      paths:   
-        - /var/log/monit.log
-      include: 
-        - '.*(?i)error.*' 
-    - group: "drupal"
-      reqservice: "php-fpm"
-      paths: 
-      - /var/log/drupal.log
-      exclude: 
-        - '.*(?i)notice.*'
-    - group: "php-fpm"
-      reqservice: "php-fpm"
-      paths: 
-      - /var/log/php-fpm/*.log
-      multiline:
-        pattern: '^\[[0-9]{1,2}-[A-Z]{1}'
-        negate: "true"
-        match: "after"
-      exclude: 
-        - '.*(?i)notice.*'
-    - group: "nginx-err"
-      reqservice: "nginx"
-      paths: 
-      - /var/log/nginx/*-error.log
+  # you can override defaults by defining variables like log_secure, log_drupal etc in your playbooks
+  log_files: "{{ log_secure }} + 
+              {{ log_messages }} + 
+              {{ log_maillog }} + 
+              {{ log_monit }} + 
+              {{ log_drupal }} + 
+              {{ log_php}} + 
+              {{ log_nginx}}"
 
-# to add extra inputs, define filebeat.log_files_extra with same structure as filebeat.log_files
+# to add extra inputs, define filebeat.log_files_extra like this
+#
+#  filebeat:
+#    log_files_extra:
+#    - group: "elasticsearch"
+#      reqservice: "elasticsearch"
+#      paths:
+#      - /var/log/elasticsearch/cluster1.log
+#      multiline:
+#        pattern: '^\[[0-9]{4}-[0-9]{1,2}'
+#        negate: "true"
+#        match: "after"
+#      include:
+#        - '.*(?i)exception.*'
+#        - '.*(?i)error.*'
 # or add
 # filebeat.custom_inputs_block with syntax described in url 
 # https://www.elastic.co/guide/en/beats/filebeat/master/filebeat-input-log.html
