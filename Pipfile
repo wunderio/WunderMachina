@@ -10,7 +10,8 @@ ansible = "==2.6.*"
 pyOpenSSL = "==17.5.*"
 jmespath = "==0.9.2"
 netaddr = "==0.7.19"
-upcloud-api = {git = "git://github.com/wunderio/upcloud-python-api", ref = "master"}
+upcloud-api = {git = "git://github.com/wunderio/upcloud-python-api",ref = "master"}
+paramiko = "*"
 
 [requires]
 python_version = "2.7"
