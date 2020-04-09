@@ -27,13 +27,13 @@ backend {{ backend.name }} {
 
     .interval  = {{ varnish.probe_interval | default('5s') }}; # check the health of each backend every n seconds
     .timeout   = {{ varnish.probe_timeout| default('1s') }}; # timing out after n seconds
-    .window    = 5;  # If 3 out of the last 5 polls succeeded the backend is
-    .threshold = 3;  # considered healthy, otherwise it will be marked as sick
+    .window    = {{ varnish.probe_window | default('5') }}; # If 3 out of the last 5 polls succeeded the backend is
+    .threshold = {{ varnish.probe_threshold | default('3') }}; # considered healthy, otherwise it will be marked as sick
   }
 
-  .first_byte_timeout     = 300s;    # How long to wait before we receive a first byte from our backend?
-  .connect_timeout        = 10s;     # How long to wait for a backend connection?
-  .between_bytes_timeout  = 10s;     # How long to wait between bytes received from our backend?
+  .first_byte_timeout     = {{ varnish.probe_first_byte_timeout | default('300s') }}; # How long to wait before we receive a first byte from our backend?
+  .connect_timeout        = {{ varnish.probe_connect_timeout | default('10s') }}; # How long to wait for a backend connection?
+  .between_bytes_timeout  = {{ varnish.probe_between_bytes_timeout | default('10s') }}; # How long to wait between bytes received from our backend?
 }
 {% endfor %}
 {% endfor %}
