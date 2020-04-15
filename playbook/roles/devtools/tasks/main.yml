@@ -42,9 +42,13 @@
 # Php XDebug.
 #
 
-- name: PHP | XDebug
+- name: PHP | Install XDebug for PHP 7.3
+  yum: pkg=php73-php-pecl-xdebug state=installed
+  when: enable_xdebug == true and php_package == "php73remi"
+
+- name: PHP | Install XDebug for PHP <7.3
   yum: pkg={{ php_package }}-pecl-xdebug state=installed
-  when: enable_xdebug== true
+  when: enable_xdebug == true and php_package != "php73remi"
 
 - name: PHP | Set up xdebug.ini
   ini_file: dest=/etc/php.d/zzz-xdebug.ini
