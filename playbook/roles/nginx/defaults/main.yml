@@ -53,8 +53,8 @@ nginx_conf:
   client_body_buffer_size: 128k
   proxy_read_timeout: 60
   server_names_hash_bucket_size: 64
+  arbeit_limit_conn: 32
 
-nginx_compression_level: 6
 # Allow connection limit bypass from certain ip addresses
 #nginx_conn_limit_whitelist:
 #  - 127.0.0.1/32

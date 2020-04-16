@@ -39,7 +39,7 @@ server {
   error_log /var/log/nginx/http-{{ site.server_name }}-error.log;
 
   {% if nginx_disable_arbeit is not defined %}
-  limit_conn arbeit 32;
+  limit_conn arbeit {{ nginx_conf.arbeit_limit_conn | default(32) }};
   {% endif %}
 
   {% if app_dir_aliases is defined %}
