@@ -13,4 +13,4 @@ netaddr = "==0.7.19"
 upcloud-api = {git = "git://github.com/wunderio/upcloud-python-api", ref = "master"}
 
 [requires]
-python_version = "2.7"
+python_version = "3.6"
