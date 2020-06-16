@@ -43,6 +43,9 @@ sslterminators:
     #   forward_to: https://somehost/somepath/$1
     #   forward_condition: '$remote_addr !~* xxx.xxx.xxx.xxx'
     #   type: permanent
+    # bauth_override_block: | # lines below are included directly in ssl_terminators.conf, use semicolumns
+    #   # commented lines to test bauth_override_block inclusion overriding 
+    #   # LB wide bauth definitions in ssl_terminators.conf
 
 httpforwards:
   - server_name: www.test.com

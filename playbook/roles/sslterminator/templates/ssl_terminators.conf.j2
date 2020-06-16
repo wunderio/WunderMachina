@@ -155,7 +155,10 @@ server {
   access_log /var/log/nginx/ssl-{{ site.server_name }}-access.log main buffer=32k;
   error_log /var/log/nginx/ssl-{{ site.server_name }}-error.log;
 
-  {% if basicauth_enabled == True %}
+  {% if site.bauth_override_block is defined %}
+  # Default basicauth settings overriden!
+  {{ site.bauth_override_block }}
+  {% elif basicauth_enabled == True %}
 
   satisfy  any;
   {% for ip in basicauth_ip %}
