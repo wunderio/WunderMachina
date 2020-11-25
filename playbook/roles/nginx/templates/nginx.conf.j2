@@ -106,7 +106,7 @@ http {
   {% endif %}
 
   ## Block MIME type sniffing on IE.
-  add_header X-Content-Options nosniff;
+  add_header X-Content-Type-Options nosniff;
 
   sendfile                on;
   tcp_nopush              on;
