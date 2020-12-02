@@ -1,0 +1,4 @@
+# Mariadb repository
+- copy:
+    src=mariadb-10-3.repo
+    dest=/etc/yum.repos.d/mariadb.repo

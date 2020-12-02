@@ -6,6 +6,19 @@
 
 # Setup MariaDB repo
 
+- include: "mariadb-10-1.yml"
+  when: mariadb_version == "10.1"
+
+- include: "mariadb-10-2.yml"
+  when: mariadb_version == "10.2"
+
+- include: "mariadb-10-3.yml"
+  when: mariadb_version == "10.3"
+
+- include: "mariadb-10-4.yml"
+  when: mariadb_version == "10.4"
+
+
 # Mariadb repository
 - copy:
     src=mariadb.repo
@@ -38,6 +51,9 @@
 
 - shell:
     systemctl stop mysql
+
+- shell:
+    mysql_upgrade
 
 - shell:
     systemctl start mysql
