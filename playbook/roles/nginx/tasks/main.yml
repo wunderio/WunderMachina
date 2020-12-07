@@ -9,6 +9,11 @@
   with_items:
     - nginx
 
+- yum:
+    name=nginx-module-geoip
+    state=present
+  when: nginx_geoip_enabled == True
+
 # Delete legacy backups
 # This is because we used to, but we really don't need to backup these.
 - shell: find {{ item }} -regex '^.*@.*~$' -type f -delete
