@@ -60,7 +60,14 @@ nginx_conf:
 #  - 127.0.0.1/32
 
 allow_origin_fonts: false
+
+# Handling web crawlers - per environment via /robots.txt
 deny_robots: false
+# Handling web crawlers - per domain and path via X-Robots-Tag header
+# This example will add X-Robots-Tag header to site paths that match the host:/path regex
+# nginx_x_robots_tag_header_rules: |
+#   "~*(dev|develop|stage|prod).mytestsitedomain.com:/.*$" "noindex, nofollow, nosnippet, noarchive";
+#   default  '';
 
 #Block specific files not in nginx 404 list. As you are adding to an existing list of files formatting is important even for one file.
 #example: |file1|file2|file3
@@ -80,3 +87,4 @@ hsts_include_subdomains: " includeSubDomains;"
 # Set to true to install nginx-module-geoip 
 # and load ngx_http_geoip_module in nginx.conf 
 nginx_geoip_enabled: false
+

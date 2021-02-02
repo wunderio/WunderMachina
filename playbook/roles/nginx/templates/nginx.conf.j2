@@ -75,6 +75,14 @@ http {
   limit_conn_zone $limit zone=arbeit:10m;
   {% endif %}
 
+  {% if nginx_x_robots_tag_header_rules is defined %}
+  ## Tell robots not to index pages on specified domains:/locations
+  map "$http_host:$request_uri" $x_robots_tag_header {
+    {{ nginx_x_robots_tag_header_rules }}
+  }
+  add_header  X-Robots-Tag $x_robots_tag_header;
+  {% endif %}
+
   ## Use a SSL/TLS cache for SSL session resume. This needs to be
   ## here (in this context, for session resumption to work. See this
   ## thread on the Nginx mailing list:
