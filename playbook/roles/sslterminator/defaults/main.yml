@@ -88,5 +88,5 @@ nginx_geoip_enabled: false
 # Setting this variable in your playbooks as in example below
 # will add X-Robots-Tag header to site locations that match the host:/path regex
 # nginx_x_robots_tag_header_rules: |
-#   "~(dev|develop|stage|prod).mytestsitedomain.com:/.*$" "noindex, nofollow, nosnippet, noarchive";
+#   "~*(dev|develop|stage|prod).mytestsitedomain.com:/.*$" "noindex, nofollow, nosnippet, noarchive";
 #   default  '';
