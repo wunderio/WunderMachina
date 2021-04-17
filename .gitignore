@@ -3,3 +3,4 @@
 
 # Ignore python virtualenv created by pip
 .virtualenv
+Pipfile.lock
