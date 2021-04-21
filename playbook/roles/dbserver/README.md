@@ -1,6 +1,7 @@
 # DBserver role
 
 Variables you can define:
+mariadb_version: "10.3"
 partition_var_lib_mysql: True
 change_db_root_password: True
 mariadb_root_password: root

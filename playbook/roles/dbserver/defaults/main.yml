@@ -2,7 +2,7 @@
 partition_var_lib_mysql: True
 var_lib_mysql_disk: /var/vdc
 
-mariadb_version: 10.2
+mariadb_version: "10.2"
 
 mariadb_root_password: root
 
