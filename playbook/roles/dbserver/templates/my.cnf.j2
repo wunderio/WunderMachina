@@ -94,7 +94,7 @@ innodb_thread_concurrency = {{ innodb_concurrency }}
 innodb_read_io_threads = {{ innodb_concurrency }}
 innodb_write_io_threads = {{ innodb_concurrency }}
 innodb_flush_log_at_trx_commit = 0
-innodb_support_xa = 0
+#innodb_support_xa = 0 #not supported in 10.3+
 innodb_max_dirty_pages_pct = 70
 innodb_lock_wait_timeout = {{ innodb_lock_wait_timeout }}
 

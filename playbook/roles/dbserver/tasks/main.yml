@@ -4,12 +4,39 @@
   when:
     partition_var_lib_mysql == True
 
-# Setup MariaDB repo
-
 # Mariadb repository
+
+- name: Delete old Mariadb repo in case of upgrade and copying proper new repo and recreate yum cache
+  file:
+    path: /etc/yum.repos.d/mariadb.repo
+    state: absent
+
+
 - copy:
-    src=mariadb.repo
+    src=mariadb-10-1.repo
     dest=/etc/yum.repos.d/mariadb.repo
+  when: mariadb_version == "10.1"
+
+- copy:
+    src=mariadb-10-2.repo
+    dest=/etc/yum.repos.d/mariadb.repo
+  when: mariadb_version == "10.2"
+
+- copy:
+    src=mariadb-10-3.repo
+    dest=/etc/yum.repos.d/mariadb.repo
+  when: mariadb_version == "10.3"
+
+- copy:
+    src=mariadb-10-4.repo
+    dest=/etc/yum.repos.d/mariadb.repo
+  when: mariadb_version == "10.4"
+
+
+- name: Update mariadb repository.
+  shell: |
+    yum clean all
+    yum makecache fast
 
 # Provision our mysql configs
 - name: Set my.cnf
@@ -21,7 +48,7 @@
 
 - yum:
     name={{ item }}
-    state=present
+    state=latest
   with_items:
     - MariaDB-server
     - MariaDB-client
@@ -36,11 +63,10 @@
     owner=mysql
     mode=755
 
-- shell:
-    systemctl stop mysql
+- shell: |
+    systemctl restart mysql
+    mysql_upgrade
 
-- shell:
-    systemctl start mysql
 
 - service: name=mysql state=started enabled=yes
 
