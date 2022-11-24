@@ -60,7 +60,7 @@
         [
           {
             "key": 'VARNISH_CONTROL_KEY',
-            "value": "{{ varnish_control_key }}"
+            "value": varnish_control_key
           }
         ]
       }}
@@ -68,7 +68,7 @@
 
 - name: Add php_env_vars to environment variables
   blockinfile:
-    path: /etc/environment
+    dest: /etc/environment
     backup: yes
     block: |
       {{ item.key }}={{ item.value }}
