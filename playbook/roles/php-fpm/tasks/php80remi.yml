@@ -1,0 +1,33 @@
+---
+
+- include: "repo_php80.yml"
+# Install all php packages
+- name: Install php-fpm
+  yum: pkg=php-fpm state=present
+
+- name: Ensure php-fpm is running now and on boot
+  service: name=php-fpm state=started enabled=yes
+
+- name: Install php packages
+  yum: pkg={{ item }} state=present
+  ignore_errors: yes
+  with_items:
+    - "php-cli"
+    - "php-common"
+    - "php-devel"
+    - "php-gd"
+    - "php-json"
+    - "php-mbstring"
+    - "php-mysqlnd"
+    - "php-opcache"
+    - "php-pdo"
+    - "php-soap"
+    - "php-tidy"
+    - "php-pecl-imagick"
+    - "php-pecl-memcached"
+    - "php-xml"
+    - "php-xmlrpc"
+    - "php-pecl-apcu"
+    - "php-bcmath"
+    - "php-pecl-zip"
+    - "php-gmp"
