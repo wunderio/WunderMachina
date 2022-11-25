@@ -15,6 +15,12 @@
 - include: "php74remi.yml"
   when: php_package == "php74remi"
 
+- include: "php80remi.yml"
+  when: php_package == "php80remi"
+
+- include: "php81remi.yml"
+  when: php_package == "php81remi"
+
 # Add db credentials as ENV for the php-fpm
 - name: add db credentials to php_env_vars
   set_fact:
