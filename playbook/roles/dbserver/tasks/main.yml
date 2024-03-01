@@ -64,6 +64,7 @@
     mode=755
 
 - shell: |
+    systemctl enable mariadb.service
     systemctl restart mysql
     mysql_upgrade
 
